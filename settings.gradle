@@ -1,0 +1,4 @@
+rootProject.name = 'siden'
+
+include 'siden-core', 'siden-example', 'siden-sandbox'
+
