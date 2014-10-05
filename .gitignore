@@ -1,0 +1,9 @@
+.gradle
+/build
+/siden-*/build
+gradle.properties
+
+/siden-*/bin
+/siden-*/.project
+/siden-*/.classpath
+/siden-*/.settings
