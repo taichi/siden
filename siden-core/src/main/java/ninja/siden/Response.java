@@ -32,7 +32,8 @@ public interface Response {
 	 * set RFC1123 date pattern to Response header.
 	 * 
 	 * @param name
-	 * @param datetime
+	 * @param date
+	 * @return this
 	 */
 	Response header(String name, long date);
 

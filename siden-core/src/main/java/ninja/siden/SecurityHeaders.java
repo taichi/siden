@@ -19,7 +19,7 @@ import io.undertow.util.HttpString;
 
 /**
  * @author taichi
- * @see https://www.owasp.org/index.php/List_of_useful_HTTP_headers
+ * @see <a href="https://www.owasp.org/index.php/List_of_useful_HTTP_headers">List_of_useful_HTTP_headers</a>
  */
 public interface SecurityHeaders {
 

@@ -42,7 +42,7 @@ public interface Config {
 	 * Use _method magic to allow put/delete forms in browsers that don't
 	 * support it.
 	 * 
-	 * @see http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete
+	 * @see <a href="http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete">why-form-dosent-support-put-delete</a>
 	 */
 	Option<Boolean> METHOD_OVERRIDE = Option.simple(Config.class,
 			"METHOD_OVERRIDE", Boolean.class);
@@ -80,9 +80,9 @@ public interface Config {
 	// Security Options
 
 	/**
-	 * X-Frame-Options: SAMEORIGIN
+	 * default value is X-Frame-Options: SAMEORIGIN
 	 * 
-	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/X-Frame-Options
+	 * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/X-Frame-Options">HTTP/X-Frame-Options</a>
 	 */
 	Option<String> FRAME_OPTIONS = Option.simple(Config.class, "FRAME_OPTIONS",
 			String.class);

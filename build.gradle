@@ -64,7 +64,7 @@ project("siden-core") {
 
 	artifacts {
 		archives sourcesJar
-		//archives javadocJar
+		archives javadocJar
 	}
 
 	apply plugin: 'maven-publish'
@@ -96,7 +96,7 @@ project("siden-core") {
 				from components.java
 				
 				artifact sourcesJar
-				//artifact javadocJar
+				artifact javadocJar
 				
 				pom.withXml {
 					def root = asNode()

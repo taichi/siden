@@ -60,12 +60,14 @@ public interface Request extends AttributeContainer {
 	Map<String, List<File>> files();
 
 	/**
-	 * get current session or create session
+	 * get current session or create new session.
+	 * @return session 
 	 */
 	Session session();
 
 	/**
 	 * get current session
+	 * @return session or empty
 	 */
 	Optional<Session> current();
 
