@@ -111,15 +111,19 @@ project("siden-core") {
 		key =  project.hasProperty('bintrayAPIKey') ? project.getProperty('bintrayAPIKey') : null
 		publications = ['mavenJava']
 		pkg {
-			repo = 'siden'
-			name = 'siden-core'
+			repo = 'maven'
+			name = 'siden'
 			licenses = ['Apache-2.0']
 		}
 	}
 }
 
-task install(dependsOn: 'siden-core:publishMavenJavaPublicationToMavenLocal') << {
+task install(dependsOn: 'siden-core:publishToMavenLocal') << {
 	logger.info "Installing $project.name"
+}
+
+task release(dependsOn: 'siden-core:bintrayUpload') << {
+	logger.info "Upload to bintray"
 }
 
 
