@@ -24,11 +24,7 @@ public class Main {
 ```groovy
 apply plugin: 'java'
 
-repositories {
-	maven {
-		url "http://dl.bintray.com/taichi/maven"
-	}
-}
+repositories.jcenter()
 
 dependencies {
 	compile 'ninja.siden:siden-core:0.0.1'
