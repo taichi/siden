@@ -52,7 +52,7 @@ public interface Response {
 	 */
 	Response type(String contentType);
 
-	Void reidrect(String location);
+	Void redirect(String location);
 
 	Void redirect(int code, String location);
 

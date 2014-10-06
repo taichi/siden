@@ -105,7 +105,7 @@ public class SidenResponse implements Response {
 	}
 
 	@Override
-	public Void reidrect(String location) {
+	public Void redirect(String location) {
 		return this.redirect(StatusCodes.FOUND, location);
 	}
 
