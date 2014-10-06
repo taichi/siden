@@ -54,7 +54,7 @@ public class App {
 
 	FiltersHandler filters;
 
-	HttpHandler core;
+	HttpHandler shared;
 
 	public App() {
 		this(Config.defaults().getMap());
@@ -65,7 +65,7 @@ public class App {
 		this.router = new RoutingHandler(this.assets);
 		this.subapp = new PathHandler(this.router);
 		this.filters = new FiltersHandler(this.subapp);
-		this.core = wrap(config, this.filters);
+		this.shared = wrap(config, this.filters);
 	}
 
 	protected HttpHandler wrap(OptionMap config, HttpHandler handler) {
@@ -252,7 +252,7 @@ public class App {
 	 */
 	public Stoppable listen(Function<Undertow.Builder, Undertow.Builder> fn) {
 		Undertow.Builder builder = fn.apply(Undertow.builder());
-		Undertow server = builder.setHandler(this.core).build();
+		Undertow server = builder.setHandler(this.shared).build();
 		server.start();
 		return server::stop;
 	}
