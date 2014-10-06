@@ -19,6 +19,8 @@ public class Main {
 }
 ```
 
+if you want to more examples, see [example/Main.java](https://github.com/taichi/siden/blob/master/siden-example/src/main/java/example/Main.java).
+
 ### Add dependency to your build
 
 ```groovy

@@ -26,6 +26,13 @@ http://rubydoc.info/github/rack/rack/master/Rack/Request
 http://expressjs.com/4x/api.html
 
 
+# Write more documents
+
+* make site on s3
+    * define deployment pipeline. 
+* more examples
+* javadoc
+
 
 # database integration
 
