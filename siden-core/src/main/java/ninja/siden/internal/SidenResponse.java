@@ -40,11 +40,9 @@ import org.xnio.OptionMap;
  */
 public class SidenResponse implements Response {
 
-	final OptionMap config;
 	final HttpServerExchange exchange;
 
 	public SidenResponse(HttpServerExchange exchange) {
-		this.config = exchange.getAttachment(Core.CONFIG);
 		this.exchange = exchange;
 	}
 
