@@ -2,8 +2,11 @@ box: mihkels/java8-oracle@0.0.1
 build:
     steps:
         - script:
-            name: shwo env
-            code: ./gradlew -v
+            name: chmod
+            code: chmod +x ./gradlew
+        - script:
+            name: show env
+            code: ./gradlew --project-cache-dir=$WERCKER_CACHE_DIR/.gradle -v
         - script:
             name: run test
-            code: ./gradlew build
+            code: ./gradlew --project-cache-dir=$WERCKER_CACHE_DIR/.gradle  --full-stacktrace build
