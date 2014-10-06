@@ -216,7 +216,7 @@ public class App {
 	 * @param sub
 	 */
 	public void use(String path, App sub) {
-		this.subapp.addPrefixPath(path, sub.subapp);
+		this.subapp.addPrefixPath(path, sub.filters);
 	}
 
 	/**
