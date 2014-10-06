@@ -117,7 +117,7 @@ public class SidenRequest implements Request {
 			Map<String, List<String>> newone = new HashMap<>();
 			this.exchange.getRequestHeaders().forEach(
 					hv -> newone.put(hv.getHeaderName().toString(), hv));
-			this.headers = newone;
+			this.headers = Collections.unmodifiableMap(newone);
 		}
 		return this.headers;
 	}
@@ -135,7 +135,7 @@ public class SidenRequest implements Request {
 			this.exchange.getRequestCookies().forEach((k, v) -> {
 				newone.put(k, new SidenCookie(v));
 			});
-			this.cookies = newone;
+			this.cookies = Collections.unmodifiableMap(newone);
 		}
 		return this.cookies;
 	}
@@ -193,7 +193,7 @@ public class SidenRequest implements Request {
 					.collect(Collectors.toList());
 			newone.put(k, list);
 		});
-		return newone;
+		return Collections.unmodifiableMap(newone);
 	}
 
 	Map<String, List<File>> files = null;

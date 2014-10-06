@@ -86,8 +86,7 @@ public class SidenResponse implements Response {
 
 	@Override
 	public Cookie removeCookie(String name) {
-		return new SidenCookie(this.exchange.getResponseCookies().remove(
-				name));
+		return new SidenCookie(this.exchange.getResponseCookies().remove(name));
 	}
 
 	@Override

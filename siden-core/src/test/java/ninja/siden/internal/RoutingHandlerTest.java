@@ -111,8 +111,9 @@ public class RoutingHandlerTest {
 			}
 		}.getMockInstance());
 
-		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(Config
-				.defaults().getMap(), this.exchange));
+		this.exchange.putAttachment(Core.CONFIG, Config.defaults().getMap());
+		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(
+				this.exchange));
 
 		target.add(Predicates.truePredicate(), (q, s) -> s.status(402)).render(
 				new MockUp<Renderer>() {
@@ -128,8 +129,9 @@ public class RoutingHandlerTest {
 
 	@Test
 	public void testEspeciallyPkgsAreNotRender() throws Exception {
-		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(Config
-				.defaults().getMap(), this.exchange));
+		this.exchange.putAttachment(Core.CONFIG, Config.defaults().getMap());
+		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(
+				this.exchange));
 
 		RoutingHandler target = new RoutingHandler(Testing.empty());
 		target.add(Predicates.truePredicate(),
