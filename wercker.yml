@@ -1,0 +1,9 @@
+box: mihkels/java8-oracle@0.0.1
+build:
+    steps:
+        - script:
+            name: shwo env
+            code: ./gradlew -v
+        - script:
+            name: run test
+            code: ./gradlew build
