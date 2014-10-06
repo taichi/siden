@@ -49,3 +49,7 @@ Apache License, Version 2.0
 * http://www.sparkjava.com/
 * http://flask.pocoo.org/
 
+# CI status
+
+[![wercker status](https://app.wercker.com/status/de09957e13da7a18ae6cf3fbd67afc68/m "wercker status")](https://app.wercker.com/project/bykey/de09957e13da7a18ae6cf3fbd67afc68)
+
