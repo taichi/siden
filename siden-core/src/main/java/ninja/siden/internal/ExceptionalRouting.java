@@ -28,12 +28,10 @@ class ExceptionalRouting<EX extends Throwable> implements
 	ExceptionalRoute<EX> route;
 	Renderer renderer;
 
-	public ExceptionalRouting(Class<EX> type, ExceptionalRoute<EX> route,
-			Renderer renderer) {
+	public ExceptionalRouting(Class<EX> type, ExceptionalRoute<EX> route) {
 		super();
 		this.type = type;
 		this.route = route;
-		this.renderer = renderer;
 	}
 
 	@Override
@@ -41,5 +39,4 @@ class ExceptionalRouting<EX extends Throwable> implements
 		this.renderer = renderer;
 		return this;
 	}
-
 }

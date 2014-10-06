@@ -26,10 +26,9 @@ class ErrorCodeRouting implements RendererCustomizer<ErrorCodeRouting> {
 	Route route;
 	Renderer renderer;
 
-	public ErrorCodeRouting(Route route, Renderer renderer) {
+	public ErrorCodeRouting(Route route) {
 		super();
 		this.route = route;
-		this.renderer = renderer;
 	}
 
 	@Override
@@ -37,5 +36,4 @@ class ErrorCodeRouting implements RendererCustomizer<ErrorCodeRouting> {
 		this.renderer = renderer;
 		return this;
 	}
-
 }

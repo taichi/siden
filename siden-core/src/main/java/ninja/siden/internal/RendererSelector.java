@@ -30,8 +30,9 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import ninja.siden.Config;
@@ -47,20 +48,23 @@ import org.xnio.streams.Streams;
  */
 public class RendererSelector implements Renderer {
 
-	static List<SelectableRenderer> renderers = new ArrayList<>();
+	List<SelectableRenderer> renderers;
 
-	static {
-		renderers.add(new StringRenderer());
-		renderers.add(new FileRenderer());
-		renderers.add(new PathRenderer());
-		renderers.add(new FileChannelRenderer());
-		renderers.add(new ByteArrayRenderer());
-		renderers.add(new ByteBufferRenderer());
-		renderers.add(new URIRenderer());
-		renderers.add(new URLRenderer());
-		renderers.add(new ReaderRenderer());
-		renderers.add(new InputStreamRenderer());
-		renderers.add(new CharSequenceRenderer());
+	public RendererSelector() {
+		this(defaultRenderers());
+	}
+
+	public RendererSelector(List<SelectableRenderer> renderers) {
+		this.renderers = renderers;
+	}
+
+	public static List<SelectableRenderer> defaultRenderers() {
+		return Arrays.asList(new StringRenderer(), new FileRenderer(),
+				new PathRenderer(), new FileChannelRenderer(),
+				new ByteArrayRenderer(), new ByteBufferRenderer(),
+				new URIRenderer(), new URLRenderer(), new ReaderRenderer(),
+				new InputStreamRenderer(), new CharSequenceRenderer(),
+				new ToStringRenderer());
 	}
 
 	@Override
@@ -72,8 +76,6 @@ public class RendererSelector implements Renderer {
 				return;
 			}
 		}
-		OptionMap config = sink.getAttachment(Core.CONFIG);
-		config.get(Config.DEFAULT_RENDERER).render(model, sink);
 	}
 
 	interface SelectableRenderer extends Renderer, Predicate<Object> {
@@ -272,6 +274,21 @@ public class RendererSelector implements Renderer {
 		public void render(Object model, HttpServerExchange sink)
 				throws IOException {
 			this.deleagte.render(model, sink);
+		}
+	}
+
+	static class ToStringRenderer implements SelectableRenderer {
+		StringRenderer deleagte = new StringRenderer();
+
+		@Override
+		public boolean test(Object t) {
+			return true;
+		}
+
+		@Override
+		public void render(Object model, HttpServerExchange sink)
+				throws IOException {
+			this.deleagte.render(Objects.toString(model), sink);
 		}
 	}
 }

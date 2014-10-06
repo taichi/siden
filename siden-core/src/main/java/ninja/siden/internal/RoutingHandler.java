@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ninja.siden.App;
+import ninja.siden.Config;
 import ninja.siden.ExceptionalRoute;
 import ninja.siden.Renderer;
 import ninja.siden.RendererCustomizer;
@@ -35,6 +36,8 @@ import ninja.siden.Request;
 import ninja.siden.Response;
 import ninja.siden.Route;
 import ninja.siden.RoutingCustomizer;
+
+import org.xnio.OptionMap;
 
 /**
  * @author taichi
@@ -132,11 +135,19 @@ public class RoutingHandler implements HttpHandler {
 				return handle((Integer) model, exchange);
 			}
 			if (contains(model.getClass()) == false) {
-				renderer.render(model, exchange);
+				resolve(renderer, exchange).render(model, exchange);
 				return true;
 			}
 		}
 		return handle(exchange.getResponseCode(), exchange);
+	}
+
+	Renderer resolve(Renderer renderer, HttpServerExchange exchange) {
+		if (renderer == null) {
+			OptionMap config = exchange.getAttachment(Core.CONFIG);
+			return config.get(Config.DEFAULT_RENDERER);
+		}
+		return renderer;
 	}
 
 	boolean contains(Class<?> clazz) {
@@ -144,24 +155,21 @@ public class RoutingHandler implements HttpHandler {
 		return ignorePackages.stream().anyMatch(s -> n.startsWith(s));
 	}
 
-	public RoutingCustomizer add(Predicate predicate, Route route,
-			Renderer renderer) {
-		Routing r = new Routing(predicate, route, renderer);
+	public RoutingCustomizer add(Predicate predicate, Route route) {
+		Routing r = new Routing(predicate, route);
 		this.routings.add(r);
 		return r;
 	}
 
 	public <EX extends Throwable> RendererCustomizer<?> add(Class<EX> type,
-			ExceptionalRoute<EX> route, Renderer renderer) {
-		ExceptionalRouting<EX> er = new ExceptionalRouting<>(type, route,
-				renderer);
+			ExceptionalRoute<EX> route) {
+		ExceptionalRouting<EX> er = new ExceptionalRouting<>(type, route);
 		this.exceptionalMappings.put(type, er);
 		return er;
 	}
 
-	public RendererCustomizer<?> add(Integer errorCode, Route route,
-			Renderer renderer) {
-		ErrorCodeRouting ecr = new ErrorCodeRouting(route, renderer);
+	public RendererCustomizer<?> add(Integer errorCode, Route route) {
+		ErrorCodeRouting ecr = new ErrorCodeRouting(route);
 		List<ErrorCodeRouting> list = this.errorCodeMappings.get(errorCode);
 		if (list == null) {
 			list = new ArrayList<>();

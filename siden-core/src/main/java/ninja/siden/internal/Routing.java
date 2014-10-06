@@ -30,10 +30,9 @@ public class Routing implements RoutingCustomizer {
 	Route route;
 	Renderer renderer;
 
-	public Routing(Predicate predicate, Route route, Renderer renderer) {
+	public Routing(Predicate predicate, Route route) {
 		this.predicate = predicate;
 		this.route = route;
-		this.renderer = renderer;
 	}
 
 	@Override
@@ -69,5 +68,4 @@ public class Routing implements RoutingCustomizer {
 		this.renderer = renderer;
 		return this;
 	}
-
 }

@@ -36,7 +36,6 @@ import ninja.siden.internal.Core;
 import ninja.siden.internal.FiltersHandler;
 import ninja.siden.internal.MethodOverrideHandler;
 import ninja.siden.internal.PathPredicate;
-import ninja.siden.internal.RendererSelector;
 import ninja.siden.internal.RoutingHandler;
 import ninja.siden.internal.SecurityHandler;
 
@@ -124,7 +123,7 @@ public class App {
 	// request handling
 	protected RoutingCustomizer verb(HttpMethod method, String path, Route route) {
 		return this.router.add(Predicates.and(method, new PathPredicate(path)),
-				route, new RendererSelector());
+				route);
 	}
 
 	public RoutingCustomizer get(String path, Route route) {
@@ -203,11 +202,11 @@ public class App {
 
 	public <T extends Throwable> RendererCustomizer<?> error(Class<T> type,
 			ExceptionalRoute<T> route) {
-		return this.router.add(type, route, new RendererSelector());
+		return this.router.add(type, route);
 	}
 
 	public RendererCustomizer<?> error(int errorCode, Route route) {
-		return this.router.add(errorCode, route, new RendererSelector());
+		return this.router.add(errorCode, route);
 	}
 
 	/**

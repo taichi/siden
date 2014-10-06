@@ -24,6 +24,7 @@ import java.io.IOException;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.integration.junit4.JMockit;
+import ninja.siden.Config;
 import ninja.siden.Renderer;
 import ninja.siden.Request;
 import ninja.siden.Response;
@@ -49,15 +50,14 @@ public class RoutingHandlerTest {
 	@Test
 	public void testNotMatch() throws Exception {
 		RoutingHandler target = new RoutingHandler(Testing.mustCall());
-		target.add(Predicates.falsePredicate(), (q, s) -> "",
-				new RendererSelector());
+		target.add(Predicates.falsePredicate(), (q, s) -> "");
 		target.handleRequest(this.exchange);
 	}
 
 	@Test
 	public void testSimpleMatch() throws Exception {
 		RoutingHandler target = new RoutingHandler(Testing.empty());
-		target.add(Predicates.truePredicate(), (q, s) -> "Hello",
+		target.add(Predicates.truePredicate(), (q, s) -> "Hello").render(
 				new MockUp<Renderer>() {
 					@Mock(invocations = 1)
 					void render(Object model, HttpServerExchange sink)
@@ -76,7 +76,7 @@ public class RoutingHandlerTest {
 			Object handle(Request request, Response response) throws Exception {
 				return "Hey";
 			}
-		}.getMockInstance(), new MockUp<Renderer>() {
+		}.getMockInstance()).render(new MockUp<Renderer>() {
 			@Mock(invocations = 1)
 			void render(Object model, HttpServerExchange sink)
 					throws IOException {
@@ -84,7 +84,7 @@ public class RoutingHandlerTest {
 			}
 		}.getMockInstance());
 
-		target.add(Predicates.truePredicate(), (q, s) -> 400,
+		target.add(Predicates.truePredicate(), (q, s) -> 400).render(
 				new MockUp<Renderer>() {
 					@Mock(invocations = 0)
 					void render(Object model, HttpServerExchange sink)
@@ -103,7 +103,7 @@ public class RoutingHandlerTest {
 			Object handle(Request request, Response response) throws Exception {
 				return "Hey";
 			}
-		}.getMockInstance(), new MockUp<Renderer>() {
+		}.getMockInstance()).render(new MockUp<Renderer>() {
 			@Mock(invocations = 1)
 			void render(Object model, HttpServerExchange sink)
 					throws IOException {
@@ -111,10 +111,10 @@ public class RoutingHandlerTest {
 			}
 		}.getMockInstance());
 
-		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(
-				this.exchange));
+		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(Config
+				.defaults().getMap(), this.exchange));
 
-		target.add(Predicates.truePredicate(), (q, s) -> s.status(402),
+		target.add(Predicates.truePredicate(), (q, s) -> s.status(402)).render(
 				new MockUp<Renderer>() {
 					@Mock(invocations = 0)
 					void render(Object model, HttpServerExchange sink)
@@ -128,12 +128,13 @@ public class RoutingHandlerTest {
 
 	@Test
 	public void testEspeciallyPkgsAreNotRender() throws Exception {
-		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(
-				this.exchange));
+		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(Config
+				.defaults().getMap(), this.exchange));
 
 		RoutingHandler target = new RoutingHandler(Testing.empty());
 		target.add(Predicates.truePredicate(),
-				(q, s) -> s.cookie("hoge", "fuga"), new MockUp<Renderer>() {
+				(q, s) -> s.cookie("hoge", "fuga")).render(
+				new MockUp<Renderer>() {
 					@Mock(invocations = 0)
 					void render(Object model, HttpServerExchange sink)
 							throws IOException {
@@ -160,7 +161,7 @@ public class RoutingHandlerTest {
 		target.add(IOException.class, (ex, res, req) -> {
 			assertEquals(MyIoException.class, ex.getClass());
 			return "Hey";
-		}, new MockUp<Renderer>() {
+		}).render(new MockUp<Renderer>() {
 			@Mock(invocations = 1)
 			void render(Object model, HttpServerExchange sink)
 					throws IOException {
@@ -170,7 +171,7 @@ public class RoutingHandlerTest {
 
 		target.add(Predicates.truePredicate(), (q, s) -> {
 			throw new MyIoException();
-		}, new MockUp<Renderer>() {
+		}).render(new MockUp<Renderer>() {
 			@Mock(invocations = 0)
 			void render(Object model, HttpServerExchange sink)
 					throws IOException {

@@ -42,7 +42,8 @@ public interface Config {
 	 * Use _method magic to allow put/delete forms in browsers that don't
 	 * support it.
 	 * 
-	 * @see <a href="http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete">why-form-dosent-support-put-delete</a>
+	 * @see <a
+	 *      href="http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete">why-form-dosent-support-put-delete</a>
 	 */
 	Option<Boolean> METHOD_OVERRIDE = Option.simple(Config.class,
 			"METHOD_OVERRIDE", Boolean.class);
@@ -82,7 +83,8 @@ public interface Config {
 	/**
 	 * default value is X-Frame-Options: SAMEORIGIN
 	 * 
-	 * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/X-Frame-Options">HTTP/X-Frame-Options</a>
+	 * @see <a
+	 *      href="https://developer.mozilla.org/en-US/docs/Web/HTTP/X-Frame-Options">HTTP/X-Frame-Options</a>
 	 */
 	Option<String> FRAME_OPTIONS = Option.simple(Config.class, "FRAME_OPTIONS",
 			String.class);
@@ -104,7 +106,7 @@ public interface Config {
 		omb.set(ENV,
 				Objects.toString(System.getenv("SIDEN_ENV"), "development"));
 		omb.set(METHOD_OVERRIDE, false);
-		omb.set(DEFAULT_RENDERER, new RendererSelector.StringRenderer());
+		omb.set(DEFAULT_RENDERER, new RendererSelector());
 		omb.set(RENDERER_REPOSITORY, RendererRepository.EMPTY);
 		omb.set(CHARSET, StandardCharsets.UTF_8);
 
