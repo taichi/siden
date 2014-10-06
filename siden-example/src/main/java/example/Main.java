@@ -1,30 +1,40 @@
+/*
+ * Copyright 2014 SATO taichi
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package example;
 
 import ninja.siden.App;
-import ninja.siden.Config;
 import ninja.siden.Renderer;
-import ninja.siden.RendererRepository;
 import ninja.siden.Request;
 
 import org.boon.json.JsonFactory;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
-import com.github.jknack.handlebars.io.TemplateLoader;
-
+/**
+ * @author taichi
+ */
 public class Main {
 
 	public static void main(String[] args) throws Exception {
 		App app = new App();
 
 		// simple get
-		app.get("/hello", (req, res) -> "Hello world !! "
-				+ req.raw().getResponseCode());
+		app.get("/hello", (req, res) -> "Hello world !!");
 
 		// receive Ajax request only
-		app.get("/ajax", (req, res) -> "{ 'name' : 'ajax' }")
-				.match(Request::xhr).type("application/json");
+		app.get("/ajax", (req, res) -> "{ 'name' : 'ajax' }").match(
+				Request::xhr);
 
 		// simple logging filter
 		app.use((req, res, chain) -> {
@@ -53,7 +63,7 @@ public class Main {
 		app.get("/402", (req, res) -> 402);
 		app.get("/payment", (req, res) -> res.status(402));
 
-		// json api on top of Boon JSON 
+		// json api on top of Boon JSON
 		// see. https://github.com/boonproject/boon
 		app.get("/users", (req, res) -> new User("john"))
 				.render(Renderer.of(JsonFactory::toJson))
@@ -76,39 +86,6 @@ public class Main {
 		sub.get("/admin", (req, res) -> "I'm in secret area");
 		app.use("/secret", sub);
 
-		// use template engines
-		// see. https://github.com/jknack/handlebars.java
-		Handlebars engine = new Handlebars();
-		Template t = engine.compileInline("Hello {{this}}!");
-
-		app.get("/bars",
-				(req, res) -> res.render("heyhey", Renderer.of(t::apply)));
-
-		class HandleBarsRepo implements RendererRepository {
-			final Handlebars engine;
-
-			public HandleBarsRepo() {
-				TemplateLoader loader = new ClassPathTemplateLoader();
-				loader.setPrefix("/templates");
-				loader.setSuffix(".html");
-				engine = new Handlebars(loader);
-			}
-
-			@Override
-			public Renderer find(String path) throws Exception {
-				Template t = engine.compile(path);
-				return Renderer.of(t::apply);
-			}
-		}
-
-		App hbapp = App.configure(conf -> {
-			conf.set(Config.RENDERER_REPOSITORY, new HandleBarsRepo());
-			return conf;
-		});
-		hbapp.get("/handlebars", // read template from templates/say/hello.html
-				(req, res) -> res.render(new User("peter"), "say/hello"));
-		app.use("/hbs", hbapp);
-
-		app.listen(8080);
+		app.listen();
 	}
 }
