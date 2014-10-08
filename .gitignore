@@ -7,3 +7,5 @@ gradle.properties
 /siden-*/.project
 /siden-*/.classpath
 /siden-*/.settings
+.idea
+*.iml
