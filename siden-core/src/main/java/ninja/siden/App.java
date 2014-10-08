@@ -169,6 +169,10 @@ public class App {
 	public RoutingCustomizer unlink(String path, Route route) {
 		return verb(HttpMethod.UNLINK, path, route);
 	}
+	
+	public void websocket(String path, WebSocket webSocket) {
+		// TODO
+	}
 
 	/**
 	 * serve static resources from root directory.
