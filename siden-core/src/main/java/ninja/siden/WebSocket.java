@@ -23,6 +23,9 @@ import java.nio.ByteBuffer;
  */
 public interface WebSocket {
 
+	default void onConnect(Connection connection) throws IOException {
+	}
+
 	default void onText(String payload) throws IOException {
 	}
 

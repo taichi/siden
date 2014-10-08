@@ -15,35 +15,48 @@
  */
 package ninja.siden.internal;
 
+import io.undertow.UndertowLogger;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
 
-import java.util.HashSet;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import ninja.siden.Connection;
 import ninja.siden.WebSocket;
 import ninja.siden.WebSocketFactory;
 
+import org.xnio.IoUtils;
+
 /**
  * @author taichi
  */
-public class SidenCallback implements WebSocketConnectionCallback {
+public class ConnectionCallback implements WebSocketConnectionCallback {
 
 	final WebSocketFactory factory;
-	final Set<Connection> peers = new HashSet<>();
+	final Set<Connection> peers = Collections
+			.newSetFromMap(new ConcurrentHashMap<>());
 
-	public SidenCallback(WebSocketFactory factory) {
+	public ConnectionCallback(WebSocketFactory factory) {
 		this.factory = factory;
 	}
 
 	@Override
 	public void onConnect(WebSocketHttpExchange exchange,
 			WebSocketChannel channel) {
-		WebSocket socket = factory.create(new SidenConnection(exchange,
-				channel, peers));
-		channel.getReceiveSetter().set(new SidenReceiveListener(socket));
-		channel.resumeReceives();
+		try {
+			Connection connection = new SidenConnection(exchange, channel,
+					peers);
+			WebSocket socket = factory.create(connection);
+			socket.onConnect(connection);
+			channel.getReceiveSetter().set(new ReceiveListenerAdapter(socket));
+			channel.resumeReceives();
+		} catch (IOException e) {
+			UndertowLogger.REQUEST_IO_LOGGER.ioException(e);
+			IoUtils.safeClose(channel);
+		}
 	}
 }

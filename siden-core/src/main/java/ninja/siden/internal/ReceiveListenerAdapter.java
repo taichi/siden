@@ -31,11 +31,11 @@ import org.xnio.Pooled;
 /**
  * @author taichi
  */
-public class SidenReceiveListener extends AbstractReceiveListener {
+public class ReceiveListenerAdapter extends AbstractReceiveListener {
 
 	final WebSocket adaptee;
 
-	public SidenReceiveListener(WebSocket socket) {
+	public ReceiveListenerAdapter(WebSocket socket) {
 		this.adaptee = socket;
 	}
 

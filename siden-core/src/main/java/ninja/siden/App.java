@@ -34,13 +34,13 @@ import java.io.File;
 import java.util.function.Function;
 
 import ninja.siden.internal.AssetsHandler;
+import ninja.siden.internal.ConnectionCallback;
 import ninja.siden.internal.Core;
 import ninja.siden.internal.FiltersHandler;
 import ninja.siden.internal.MethodOverrideHandler;
 import ninja.siden.internal.PathPredicate;
 import ninja.siden.internal.RoutingHandler;
 import ninja.siden.internal.SecurityHandler;
-import ninja.siden.internal.SidenCallback;
 
 import org.xnio.OptionMap;
 
@@ -179,8 +179,8 @@ public class App {
 	public void websocket(String path, WebSocketFactory factory) {
 		PathPredicate pp = new PathPredicate(path);
 		this.websockets.addPredicatedHandler(pp, next -> {
-			return new WebSocketProtocolHandshakeHandler(new SidenCallback(
-					factory), next);
+			return new WebSocketProtocolHandshakeHandler(
+					new ConnectionCallback(factory), next);
 		});
 	}
 
