@@ -13,28 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package example;
-
-import java.nio.file.Paths;
-
-import ninja.siden.App;
+package ninja.siden.util;
 
 /**
  * @author taichi
  */
-public class UseWebsocket {
+@FunctionalInterface
+public interface ExceptionalBiConsumer<T, U, EX extends Exception> {
 
-	public static void main(String[] args) {
-		App app = new App();
-
-		app.get("/", (q, s) -> Paths.get("assets/chat.html"));
-
-		app.websocket("/ws/simple").onText((con, txt) -> {
-			con.peerConnections().forEach(c -> {
-				c.send(txt);
-			});
-		});
-
-		app.listen(8181);
-	}
+	void accept(T t, U u) throws EX;
 }

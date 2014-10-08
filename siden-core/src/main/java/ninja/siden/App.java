@@ -37,6 +37,7 @@ import ninja.siden.internal.AssetsHandler;
 import ninja.siden.internal.ConnectionCallback;
 import ninja.siden.internal.Core;
 import ninja.siden.internal.FiltersHandler;
+import ninja.siden.internal.LambdaWebSocketFactory;
 import ninja.siden.internal.MethodOverrideHandler;
 import ninja.siden.internal.PathPredicate;
 import ninja.siden.internal.RoutingHandler;
@@ -182,6 +183,12 @@ public class App {
 			return new WebSocketProtocolHandshakeHandler(
 					new ConnectionCallback(factory), next);
 		});
+	}
+
+	public WebSocketCustomizer websocket(String path) {
+		LambdaWebSocketFactory factory = new LambdaWebSocketFactory();
+		websocket(path, factory);
+		return factory;
 	}
 
 	/**
