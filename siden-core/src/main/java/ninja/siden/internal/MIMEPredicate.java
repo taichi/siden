@@ -59,6 +59,7 @@ public class MIMEPredicate implements Predicate {
 				.flatMap(List::stream)
 				.anyMatch(
 						v -> v.getValue().equals("*")
+								|| v.getValue().equals("*/*")
 								|| v.getValue().equals(contentType));
 	}
 }
