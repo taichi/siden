@@ -20,18 +20,9 @@ package ninja.siden.util;
  */
 public interface Io {
 
-	@FunctionalInterface
-	public interface Opener<T> {
-		T get() throws Exception;
-	}
-
-	@FunctionalInterface
-	public interface IoHandler<T, R> {
-		R apply(T t) throws Exception;
-	}
-
 	static <IO extends AutoCloseable, R, E extends Exception> R using(
-			Opener<IO> io, IoHandler<IO, R> fn) {
+			ExceptionalSupplier<IO, Exception> io,
+			ExceptionalFunction<IO, R, Exception> fn) {
 		try (IO t = io.get()) {
 			return fn.apply(t);
 		} catch (RuntimeException e) {

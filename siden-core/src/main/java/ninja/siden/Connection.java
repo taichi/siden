@@ -17,6 +17,8 @@ package ninja.siden;
 
 import io.undertow.websockets.core.WebSocketChannel;
 
+import java.io.OutputStream;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -24,15 +26,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import ninja.siden.util.ExceptionalConsumer;
+
 /**
  * @author taichi
  * @see io.undertow.websockets.core.WebSocketChannel
- * @see
  */
 public interface Connection extends AttributeContainer {
 
 	// endpoint methods
-	
+
 	CompletableFuture<Void> send(String text);
 
 	CompletableFuture<Void> send(ByteBuffer payload);
@@ -44,6 +47,10 @@ public interface Connection extends AttributeContainer {
 	CompletableFuture<Void> close();
 
 	CompletableFuture<Void> close(int code, String reason);
+
+	void sendStream(ExceptionalConsumer<OutputStream, Exception> fn);
+
+	void sendWriter(ExceptionalConsumer<Writer, Exception> fn);
 
 	// informations
 
@@ -58,8 +65,6 @@ public interface Connection extends AttributeContainer {
 	Set<Connection> peerConnections();
 
 	// from request
-
-	String path();
 
 	Optional<String> params(String key);
 

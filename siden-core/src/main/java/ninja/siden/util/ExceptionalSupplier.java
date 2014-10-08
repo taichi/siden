@@ -13,41 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package example;
-
-import java.io.File;
-
-import ninja.siden.App;
-import ninja.siden.Connection;
-import ninja.siden.WebSocket;
+package ninja.siden.util;
 
 /**
  * @author taichi
  */
-public class UseWebsocket {
+@FunctionalInterface
+public interface ExceptionalSupplier<T, EX extends Exception> {
 
-	public static void main(String[] args) {
-		App app = new App();
-		
-		app.websocket("/ws", User::new);
-		app.get("/", (q, s) -> new File("assets/chat.html"));
-		
-		app.listen(8181);
-	}
-	
-	static class User implements WebSocket {
-		
-		Connection connection;
-		
-		public User(Connection connection) {
-			this.connection = connection;
-		}
-		
-		@Override
-		public void onText(String payload) {
-			this.connection.peerConnections().forEach(c -> {
-				c.send(payload);
-			});
-		}
-	}
+	T get() throws EX;
 }

@@ -35,7 +35,7 @@ public class SidenSession implements Session {
 	final HttpServerExchange exchange;
 	final io.undertow.server.session.Session delegate;
 
-	SidenSession(HttpServerExchange exchange,
+	public SidenSession(HttpServerExchange exchange,
 			io.undertow.server.session.Session delegate) {
 		this.exchange = exchange;
 		this.delegate = delegate;
