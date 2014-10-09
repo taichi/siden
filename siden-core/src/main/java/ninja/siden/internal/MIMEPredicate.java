@@ -22,15 +22,22 @@ import io.undertow.util.HttpString;
 import io.undertow.util.QValueParser;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author taichi
  */
 public class MIMEPredicate implements Predicate {
 
+	static final Pattern MIME = Pattern
+			.compile("(?<type>[*\\w]+)/(?<subtype>[*-.\\w]+)(;(.*))?");
+
 	final HttpString name;
 
-	final String contentType;
+	final String type;
+
+	final String subType;
 
 	public static Predicate accept(String type) {
 		return new MIMEPredicate(Headers.ACCEPT, type);
@@ -43,7 +50,17 @@ public class MIMEPredicate implements Predicate {
 	public MIMEPredicate(HttpString name, String contentType) {
 		super();
 		this.name = name;
-		this.contentType = contentType;
+		if (wildCard(contentType)) {
+			this.type = this.subType = "*";
+		} else {
+			Matcher m = MIME.matcher(contentType);
+			if (m.find()) {
+				this.type = m.group("type");
+				this.subType = m.group("subtype");
+			} else {
+				throw new IllegalArgumentException("contentType");
+			}
+		}
 	}
 
 	@Override
@@ -54,12 +71,32 @@ public class MIMEPredicate implements Predicate {
 		}
 		final List<List<QValueParser.QValueResult>> found = QValueParser
 				.parse(res);
-		return found
-				.stream()
-				.flatMap(List::stream)
-				.anyMatch(
-						v -> v.getValue().equals("*")
-								|| v.getValue().equals("*/*")
-								|| v.getValue().equals(contentType));
+		return found.stream().flatMap(List::stream).anyMatch(this::match);
+	}
+
+	boolean wildCard(String s) {
+		return s.equals("*");
+	}
+
+	boolean match(QValueParser.QValueResult result) {
+		String v = result.getValue();
+		if (wildCard(v) || wildCard(this.type)) {
+			return true;
+		}
+		Matcher m = MIME.matcher(v);
+		if (m.find() == false) {
+			return false;
+		}
+		String t = m.group("type");
+		if (wildCard(t)) {
+			return true;
+		}
+		if (this.type.equalsIgnoreCase(t)) {
+			String sub = m.group("subtype");
+			if (wildCard(sub) || wildCard(this.subType) || this.subType.equalsIgnoreCase(sub)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
