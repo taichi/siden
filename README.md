@@ -21,7 +21,7 @@ public class Main {
 
 if you want to more examples, see [example/Main.java](https://github.com/taichi/siden/blob/master/siden-example/src/main/java/example/Main.java).
 
-### Add dependency to your build
+### Add dependency to your build.gradle
 
 ```groovy
 apply plugin: 'java'
@@ -39,6 +39,26 @@ sourceCompatibility = targetCompatibility = 1.8
 
     http://localhost:8080/hello
 
+## WebSocket Example
+
+```java
+import java.nio.file.Paths;
+import ninja.siden.App;
+
+public class UseWebsocket {
+
+	public static void main(String[] args) {
+		App app = new App();
+		app.get("/", (q, s) -> Paths.get("assets/chat.html"));
+		app.websocket("/ws").onText((con, txt) -> {
+			con.peerConnections().forEach(c -> {
+				c.send(txt);
+			});
+		});
+		app.listen(8181);
+	}
+}
+```
 
 # License
 

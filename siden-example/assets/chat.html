@@ -24,7 +24,7 @@
 			$("#messages").append(str);
 		};
 		$(document).ready(function() {
-			var ws = new WebSocket("ws://localhost:8181/ws/simple");
+			var ws = new WebSocket("ws://localhost:8181/ws");
 			
 			var sendMsg = function(event) {
 				var msg = {};
