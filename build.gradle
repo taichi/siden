@@ -21,7 +21,7 @@ configure(subprojects) {
 	repositories.mavenCentral()
 
 	dependencies {
-		compile 'io.undertow:undertow-core:1.0.16.Final'
+		compile 'io.undertow:undertow-core:1.1.0.CR3'
 		testCompile 'junit:junit:4.11'
 		testCompile 'org.jmockit:jmockit:1.11'
 		testCompile 'org.apache.httpcomponents:httpcomponents-client:4.3.5'

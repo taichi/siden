@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Simple WebSocket Chat</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<style type="text/css">
+	body {
+		padding-top: 40px;
+		padding-bottom: 40px;
+		background-color: #eee;
+	}
+	</style>
+	<script>
+		var addMsg = function(msg) {
+			var str = '<div class="row"><div class="col-md-1">'
+			+ $("<div/>").text(msg.name).html()
+			+ '</div><div class="col-md-11">'
+			+ $("<div/>").text(msg.msg).html()
+			+ '</div></div>';
+			$("#messages").append(str);
+		};
+		$(document).ready(function() {
+			var ws = new WebSocket("ws://localhost:8181/ws/simple");
+			
+			var sendMsg = function(event) {
+				var msg = {};
+				$($("#msgform").serializeArray()).each(function(i,v) {
+						msg[v.name] = v.value;
+					});
+				if(msg.msg) {
+					$("#msgform input[name='msg']").val("");
+					ws.send(JSON.stringify(msg));
+				}
+				event.preventDefault();
+			};
+			
+			ws.onopen = function(ev) {
+				$("input").prop("disabled", false);
+				$("button").prop("disabled", false);
+			};
+			ws.onmessage = function(ev) {
+				addMsg(JSON.parse(ev.data));
+			};
+			$("#msgform").submit(sendMsg);
+			$("#say").click(sendMsg);
+		});
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<form role="form" id="msgform">
+					<div class="form-group col-sm-2">
+						<input name="name" type="text" class="form-control" placeholder="username" disabled>
+					</div>
+					<div class="form-group col-sm-10">
+						<div class="input-group">
+							<input name="msg" type="text" class="form-control" placeholder="message" disabled>
+							<span class="input-group-btn">
+								<button id="say" type="submit" class="btn btn-default" disabled>Say</button>
+							</span>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group col-md-12">
+					<div class="well" id="messages"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

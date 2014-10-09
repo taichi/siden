@@ -18,17 +18,8 @@ package ninja.siden.util;
 /**
  * @author taichi
  */
-public interface Io {
+@FunctionalInterface
+public interface ExceptionalSupplier<T, EX extends Exception> {
 
-	static <IO extends AutoCloseable, R, E extends Exception> R using(
-			ExceptionalSupplier<IO, Exception> io,
-			ExceptionalFunction<IO, R, Exception> fn) {
-		try (IO t = io.get()) {
-			return fn.apply(t);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+	T get() throws EX;
 }

@@ -13,22 +13,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.util;
+package ninja.siden;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author taichi
  */
-public interface Io {
+public interface WebSocket {
 
-	static <IO extends AutoCloseable, R, E extends Exception> R using(
-			ExceptionalSupplier<IO, Exception> io,
-			ExceptionalFunction<IO, R, Exception> fn) {
-		try (IO t = io.get()) {
-			return fn.apply(t);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	default void onConnect(Connection connection) throws Exception {
+	}
+
+	default void onText(String payload) throws Exception {
+	}
+
+	default void onBinary(ByteBuffer[] payload) throws Exception {
+	}
+
+	default void onPong(ByteBuffer[] payload) throws Exception {
+	}
+
+	default void onPing(ByteBuffer[] payload) throws Exception {
+	}
+
+	default void onClose(ByteBuffer[] payload) throws Exception {
 	}
 }

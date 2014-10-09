@@ -13,22 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.util;
+package example;
+
+import java.nio.file.Paths;
+
+import ninja.siden.App;
 
 /**
  * @author taichi
  */
-public interface Io {
+public class UseWebsocket {
 
-	static <IO extends AutoCloseable, R, E extends Exception> R using(
-			ExceptionalSupplier<IO, Exception> io,
-			ExceptionalFunction<IO, R, Exception> fn) {
-		try (IO t = io.get()) {
-			return fn.apply(t);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public static void main(String[] args) {
+		App app = new App();
+
+		app.get("/", (q, s) -> Paths.get("assets/chat.html"));
+
+		app.websocket("/ws/simple").onText((con, txt) -> {
+			con.peerConnections().forEach(c -> {
+				c.send(txt);
+			});
+		});
+
+		app.listen(8181);
 	}
 }

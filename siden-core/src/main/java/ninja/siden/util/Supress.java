@@ -18,11 +18,9 @@ package ninja.siden.util;
 /**
  * @author taichi
  */
-public interface Supress<T> {
+public interface Supress {
 
-	T get() throws Exception;
-
-	static <T> T get(Supress<T> supplier) {
+	static <T, EX extends Exception> T get(ExceptionalSupplier<T, EX> supplier) {
 		try {
 			return supplier.get();
 		} catch (RuntimeException e) {

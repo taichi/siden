@@ -18,6 +18,7 @@ package ninja.siden;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.predicate.Predicates;
+import io.undertow.predicate.PredicatesHandler;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
@@ -27,13 +28,16 @@ import io.undertow.server.handlers.form.MultiPartParserDefinition;
 import io.undertow.server.session.InMemorySessionManager;
 import io.undertow.server.session.SessionAttachmentHandler;
 import io.undertow.server.session.SessionCookieConfig;
+import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 
 import java.io.File;
 import java.util.function.Function;
 
 import ninja.siden.internal.AssetsHandler;
+import ninja.siden.internal.ConnectionCallback;
 import ninja.siden.internal.Core;
 import ninja.siden.internal.FiltersHandler;
+import ninja.siden.internal.LambdaWebSocketFactory;
 import ninja.siden.internal.MethodOverrideHandler;
 import ninja.siden.internal.PathPredicate;
 import ninja.siden.internal.RoutingHandler;
@@ -50,6 +54,8 @@ public class App {
 
 	RoutingHandler router;
 
+	PredicatesHandler websockets;
+
 	PathHandler subapp;
 
 	FiltersHandler filters;
@@ -64,7 +70,8 @@ public class App {
 		this.assets = new AssetsHandler(config);
 		this.router = new RoutingHandler(this.assets);
 		this.subapp = new PathHandler(this.router);
-		this.filters = new FiltersHandler(this.subapp);
+		this.websockets = new PredicatesHandler(this.subapp);
+		this.filters = new FiltersHandler(this.websockets);
 		this.shared = wrap(config, this.filters);
 	}
 
@@ -168,6 +175,20 @@ public class App {
 
 	public RoutingCustomizer unlink(String path, Route route) {
 		return verb(HttpMethod.UNLINK, path, route);
+	}
+
+	public void websocket(String path, WebSocketFactory factory) {
+		PathPredicate pp = new PathPredicate(path);
+		this.websockets.addPredicatedHandler(pp, next -> {
+			return new WebSocketProtocolHandshakeHandler(
+					new ConnectionCallback(factory), next);
+		});
+	}
+
+	public WebSocketCustomizer websocket(String path) {
+		LambdaWebSocketFactory factory = new LambdaWebSocketFactory();
+		websocket(path, factory);
+		return factory;
 	}
 
 	/**

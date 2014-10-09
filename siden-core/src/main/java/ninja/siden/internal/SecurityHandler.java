@@ -60,7 +60,8 @@ public class SecurityHandler implements HttpHandler {
 
 		exchange.addExchangeCompleteListener((ex, next) -> {
 			try {
-				if (rh.contains(Headers.CONTENT_TYPE) == false) {
+				if (rh.contains(Headers.CONTENT_TYPE) == false
+						&& rh.contains(Headers.SEC_WEB_SOCKET_ACCEPT) == false) {
 					LOG.warning(() -> "Content-Type header doesn't exist.");
 				}
 			} finally {
