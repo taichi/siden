@@ -121,10 +121,11 @@ public class WebSocketTest {
 		}
 
 		void run() throws Exception {
-			server(app.websocket("/ws"));
+			CountDownLatch closelatch = new CountDownLatch(2);
+			server(app.websocket("/ws").onClose(
+					(c, buf) -> closelatch.countDown()));
 			stopper = app.listen(port);
 			CountDownLatch latch = new CountDownLatch(1);
-			CountDownLatch closelatch = new CountDownLatch(1);
 			WebSocketChannel channel = WebSocketClient.connect(worker, buffer,
 					OptionMap.EMPTY,
 					new URI(String.format("http://localhost:%d/ws", port)),
@@ -213,6 +214,80 @@ public class WebSocketTest {
 					throws Exception {
 				new StringWriteChannelListener("TestTest").setup(channel
 						.send(WebSocketFrameType.BINARY));
+				latch.await(3, TimeUnit.SECONDS);
+				ByteBuffer buf = ByteBuffer.wrap("TestTest".getBytes());
+				assertEquals(buf, WebSockets.mergeBuffers(ref.get()));
+			}
+		};
+	}
+
+	@Test
+	public void testPong() throws Exception {
+		AtomicReference<ByteBuffer[]> ref = new AtomicReference<>();
+		new TT() {
+			@Override
+			void server(WebSocketCustomizer ws) {
+				ws.onPong((con, bin) -> {
+					ByteBuffer buf = WebSockets.mergeBuffers(bin);
+					con.send(buf);
+				});
+			}
+
+			@Override
+			TestListener listener(CountDownLatch latch) {
+				return new TestListener(latch) {
+					@Override
+					protected void onFullBinaryMessage(
+							WebSocketChannel channel,
+							BufferedBinaryMessage message) throws IOException {
+						ref.set(message.getData().getResource());
+						latch.countDown();
+					}
+				};
+			}
+
+			@Override
+			void assertion(WebSocketChannel channel, CountDownLatch latch)
+					throws Exception {
+				new StringWriteChannelListener("TestTest").setup(channel
+						.send(WebSocketFrameType.PONG));
+				latch.await(3, TimeUnit.SECONDS);
+				ByteBuffer buf = ByteBuffer.wrap("TestTest".getBytes());
+				assertEquals(buf, WebSockets.mergeBuffers(ref.get()));
+			}
+		};
+	}
+
+	@Test
+	public void testPing() throws Exception {
+		AtomicReference<ByteBuffer[]> ref = new AtomicReference<>();
+		new TT() {
+			@Override
+			void server(WebSocketCustomizer ws) {
+				ws.onPing((con, bin) -> {
+					ByteBuffer buf = WebSockets.mergeBuffers(bin);
+					con.send(buf);
+				});
+			}
+
+			@Override
+			TestListener listener(CountDownLatch latch) {
+				return new TestListener(latch) {
+					@Override
+					protected void onFullBinaryMessage(
+							WebSocketChannel channel,
+							BufferedBinaryMessage message) throws IOException {
+						ref.set(message.getData().getResource());
+						latch.countDown();
+					}
+				};
+			}
+
+			@Override
+			void assertion(WebSocketChannel channel, CountDownLatch latch)
+					throws Exception {
+				new StringWriteChannelListener("TestTest").setup(channel
+						.send(WebSocketFrameType.PING));
 				latch.await(3, TimeUnit.SECONDS);
 				ByteBuffer buf = ByteBuffer.wrap("TestTest".getBytes());
 				assertEquals(buf, WebSockets.mergeBuffers(ref.get()));
