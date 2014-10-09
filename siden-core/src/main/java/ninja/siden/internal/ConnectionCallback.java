@@ -57,6 +57,8 @@ public class ConnectionCallback implements WebSocketConnectionCallback {
 		} catch (IOException e) {
 			UndertowLogger.REQUEST_IO_LOGGER.ioException(e);
 			IoUtils.safeClose(channel);
+		} catch (Exception e) {
+			IoUtils.safeClose(channel);
 		}
 	}
 }

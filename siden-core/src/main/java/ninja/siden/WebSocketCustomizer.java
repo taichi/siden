@@ -15,7 +15,6 @@
  */
 package ninja.siden;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import ninja.siden.util.ExceptionalBiConsumer;
@@ -26,21 +25,20 @@ import ninja.siden.util.ExceptionalConsumer;
  */
 public interface WebSocketCustomizer {
 
-	WebSocketCustomizer onConnect(
-			ExceptionalConsumer<Connection, IOException> fn);
+	WebSocketCustomizer onConnect(ExceptionalConsumer<Connection, Exception> fn);
 
 	WebSocketCustomizer onText(
-			ExceptionalBiConsumer<Connection, String, IOException> fn);
+			ExceptionalBiConsumer<Connection, String, Exception> fn);
 
 	WebSocketCustomizer onBinary(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn);
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn);
 
 	WebSocketCustomizer onPong(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn);
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn);
 
 	WebSocketCustomizer onPing(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn);
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn);
 
 	WebSocketCustomizer onClose(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn);
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn);
 }

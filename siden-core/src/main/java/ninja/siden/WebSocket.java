@@ -15,7 +15,6 @@
  */
 package ninja.siden;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -23,21 +22,21 @@ import java.nio.ByteBuffer;
  */
 public interface WebSocket {
 
-	default void onConnect(Connection connection) throws IOException {
+	default void onConnect(Connection connection) throws Exception {
 	}
 
-	default void onText(String payload) throws IOException {
+	default void onText(String payload) throws Exception {
 	}
 
-	default void onBinary(ByteBuffer[] payload) throws IOException {
+	default void onBinary(ByteBuffer[] payload) throws Exception {
 	}
 
-	default void onPong(ByteBuffer[] payload) throws IOException {
+	default void onPong(ByteBuffer[] payload) throws Exception {
 	}
 
-	default void onPing(ByteBuffer[] payload) throws IOException {
+	default void onPing(ByteBuffer[] payload) throws Exception {
 	}
 
-	default void onClose(ByteBuffer[] payload) throws IOException {
+	default void onClose(ByteBuffer[] payload) throws Exception {
 	}
 }

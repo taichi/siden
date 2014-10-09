@@ -42,7 +42,13 @@ public class ReceiveListenerAdapter extends AbstractReceiveListener {
 	@Override
 	protected void onFullTextMessage(WebSocketChannel channel,
 			BufferedTextMessage message) throws IOException {
-		this.adaptee.onText(message.getData());
+		try {
+			this.adaptee.onText(message.getData());
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IOException(e);
+		}
 	}
 
 	@Override
@@ -51,11 +57,15 @@ public class ReceiveListenerAdapter extends AbstractReceiveListener {
 		deliver(this.adaptee::onBinary, message);
 	}
 
-	void deliver(ExceptionalConsumer<ByteBuffer[], IOException> deliver,
+	void deliver(ExceptionalConsumer<ByteBuffer[], Exception> deliver,
 			BufferedBinaryMessage message) throws IOException {
 		Pooled<ByteBuffer[]> pooled = message.getData();
 		try {
 			deliver.accept(pooled.getResource());
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IOException(e);
 		} finally {
 			pooled.free();
 		}

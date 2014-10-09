@@ -78,12 +78,11 @@ public class SidenConnection implements Connection {
 		});
 		peers.add(this);
 
+		// TODO onConnect でキープするものを選択できるようにする。要らないものはさっさと捨てられるようにする。
 		this.params = exchange.getAttachment(PathPredicate.PARAMS);
 		this.queries = exchange.getRequestParameters();
 		this.headers = exchange.getRequestHeaders();
 		this.cookies = this.headers.get(Headers.COOKIE_STRING);
-
-		// copy http headers from exchange
 	}
 
 	class WebSocketSession extends SidenSession {

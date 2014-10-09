@@ -15,7 +15,6 @@
  */
 package ninja.siden.internal;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +32,12 @@ import ninja.siden.util.ExceptionalConsumer;
 public class LambdaWebSocketFactory implements WebSocketFactory,
 		WebSocketCustomizer {
 
-	List<ExceptionalConsumer<Connection, IOException>> conn = new ArrayList<>();
-	List<ExceptionalBiConsumer<Connection, String, IOException>> txt = new ArrayList<>();
-	List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> bin = new ArrayList<>();
-	List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> pong = new ArrayList<>();
-	List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> ping = new ArrayList<>();
-	List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> close = new ArrayList<>();
+	List<ExceptionalConsumer<Connection, Exception>> conn = new ArrayList<>();
+	List<ExceptionalBiConsumer<Connection, String, Exception>> txt = new ArrayList<>();
+	List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> bin = new ArrayList<>();
+	List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> pong = new ArrayList<>();
+	List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> ping = new ArrayList<>();
+	List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> close = new ArrayList<>();
 
 	@Override
 	public WebSocket create(Connection connection) {
@@ -48,98 +47,99 @@ public class LambdaWebSocketFactory implements WebSocketFactory,
 	class LambdaWebSocket implements WebSocket {
 		Connection connection;
 
-		List<ExceptionalConsumer<Connection, IOException>> conn = new ArrayList<>(
+		List<ExceptionalConsumer<Connection, Exception>> conn = new ArrayList<>(
 				LambdaWebSocketFactory.this.conn);
-		List<ExceptionalBiConsumer<Connection, String, IOException>> txt = new ArrayList<>(
+		List<ExceptionalBiConsumer<Connection, String, Exception>> txt = new ArrayList<>(
 				LambdaWebSocketFactory.this.txt);
-		List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> bin = new ArrayList<>(
+		List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> bin = new ArrayList<>(
 				LambdaWebSocketFactory.this.bin);
-		List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> pong = new ArrayList<>(
+		List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> pong = new ArrayList<>(
 				LambdaWebSocketFactory.this.pong);
-		List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> ping = new ArrayList<>(
+		List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> ping = new ArrayList<>(
 				LambdaWebSocketFactory.this.ping);
-		List<ExceptionalBiConsumer<Connection, ByteBuffer[], IOException>> close = new ArrayList<>(
+		List<ExceptionalBiConsumer<Connection, ByteBuffer[], Exception>> close = new ArrayList<>(
 				LambdaWebSocketFactory.this.close);
 
 		@Override
-		public void onConnect(Connection connection) throws IOException {
+		public void onConnect(Connection connection) throws Exception {
 			this.connection = connection;
-			for (ExceptionalConsumer<Connection, IOException> fn : this.conn) {
+			for (ExceptionalConsumer<Connection, Exception> fn : this.conn) {
 				fn.accept(this.connection);
 			}
 		}
 
 		<T> void forEach(T payload,
-				List<ExceptionalBiConsumer<Connection, T, IOException>> list)
-				throws IOException {
-			for (ExceptionalBiConsumer<Connection, T, IOException> fn : list) {
+				List<ExceptionalBiConsumer<Connection, T, Exception>> list)
+				throws Exception {
+			for (ExceptionalBiConsumer<Connection, T, Exception> fn : list) {
 				fn.accept(this.connection, payload);
 			}
 		}
 
 		@Override
-		public void onText(String payload) throws IOException {
+		public void onText(String payload) throws Exception {
 			forEach(payload, this.txt);
 		}
 
 		@Override
-		public void onBinary(ByteBuffer[] payload) throws IOException {
+		public void onBinary(ByteBuffer[] payload) throws Exception {
 			forEach(payload, this.bin);
 		}
 
 		@Override
-		public void onPong(ByteBuffer[] payload) throws IOException {
+		public void onPong(ByteBuffer[] payload) throws Exception {
 			forEach(payload, this.pong);
 		}
 
 		@Override
-		public void onPing(ByteBuffer[] payload) throws IOException {
+		public void onPing(ByteBuffer[] payload) throws Exception {
 			forEach(payload, this.ping);
 		}
 
 		@Override
-		public void onClose(ByteBuffer[] payload) throws IOException {
+		public void onClose(ByteBuffer[] payload) throws Exception {
 			forEach(payload, this.close);
 		}
 	}
 
 	@Override
 	public WebSocketCustomizer onConnect(
-			ExceptionalConsumer<Connection, IOException> fn) {
+			ExceptionalConsumer<Connection, Exception> fn) {
+		this.conn.add(fn);
 		return this;
 	}
 
 	@Override
 	public WebSocketCustomizer onText(
-			ExceptionalBiConsumer<Connection, String, IOException> fn) {
+			ExceptionalBiConsumer<Connection, String, Exception> fn) {
 		this.txt.add(fn);
 		return this;
 	}
 
 	@Override
 	public WebSocketCustomizer onBinary(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn) {
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn) {
 		this.bin.add(fn);
 		return this;
 	}
 
 	@Override
 	public WebSocketCustomizer onPong(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn) {
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn) {
 		this.pong.add(fn);
 		return this;
 	}
 
 	@Override
 	public WebSocketCustomizer onPing(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn) {
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn) {
 		this.ping.add(fn);
 		return this;
 	}
 
 	@Override
 	public WebSocketCustomizer onClose(
-			ExceptionalBiConsumer<Connection, ByteBuffer[], IOException> fn) {
+			ExceptionalBiConsumer<Connection, ByteBuffer[], Exception> fn) {
 		this.close.add(fn);
 		return this;
 	}
