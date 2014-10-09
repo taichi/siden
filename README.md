@@ -29,7 +29,7 @@ apply plugin: 'java'
 repositories.jcenter()
 
 dependencies {
-	compile 'ninja.siden:siden-core:0.0.1'
+	compile 'ninja.siden:siden-core:0.1.0'
 }
 
 sourceCompatibility = targetCompatibility = 1.8
@@ -46,7 +46,6 @@ import java.nio.file.Paths;
 import ninja.siden.App;
 
 public class UseWebsocket {
-
 	public static void main(String[] args) {
 		App app = new App();
 		app.get("/", (q, s) -> Paths.get("assets/chat.html"));

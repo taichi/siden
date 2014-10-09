@@ -14,7 +14,7 @@ configure(subprojects) {
 	apply plugin: 'eclipse'
 	
 	group = 'ninja.siden'
-	version = "0.0.1"
+	version = "0.1.0"
 
 	sourceCompatibility = targetCompatibility = 1.8
 	
