@@ -30,7 +30,7 @@ public class UseWebsocket {
 		app.get("/", (q, s) -> Paths.get("assets/chat.html"));
 
 		app.websocket("/ws").onText((con, txt) -> {
-			con.peerConnections().forEach(c -> {
+			con.peers().forEach(c -> {
 				c.send(txt);
 			});
 		});

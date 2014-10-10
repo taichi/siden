@@ -261,7 +261,7 @@ public class SidenConnection implements Connection {
 	}
 
 	@Override
-	public Set<Connection> peerConnections() {
+	public Set<Connection> peers() {
 		return Collections.unmodifiableSet(this.peers);
 	}
 

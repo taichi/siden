@@ -62,7 +62,7 @@ public interface Connection extends AttributeContainer {
 
 	boolean open();
 
-	Set<Connection> peerConnections();
+	Set<Connection> peers();
 
 	// from request
 
