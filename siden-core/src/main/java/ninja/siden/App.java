@@ -17,6 +17,7 @@ package ninja.siden;
 
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.predicate.Predicate;
 import io.undertow.predicate.Predicates;
 import io.undertow.predicate.PredicatesHandler;
 import io.undertow.server.HttpHandler;
@@ -32,6 +33,7 @@ import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 
 import java.io.File;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import ninja.siden.internal.AssetsHandler;
 import ninja.siden.internal.ConnectionCallback;
@@ -128,9 +130,17 @@ public class App {
 	}
 
 	// request handling
+	protected RoutingCustomizer verb(HttpMethod method, Predicate pred,
+			Route route) {
+		return this.router.add(Predicates.and(method, pred), route);
+	}
+
 	protected RoutingCustomizer verb(HttpMethod method, String path, Route route) {
-		return this.router.add(Predicates.and(method, new PathPredicate(path)),
-				route);
+		return this.verb(method, new PathPredicate(path), route);
+	}
+
+	protected RoutingCustomizer verb(HttpMethod method, Pattern p, Route route) {
+		return this.verb(method, new PathPredicate(p), route);
 	}
 
 	public RoutingCustomizer get(String path, Route route) {
@@ -178,14 +188,71 @@ public class App {
 	}
 
 	public void websocket(String path, WebSocketFactory factory) {
-		PathPredicate pp = new PathPredicate(path);
-		this.websockets.addPredicatedHandler(pp, next -> {
+		websocket(new PathPredicate(path), factory);
+	}
+
+	public WebSocketCustomizer websocket(String path) {
+		LambdaWebSocketFactory factory = new LambdaWebSocketFactory();
+		websocket(path, factory);
+		return factory;
+	}
+
+	protected void websocket(Predicate pred, WebSocketFactory factory) {
+		this.websockets.addPredicatedHandler(pred, next -> {
 			return new WebSocketProtocolHandshakeHandler(
 					new ConnectionCallback(factory), next);
 		});
 	}
 
-	public WebSocketCustomizer websocket(String path) {
+	public RoutingCustomizer get(Pattern p, Route route) {
+		return verb(HttpMethod.GET, p, route);
+	}
+
+	public RoutingCustomizer head(Pattern p, Route route) {
+		return verb(HttpMethod.HEAD, p, route);
+	}
+
+	public RoutingCustomizer post(Pattern p, Route route) {
+		return verb(HttpMethod.POST, p, route);
+	}
+
+	public RoutingCustomizer put(Pattern p, Route route) {
+		return verb(HttpMethod.PUT, p, route);
+	}
+
+	public RoutingCustomizer delete(Pattern p, Route route) {
+		return verb(HttpMethod.DELETE, p, route);
+	}
+
+	public RoutingCustomizer trace(Pattern p, Route route) {
+		return verb(HttpMethod.TRACE, p, route);
+	}
+
+	public RoutingCustomizer options(Pattern p, Route route) {
+		return verb(HttpMethod.OPTIONS, p, route);
+	}
+
+	public RoutingCustomizer connect(Pattern p, Route route) {
+		return verb(HttpMethod.CONNECT, p, route);
+	}
+
+	public RoutingCustomizer patch(Pattern p, Route route) {
+		return verb(HttpMethod.PATCH, p, route);
+	}
+
+	public RoutingCustomizer link(Pattern p, Route route) {
+		return verb(HttpMethod.LINK, p, route);
+	}
+
+	public RoutingCustomizer unlink(Pattern p, Route route) {
+		return verb(HttpMethod.UNLINK, p, route);
+	}
+
+	public void websocket(Pattern path, WebSocketFactory factory) {
+		websocket(new PathPredicate(path), factory);
+	}
+
+	public WebSocketCustomizer websocket(Pattern path) {
 		LambdaWebSocketFactory factory = new LambdaWebSocketFactory();
 		websocket(path, factory);
 		return factory;
