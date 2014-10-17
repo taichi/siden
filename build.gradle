@@ -4,7 +4,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.6'
 	}
 }
 
@@ -14,7 +14,7 @@ configure(subprojects) {
 	apply plugin: 'eclipse'
 	
 	group = 'ninja.siden'
-	version = "0.1.0"
+	version = "0.2.0"
 
 	sourceCompatibility = targetCompatibility = 1.8
 	
@@ -122,7 +122,7 @@ task install(dependsOn: ['siden-core:publishToMavenLocal', 'siden-react:publishT
 	logger.info "Installing $project.name"
 }
 
-task release(dependsOn: 'siden-core:bintrayUpload') << {
+task release(dependsOn: ['siden-core:bintrayUpload', 'siden-react:bintrayUpload']) << {
 	logger.info "Upload to bintray"
 }
 
