@@ -1,23 +1,4 @@
 
-# React.js serverside rendering support
-https://github.com/facebook/react
-
-http://facebook.github.io/react/docs/top-level-api.html#react.rendercomponenttostring
-
-https://github.com/facebook/react/blob/master/src/browser/server/ReactServerRendering.js
-
-jsxTransformer
-
-https://github.com/reactjs/express-react-views/blob/master/index.js
-https://github.com/reactjs/React.NET/blob/master/src/React/ReactComponent.cs
-http://reactjs.net/guides/server-side-rendering.html
-https://github.com/mhart/react-server-example
-https://github.com/ssorallen/react-play
-
-
-http://augustl.com/blog/2014/jdk8_react_rendering_on_server/
-http://yanns.github.io/blog/2014/03/15/server-side-rendering-for-javascript-reactjs-framework/
-
 # Monitoring support
 
 # Request & Response
