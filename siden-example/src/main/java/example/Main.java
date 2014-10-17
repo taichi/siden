@@ -73,7 +73,7 @@ public class Main {
 		// GET /javascripts/jquery.js
 		// GET /style.css
 		// GET /favicon.ico
-		app.assets("assets/");
+		app.assets("/", "assets/");
 
 		// GET /static/javascripts/jquery.js
 		// GET /static/style.css

@@ -41,7 +41,7 @@ configure(subprojects) {
 	}
 }
 
-project("siden-core") {
+configure([project("siden-core"), project("siden-react")]) {
 	jar.manifest {
 		attributes(
 			'Implementation-Title' : name,
@@ -118,7 +118,7 @@ project("siden-core") {
 	}
 }
 
-task install(dependsOn: 'siden-core:publishToMavenLocal') << {
+task install(dependsOn: ['siden-core:publishToMavenLocal', 'siden-react:publishToMavenLocal']) << {
 	logger.info "Installing $project.name"
 }
 
@@ -126,12 +126,19 @@ task release(dependsOn: 'siden-core:bintrayUpload') << {
 	logger.info "Upload to bintray"
 }
 
+project("siden-react") {
+	dependencies {
+		compile project(":siden-core")
+	}
+}
 
 project("siden-example") {
 	dependencies {
 		compile project(":siden-core")
+		compile project(":siden-react")
 		compile "io.fastjson:boon:0.23"
 		compile "com.github.jknack:handlebars:1.3.2"
+		compile "com.github.spullara.mustache.java:compiler:0.8.17"
 	}
 }
 

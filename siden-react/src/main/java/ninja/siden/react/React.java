@@ -15,50 +15,49 @@
  */
 package ninja.siden.react;
 
+import java.nio.file.Path;
+import java.util.List;
+
 /**
  * @author taichi
  */
-public class ReactComponent {
+public class React {
 
-	final JsEngine engine;
+	final JsEngine engine = new JsEngine();
 
 	final String name;
 
-	final String encodedProps;
-
 	final String containerId;
 
-	public ReactComponent(JsEngine engine, String name, String encodedProps,
-			String containerId) {
+	public React(String name, String containerId, List<Path> scripts) {
 		super();
-		this.engine = engine;
 		this.name = name;
-		this.encodedProps = encodedProps;
 		this.containerId = containerId;
+		this.engine.initialize(scripts);
 	}
 
-	String makeScript() {
+	String makeScript(String encodedProps) {
 		StringBuilder stb = new StringBuilder();
 		stb.append("React.renderComponentToString(");
-		appendInitializer(stb);
+		appendInitializer(stb, encodedProps);
 		stb.append(")");
 		return stb.toString();
 	}
 
-	public StringBuilder toHtml() {
+	public StringBuilder toHtml(String encodedProps) {
 		StringBuilder stb = new StringBuilder();
 		stb.append("<div id=\"");
 		stb.append(this.containerId);
 		stb.append("\">");
-		stb.append(engine.eval(makeScript()));
+		stb.append(this.engine.eval(makeScript(encodedProps)));
 		stb.append("</div>");
 		return stb;
 	}
 
-	public StringBuilder toClientJs() {
+	public StringBuilder toClientJs(String encodedProps) {
 		StringBuilder stb = new StringBuilder();
 		stb.append("React.renderComponent(");
-		appendInitializer(stb);
+		appendInitializer(stb, encodedProps);
 		stb.append(", document.getElementById(");
 		stb.append("\"");
 		stb.append(this.containerId);
@@ -66,10 +65,10 @@ public class ReactComponent {
 		return stb;
 	}
 
-	void appendInitializer(StringBuilder a) {
+	void appendInitializer(StringBuilder a, String encodedProps) {
 		a.append(this.name);
 		a.append('(');
-		a.append(this.encodedProps);
+		a.append(encodedProps);
 		a.append(')');
 	}
 }

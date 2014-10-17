@@ -259,13 +259,13 @@ public class App {
 	}
 
 	/**
-	 * serve static resources from root directory.
+	 * serve static resources on {@code root} from {@code root} directory.
 	 * 
 	 * @param root
 	 * @return
 	 */
 	public AssetsCustomizer assets(String root) {
-		return this.assets("/", root);
+		return this.assets("/" + root, root);
 	}
 
 	/**

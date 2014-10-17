@@ -18,37 +18,54 @@ package ninja.siden.react;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.logging.Logger;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import ninja.siden.util.Io;
+import ninja.siden.util.Loggers;
 import ninja.siden.util.Supress;
 
 /**
  * @author taichi
  */
 public class JsEngine {
+	
+	static final Logger LOG = Loggers.from(JsEngine.class);
 
 	final ScriptEngineManager manager;
-	ScriptEngine engine;
 
 	public JsEngine() {
 		manager = new ScriptEngineManager();
 	}
 
 	ScriptEngine newEngine() {
-		return manager.getEngineByName("nashorn");
+		return manager.getEngineByExtension("js");
 	}
 
 	public void initialize(List<Path> scripts) {
-		this.engine = newEngine();
-		eval("var global = this;");
-		scripts.stream().map(
-				p -> Io.using(() -> Files.newBufferedReader(p), engine::eval));
+		ScriptEngine se = newEngine();
+		Supress.get(() -> se.eval("var global = this;"));
+		scripts.forEach(p -> eval(se, p));
+		this.manager.setBindings(se.getBindings(ScriptContext.ENGINE_SCOPE));
 	}
 
 	public Object eval(String script) {
+		LOG.finest(() -> manager.getBindings().keySet().toString());
+		ScriptEngine engine = newEngine();
 		return Supress.get(() -> engine.eval(script));
+	}
+
+	public Object eval(Path path) {
+		LOG.finest(() -> manager.getBindings().keySet().toString());
+		return eval(newEngine(), path);
+	}
+	
+	Object eval(ScriptEngine engine, Path path) {
+		return Io.using(() -> Files.newBufferedReader(path), r -> {
+			return engine.eval(r);
+		});
 	}
 }
