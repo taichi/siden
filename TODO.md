@@ -1,12 +1,6 @@
 
 # Monitoring support
 
-# Request & Response
-https://github.com/perwendel/spark/blob/master/src/main/java/spark/Request.java
-http://rubydoc.info/github/rack/rack/master/Rack/Request
-http://expressjs.com/4x/api.html
-
-
 # Write more documents
 
 * make site on s3
@@ -14,10 +8,10 @@ http://expressjs.com/4x/api.html
 * more examples
 * javadoc
 
-
 # database integration
 
-https://github.com/brianm/jdbi
+* https://github.com/jOOQ/jOOQ
+* https://github.com/brianm/jdbi
 
 # don't work
 
