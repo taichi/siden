@@ -1,4 +1,4 @@
-box: mihkels/java8-oracle@0.0.1
+box: taichi/java8-oracle@0.0.1
 build:
     steps:
         - script:
