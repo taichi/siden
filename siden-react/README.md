@@ -44,7 +44,7 @@ apply plugin: 'java'
 repositories.jcenter()
 
 dependencies {
-	compile 'ninja.siden:siden-react:0.0.1'
+	compile 'ninja.siden:siden-react:0.2.0'
 }
 
 sourceCompatibility = targetCompatibility = 1.8
