@@ -6,8 +6,8 @@
 <script src="static/react.js"></script>
 </head>
 <body>
-	<div id="content">{{{rendered}}}</div>
-	<script src="build/tutorial1.js"></script>
-	<script>{{{clientjs}}}</script>
+	{{& rendered}}
+	<script src="build/comments.js"></script>
+	<script>{{& clientjs}}</script>
 </body>
 </html>
