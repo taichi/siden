@@ -29,11 +29,8 @@ public class UseWebsocket {
 
 		app.get("/", (q, s) -> Paths.get("assets/chat.html"));
 
-		app.websocket("/ws").onText((con, txt) -> {
-			con.peers().forEach(c -> {
-				c.send(txt);
-			});
-		});
+		app.websocket("/ws").onText(
+				(con, txt) -> con.peers().forEach(c -> c.send(txt)));
 
 		app.listen(8181);
 	}
