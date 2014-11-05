@@ -1,5 +1,6 @@
 
 # Monitoring support
+* https://github.com/rhq-project/rhq
 * https://github.com/dropwizard/metrics
 * https://github.com/undertow-io/undertow/blob/master/core/src/main/java/io/undertow/server/handlers/MetricsHandler.java
 * https://github.com/CloudBees-community/wildfly-clickstack/blob/master/src/clickstack-resources/jboss-base-dir/configuration/wildfly-metrics.xml
