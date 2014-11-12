@@ -15,8 +15,6 @@
  */
 package example;
 
-import java.nio.file.Paths;
-
 import ninja.siden.App;
 
 /**
@@ -27,7 +25,7 @@ public class UseWebsocket {
 	public static void main(String[] args) {
 		App app = new App();
 
-		app.get("/", (q, s) -> Paths.get("assets/chat.html"));
+		app.get("/", (q, s) -> new java.io.File("assets/chat.html"));
 
 		app.websocket("/ws").onText(
 				(con, txt) -> con.peers().forEach(c -> c.send(txt)));
