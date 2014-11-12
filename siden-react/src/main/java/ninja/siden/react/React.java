@@ -38,7 +38,7 @@ public class React {
 
 	String makeScript(String encodedProps) {
 		StringBuilder stb = new StringBuilder();
-		stb.append("React.renderComponentToString(");
+		stb.append("React.renderToString(");
 		appendInitializer(stb, encodedProps);
 		stb.append(")");
 		return stb.toString();
@@ -56,7 +56,7 @@ public class React {
 
 	public StringBuilder toClientJs(String encodedProps) {
 		StringBuilder stb = new StringBuilder();
-		stb.append("React.renderComponent(");
+		stb.append("React.render(");
 		appendInitializer(stb, encodedProps);
 		stb.append(", document.getElementById(");
 		stb.append("\"");
