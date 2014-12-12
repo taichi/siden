@@ -8,6 +8,7 @@ buildscript {
 	}
 }
 
+apply plugin: 'idea'
 
 configure(subprojects) {
 	apply plugin: 'java'
@@ -129,6 +130,7 @@ task release(dependsOn: ['siden-core:bintrayUpload', 'siden-react:bintrayUpload'
 project("siden-react") {
 	dependencies {
 		compile project(":siden-core")
+		compile 'org.webjars:react:0.12.0'
 	}
 }
 
@@ -143,9 +145,14 @@ project("siden-example") {
 }
 
 project("siden-sandbox") {
+	apply from: rootProject.file('gradle/dagger.gradle')
 	dependencies {
 		compile project(":siden-core")
 		compile "io.fastjson:boon:0.23"
+		compile 'com.zaxxer:HikariCP:2.2.4'
+		compile("org.jooq:jool:0.9.2") {
+			exclude group: 'org.scala-lang'
+		}
 	}
 }
 
