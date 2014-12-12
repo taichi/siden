@@ -26,7 +26,7 @@ import javax.script.ScriptEngineManager;
 
 import ninja.siden.util.Io;
 import ninja.siden.util.Loggers;
-import ninja.siden.util.Supress;
+import ninja.siden.util.Suppress;
 
 /**
  * @author taichi
@@ -47,7 +47,7 @@ public class JsEngine {
 
 	public void initialize(List<Path> scripts) {
 		ScriptEngine se = newEngine();
-		Supress.get(() -> se.eval("var global = this;"));
+		Suppress.get(() -> se.eval("var global = this;"));
 		scripts.forEach(p -> eval(se, p));
 		this.manager.setBindings(se.getBindings(ScriptContext.ENGINE_SCOPE));
 	}
@@ -55,7 +55,7 @@ public class JsEngine {
 	public Object eval(String script) {
 		LOG.finest(() -> manager.getBindings().keySet().toString());
 		ScriptEngine engine = newEngine();
-		return Supress.get(() -> engine.eval(script));
+		return Suppress.get(() -> engine.eval(script));
 	}
 
 	public Object eval(Path path) {
