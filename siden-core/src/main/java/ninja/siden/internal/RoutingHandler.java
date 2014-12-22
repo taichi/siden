@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import ninja.siden.App;
@@ -131,6 +132,11 @@ public class RoutingHandler implements HttpHandler {
 		Response response = exchange.getAttachment(Core.RESPONSE);
 		Object model = fn.handle(request, response);
 		if (model != null) {
+			if (model instanceof Optional) {
+				@SuppressWarnings("unchecked")
+				Optional<Object> opt = (Optional<Object>) model;
+				model = opt.map(v -> v).orElse(null);
+			}
 			if (model instanceof Integer) {
 				return handle((Integer) model, exchange);
 			}

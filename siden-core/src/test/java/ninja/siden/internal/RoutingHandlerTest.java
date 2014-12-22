@@ -20,6 +20,7 @@ import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpServerExchange;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import mockit.Mock;
 import mockit.MockUp;
@@ -59,6 +60,20 @@ public class RoutingHandlerTest {
 		RoutingHandler target = new RoutingHandler(Testing.empty());
 		target.add(Predicates.truePredicate(), (q, s) -> "Hello").render(
 				new MockUp<Renderer>() {
+					@Mock(invocations = 1)
+					void render(Object model, HttpServerExchange sink)
+							throws IOException {
+						assertEquals("Hello", model);
+					}
+				}.getMockInstance());
+		target.handleRequest(this.exchange);
+	}
+
+	@Test
+	public void testReturnOptinal() throws Exception {
+		RoutingHandler target = new RoutingHandler(Testing.empty());
+		target.add(Predicates.truePredicate(), (q, s) -> Optional.of("Hello"))
+				.render(new MockUp<Renderer>() {
 					@Mock(invocations = 1)
 					void render(Object model, HttpServerExchange sink)
 							throws IOException {
