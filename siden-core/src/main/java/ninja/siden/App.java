@@ -320,7 +320,7 @@ public class App {
 	 * @param port
 	 */
 	public Stoppable listen(int port) {
-		return listen("localhost", port);
+		return listen("0.0.0.0", port);
 	}
 
 	/**
