@@ -24,7 +24,7 @@ configure(subprojects) {
 	dependencies {
 		compile 'io.undertow:undertow-core:1.1.0.CR3'
 		testCompile 'junit:junit:4.11'
-		testCompile 'org.jmockit:jmockit:1.11'
+		testCompile 'org.jmockit:jmockit:1.+'
 		testCompile 'org.apache.httpcomponents:httpcomponents-client:4.3.5'
 		testCompile 'org.apache.httpcomponents:httpmime:4.3.5'
 	}
