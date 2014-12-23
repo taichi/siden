@@ -46,31 +46,30 @@ import org.xnio.streams.Streams;
 /**
  * @author taichi
  */
-public class RendererSelector implements Renderer {
+public class RendererSelector<T> implements Renderer<T> {
 
-	List<SelectableRenderer> renderers;
+	List<SelectableRenderer<T>> renderers;
 
 	public RendererSelector() {
 		this(defaultRenderers());
 	}
 
-	public RendererSelector(List<SelectableRenderer> renderers) {
+	public RendererSelector(List<SelectableRenderer<T>> renderers) {
 		this.renderers = renderers;
 	}
 
-	public static List<SelectableRenderer> defaultRenderers() {
-		return Arrays.asList(new StringRenderer(), new FileRenderer(),
-				new PathRenderer(), new FileChannelRenderer(),
-				new ByteArrayRenderer(), new ByteBufferRenderer(),
-				new URIRenderer(), new URLRenderer(), new ReaderRenderer(),
-				new InputStreamRenderer(), new CharSequenceRenderer(),
-				new ToStringRenderer());
+	public static <T> List<SelectableRenderer<T>> defaultRenderers() {
+		return Arrays.asList(new StringRenderer<T>(), new FileRenderer<T>(),
+				new PathRenderer<T>(), new FileChannelRenderer<T>(),
+				new ByteArrayRenderer<T>(), new ByteBufferRenderer<T>(),
+				new URIRenderer<T>(), new URLRenderer<T>(),
+				new ReaderRenderer<T>(), new InputStreamRenderer<T>(),
+				new CharSequenceRenderer<T>(), new ToStringRenderer<T>());
 	}
 
 	@Override
-	public void render(Object model, HttpServerExchange sink)
-			throws IOException {
-		for (SelectableRenderer pr : renderers) {
+	public void render(T model, HttpServerExchange sink) throws IOException {
+		for (SelectableRenderer<T> pr : renderers) {
 			if (pr.test(model)) {
 				pr.render(model, sink);
 				return;
@@ -78,11 +77,11 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	interface SelectableRenderer extends Renderer, Predicate<Object> {
+	interface SelectableRenderer<T> extends Renderer<T>, Predicate<T> {
 	}
 
-	static class ReaderRenderer implements SelectableRenderer {
-		final InputStreamRenderer delegate = new InputStreamRenderer();
+	static class ReaderRenderer<T> implements SelectableRenderer<T> {
+		final InputStreamRenderer<T> delegate = new InputStreamRenderer<T>();
 
 		@Override
 		public boolean test(Object model) {
@@ -101,7 +100,7 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class InputStreamRenderer implements SelectableRenderer {
+	static class InputStreamRenderer<T> implements SelectableRenderer<T> {
 
 		@Override
 		public boolean test(Object model) {
@@ -123,8 +122,8 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class URIRenderer implements SelectableRenderer {
-		final Renderer delegate = new URLRenderer();
+	static class URIRenderer<T> implements SelectableRenderer<T> {
+		final Renderer<URL> delegate = new URLRenderer<URL>();
 
 		@Override
 		public boolean test(Object t) {
@@ -139,7 +138,7 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class URLRenderer implements SelectableRenderer {
+	static class URLRenderer<T> implements SelectableRenderer<T> {
 
 		@Override
 		public boolean test(Object t) {
@@ -161,8 +160,8 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class PathRenderer implements SelectableRenderer {
-		Renderer delegate = new URLRenderer();
+	static class PathRenderer<T> implements SelectableRenderer<T> {
+		Renderer<URL> delegate = new URLRenderer<URL>();
 
 		@Override
 		public boolean test(Object t) {
@@ -177,8 +176,8 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class FileRenderer implements SelectableRenderer {
-		Renderer delegate = new URLRenderer();
+	static class FileRenderer<T> implements SelectableRenderer<T> {
+		Renderer<URL> delegate = new URLRenderer<URL>();
 
 		@Override
 		public boolean test(Object t) {
@@ -193,7 +192,7 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class FileChannelRenderer implements SelectableRenderer {
+	static class FileChannelRenderer<T> implements SelectableRenderer<T> {
 
 		@Override
 		public boolean test(Object t) {
@@ -210,7 +209,7 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class ByteBufferRenderer implements SelectableRenderer {
+	static class ByteBufferRenderer<T> implements SelectableRenderer<T> {
 
 		@Override
 		public boolean test(Object t) {
@@ -226,7 +225,7 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class ByteArrayRenderer implements SelectableRenderer {
+	static class ByteArrayRenderer<T> implements SelectableRenderer<T> {
 
 		@Override
 		public boolean test(Object t) {
@@ -242,7 +241,7 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	public static class StringRenderer implements SelectableRenderer {
+	public static class StringRenderer<T> implements SelectableRenderer<T> {
 
 		@Override
 		public boolean test(Object t) {
@@ -262,8 +261,8 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class CharSequenceRenderer implements SelectableRenderer {
-		StringRenderer deleagte = new StringRenderer();
+	static class CharSequenceRenderer<T> implements SelectableRenderer<T> {
+		StringRenderer<T> deleagte = new StringRenderer<T>();
 
 		@Override
 		public boolean test(Object t) {
@@ -277,8 +276,8 @@ public class RendererSelector implements Renderer {
 		}
 	}
 
-	static class ToStringRenderer implements SelectableRenderer {
-		StringRenderer deleagte = new StringRenderer();
+	static class ToStringRenderer<T> implements SelectableRenderer<T> {
+		StringRenderer<T> deleagte = new StringRenderer<T>();
 
 		@Override
 		public boolean test(Object t) {

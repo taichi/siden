@@ -48,6 +48,7 @@ public interface Config {
 	Option<Boolean> METHOD_OVERRIDE = Option.simple(Config.class,
 			"METHOD_OVERRIDE", Boolean.class);
 
+	@SuppressWarnings("rawtypes")
 	Option<Renderer> DEFAULT_RENDERER = Option.simple(Config.class,
 			"DEFAULT_RENDERER", Renderer.class);
 
@@ -77,14 +78,17 @@ public interface Config {
 
 	Option<Integer> DEFAULT_SESSION_TIMEOUT_SECONDS = Option.simple(
 			Config.class, "DEFAULT_SESSION_TIMEOUT_SECONDS", Integer.class);
-	
-	// WebSocket Options
-	Option<Long> WS_MAX_IDLE_TIMEOUT = Option.simple(Config.class, "WS_MAX_IDLE_TIMEOUT", Long.class);
-	
-	Option<Integer> WS_BINARY_MESSAGE_BUFFER_SIZE = Option.simple(Config.class, "WS_BINARY_MESSAGE_BUFFER_SIZE", Integer.class);
 
-	Option<Integer> WS_TEXT_MESSAGE_BUFFER_SIZE = Option.simple(Config.class, "WS_TEXT_MESSAGE_BUFFER_SIZE", Integer.class);
-	
+	// WebSocket Options
+	Option<Long> WS_MAX_IDLE_TIMEOUT = Option.simple(Config.class,
+			"WS_MAX_IDLE_TIMEOUT", Long.class);
+
+	Option<Integer> WS_BINARY_MESSAGE_BUFFER_SIZE = Option.simple(Config.class,
+			"WS_BINARY_MESSAGE_BUFFER_SIZE", Integer.class);
+
+	Option<Integer> WS_TEXT_MESSAGE_BUFFER_SIZE = Option.simple(Config.class,
+			"WS_TEXT_MESSAGE_BUFFER_SIZE", Integer.class);
+
 	// Security Options
 
 	/**
@@ -113,7 +117,7 @@ public interface Config {
 		omb.set(ENV,
 				Objects.toString(System.getenv("SIDEN_ENV"), "development"));
 		omb.set(METHOD_OVERRIDE, false);
-		omb.set(DEFAULT_RENDERER, new RendererSelector());
+		omb.set(DEFAULT_RENDERER, new RendererSelector<Object>());
 		omb.set(RENDERER_REPOSITORY, RendererRepository.EMPTY);
 		omb.set(CHARSET, StandardCharsets.UTF_8);
 
@@ -129,7 +133,7 @@ public interface Config {
 		omb.set(SESSION_COOKIE_NAME, "sid");
 		omb.set(MAX_SESSIONS, -1);
 		omb.set(DEFAULT_SESSION_TIMEOUT_SECONDS, 30 * 60);
-		
+
 		omb.set(WS_MAX_IDLE_TIMEOUT, 0L);
 		omb.set(WS_BINARY_MESSAGE_BUFFER_SIZE, -1);
 		omb.set(WS_TEXT_MESSAGE_BUFFER_SIZE, -1);

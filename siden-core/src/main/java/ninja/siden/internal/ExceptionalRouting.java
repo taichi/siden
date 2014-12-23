@@ -26,7 +26,7 @@ class ExceptionalRouting<EX extends Throwable> implements
 		RendererCustomizer<ExceptionalRouting<EX>> {
 	Class<EX> type;
 	ExceptionalRoute<EX> route;
-	Renderer renderer;
+	Renderer<?> renderer;
 
 	public ExceptionalRouting(Class<EX> type, ExceptionalRoute<EX> route) {
 		super();
@@ -35,7 +35,7 @@ class ExceptionalRouting<EX extends Throwable> implements
 	}
 
 	@Override
-	public ExceptionalRouting<EX> render(Renderer renderer) {
+	public <MODEL> ExceptionalRouting<EX> render(Renderer<MODEL> renderer) {
 		this.renderer = renderer;
 		return this;
 	}

@@ -31,17 +31,18 @@ import org.xnio.OptionMap;
  * @author taichi
  */
 @FunctionalInterface
-public interface Renderer {
+public interface Renderer<T> {
 
-	void render(Object model, HttpServerExchange sink) throws IOException;
+	void render(T model, HttpServerExchange sink) throws IOException;
 
-	public static Renderer ofStream(OutputStreamConsumer fn) {
-		return new BlockingRenderer((model, sink) -> fn.render(model,
+	public static <MODEL> Renderer<MODEL> ofStream(
+			OutputStreamConsumer<MODEL> fn) {
+		return new BlockingRenderer<MODEL>((model, sink) -> fn.render(model,
 				sink.getOutputStream()));
 	}
 
-	public static Renderer of(WriterConsumer fn) {
-		return new BlockingRenderer((model, sink) -> {
+	public static <MODEL> Renderer<MODEL> of(WriterConsumer<MODEL> fn) {
+		return new BlockingRenderer<MODEL>((model, sink) -> {
 			OptionMap config = sink.getAttachment(Core.CONFIG);
 			Writer w = new OutputStreamWriter(sink.getOutputStream(),
 					config.get(Config.CHARSET));
@@ -51,12 +52,12 @@ public interface Renderer {
 	}
 
 	@FunctionalInterface
-	public interface OutputStreamConsumer {
-		void render(Object model, OutputStream out) throws IOException;
+	public interface OutputStreamConsumer<T> {
+		void render(T model, OutputStream out) throws IOException;
 	}
 
 	@FunctionalInterface
-	public interface WriterConsumer {
-		void render(Object model, Writer out) throws IOException;
+	public interface WriterConsumer<T> {
+		void render(T model, Writer out) throws IOException;
 	}
 }

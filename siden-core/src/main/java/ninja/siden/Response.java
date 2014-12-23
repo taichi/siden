@@ -52,13 +52,13 @@ public interface Response {
 	 */
 	Response type(String contentType);
 
-	Void redirect(String location);
+	Object redirect(String location);
 
-	Void redirect(int code, String location);
+	Object redirect(int code, String location);
 
-	Void render(Object model, Renderer renderer) throws Exception;
+	<MODEL> Object render(MODEL model, Renderer<MODEL> renderer);
 
-	Void render(Object model, String template) throws Exception;
+	<MODEL> Object render(MODEL model, String template);
 
 	HttpServerExchange raw();
 }

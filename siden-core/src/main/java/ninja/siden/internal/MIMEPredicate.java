@@ -93,7 +93,8 @@ public class MIMEPredicate implements Predicate {
 		}
 		if (this.type.equalsIgnoreCase(t)) {
 			String sub = m.group("subtype");
-			if (wildCard(sub) || wildCard(this.subType) || this.subType.equalsIgnoreCase(sub)) {
+			if (wildCard(sub) || wildCard(this.subType)
+					|| this.subType.equalsIgnoreCase(sub)) {
 				return true;
 			}
 		}

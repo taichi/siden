@@ -126,7 +126,7 @@ public class RoutingHandler implements HttpHandler {
 		}, route.renderer);
 	}
 
-	boolean handle(HttpServerExchange exchange, Route fn, Renderer renderer)
+	boolean handle(HttpServerExchange exchange, Route fn, Renderer<?> renderer)
 			throws Exception {
 		Request request = exchange.getAttachment(Core.REQUEST);
 		Response response = exchange.getAttachment(Core.RESPONSE);
@@ -148,12 +148,13 @@ public class RoutingHandler implements HttpHandler {
 		return handle(exchange.getResponseCode(), exchange);
 	}
 
-	Renderer resolve(Renderer renderer, HttpServerExchange exchange) {
+	@SuppressWarnings("unchecked")
+	Renderer<Object> resolve(Renderer<?> renderer, HttpServerExchange exchange) {
 		if (renderer == null) {
 			OptionMap config = exchange.getAttachment(Core.CONFIG);
 			return config.get(Config.DEFAULT_RENDERER);
 		}
-		return renderer;
+		return (Renderer<Object>) renderer;
 	}
 
 	boolean contains(Class<?> clazz) {

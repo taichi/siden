@@ -19,6 +19,7 @@ import ninja.siden.App;
 import ninja.siden.Config;
 import ninja.siden.Renderer;
 import ninja.siden.RendererRepository;
+import ninja.siden.util.Suppress;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -60,8 +61,8 @@ public class UseHandlebars {
 		}
 
 		@Override
-		public Renderer find(String path) throws Exception {
-			Template t = engine.compile(path);
+		public <T> Renderer<T> find(String path) {
+			Template t = Suppress.get(() -> engine.compile(path));
 			return Renderer.of(t::apply);
 		}
 	}

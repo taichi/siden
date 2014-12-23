@@ -65,7 +65,7 @@ public class Main {
 
 		// json api on top of Boon JSON
 		// see. https://github.com/boonproject/boon
-		app.get("/users", (req, res) -> new User("john"))
+		app.get("/users/:name", (req, res) -> req.params("name").map(User::new))
 				.render(Renderer.of(JsonFactory::toJson))
 				.type("application/json");
 
@@ -79,6 +79,8 @@ public class Main {
 		// GET /static/style.css
 		// GET /static/favicon.ico
 		app.assets("/static", "assets/");
+		
+		app.get("/", (req, res) -> "Siden Example Application is running.");
 
 		// sub application
 		App sub = new App();

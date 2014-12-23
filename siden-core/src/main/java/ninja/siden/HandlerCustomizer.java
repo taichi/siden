@@ -28,9 +28,9 @@ public interface HandlerCustomizer {
 
 	HandlerCustomizer match(Predicate<Request> fn);
 
-	HandlerCustomizer render(Renderer renderer);
+	<T> HandlerCustomizer render(Renderer<T> renderer);
 
-	HandlerCustomizer render(Renderer.OutputStreamConsumer fn);
+	<T> HandlerCustomizer render(Renderer.OutputStreamConsumer<T> fn);
 
-	HandlerCustomizer render(Renderer.WriterConsumer fn);
+	<T> HandlerCustomizer render(Renderer.WriterConsumer<T> fn);
 }

@@ -28,7 +28,7 @@ import ninja.siden.RoutingCustomizer;
 public class Routing implements RoutingCustomizer {
 	Predicate predicate;
 	Route route;
-	Renderer renderer;
+	Renderer<?> renderer;
 
 	public Routing(Predicate predicate, Route route) {
 		this.predicate = predicate;
@@ -64,7 +64,7 @@ public class Routing implements RoutingCustomizer {
 	}
 
 	@Override
-	public RoutingCustomizer render(Renderer renderer) {
+	public <MODEL> RoutingCustomizer render(Renderer<MODEL> renderer) {
 		this.renderer = renderer;
 		return this;
 	}

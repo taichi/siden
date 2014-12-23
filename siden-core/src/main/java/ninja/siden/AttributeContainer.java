@@ -23,8 +23,10 @@ import java.util.Optional;
 public interface AttributeContainer extends Iterable<AttributeContainer.Attr> {
 
 	/**
-	 * @param key attribute name
-	 * @param newone new attribute
+	 * @param key
+	 *            attribute name
+	 * @param newone
+	 *            new attribute
 	 * @return existing value
 	 */
 	<T> Optional<T> attr(String key, T newone);

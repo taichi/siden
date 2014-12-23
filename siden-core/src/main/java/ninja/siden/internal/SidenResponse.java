@@ -32,6 +32,7 @@ import ninja.siden.Cookie;
 import ninja.siden.Renderer;
 import ninja.siden.RendererRepository;
 import ninja.siden.Response;
+import ninja.siden.util.Suppress;
 
 import org.xnio.OptionMap;
 
@@ -39,6 +40,10 @@ import org.xnio.OptionMap;
  * @author taichi
  */
 public class SidenResponse implements Response {
+	
+	enum ExchangeState {
+		Rendered, Redirected;
+	}
 
 	final HttpServerExchange exchange;
 
@@ -102,26 +107,28 @@ public class SidenResponse implements Response {
 	}
 
 	@Override
-	public Void redirect(String location) {
+	public ExchangeState redirect(String location) {
 		return this.redirect(StatusCodes.FOUND, location);
 	}
 
 	@Override
-	public Void redirect(int code, String location) {
+	public ExchangeState redirect(int code, String location) {
 		this.exchange.setResponseCode(code);
 		this.exchange.getResponseHeaders().put(Headers.LOCATION, location);
 		this.exchange.endExchange();
-		return null;
+		return ExchangeState.Redirected;
 	}
 
 	@Override
-	public Void render(Object model, Renderer renderer) throws Exception {
-		renderer.render(model, this.exchange);
-		return null;
+	public <MODEL> ExchangeState render(MODEL model, Renderer<MODEL> renderer) {
+		return Suppress.get(() -> {
+			renderer.render(model, this.exchange);
+			return ExchangeState.Rendered;
+		});
 	}
 
 	@Override
-	public Void render(Object model, String template) throws Exception {
+	public <MODEL> ExchangeState render(MODEL model, String template) {
 		OptionMap config = this.exchange.getAttachment(Core.CONFIG);
 		RendererRepository repo = config.get(Config.RENDERER_REPOSITORY);
 		return render(model, repo.find(template));
@@ -137,8 +144,6 @@ public class SidenResponse implements Response {
 		this.exchange.getResponseCookies().forEach((k, c) -> {
 			fmt.format("%s", new SidenCookie(c));
 		});
-		fmt.format("]}");
-
-		return fmt.toString();
+		return fmt.format("]}").toString();
 	}
 }

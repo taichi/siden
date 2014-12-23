@@ -24,7 +24,7 @@ import ninja.siden.Route;
  */
 class ErrorCodeRouting implements RendererCustomizer<ErrorCodeRouting> {
 	Route route;
-	Renderer renderer;
+	Renderer<?> renderer;
 
 	public ErrorCodeRouting(Route route) {
 		super();
@@ -32,7 +32,7 @@ class ErrorCodeRouting implements RendererCustomizer<ErrorCodeRouting> {
 	}
 
 	@Override
-	public ErrorCodeRouting render(Renderer renderer) {
+	public <MODEL> ErrorCodeRouting render(Renderer<MODEL> renderer) {
 		this.renderer = renderer;
 		return this;
 	}

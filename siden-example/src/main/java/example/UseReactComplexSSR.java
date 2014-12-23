@@ -54,7 +54,7 @@ public class UseReactComplexSSR {
 		// setup template engine
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache template = mf.compile("assets/react.mustache");
-		Renderer renderer = Renderer.of((m, w) -> template.execute(w, m));
+		Renderer<Object> renderer = Renderer.of((m, w) -> template.execute(w, m));
 
 		// setup react server side rendering
 		React rc = new React("CommentBox", "content", Arrays.asList(

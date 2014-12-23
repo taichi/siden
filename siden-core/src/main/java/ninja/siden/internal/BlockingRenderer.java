@@ -24,18 +24,17 @@ import ninja.siden.Renderer;
 /**
  * @author taichi
  */
-public class BlockingRenderer implements Renderer {
+public class BlockingRenderer<T> implements Renderer<T> {
 
-	final Renderer renderer;
+	final Renderer<T> renderer;
 
-	public BlockingRenderer(Renderer renderer) {
+	public BlockingRenderer(Renderer<T> renderer) {
 		super();
 		this.renderer = renderer;
 	}
 
 	@Override
-	public void render(Object model, HttpServerExchange sink)
-			throws IOException {
+	public void render(T model, HttpServerExchange sink) throws IOException {
 		sink.startBlocking();
 		if (sink.isInIoThread()) {
 			sink.dispatch(exchange -> {
