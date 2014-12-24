@@ -70,5 +70,3 @@ Apache License, Version 2.0
 # Badges
 
 [![wercker status](https://app.wercker.com/status/de09957e13da7a18ae6cf3fbd67afc68/m "wercker status")](https://app.wercker.com/project/bykey/de09957e13da7a18ae6cf3fbd67afc68)
-
-[![Dependency Status](https://www.versioneye.com/user/projects/549a75316b1b81d16a000105/badge.svg?style=flat)](https://www.versioneye.com/user/projects/549a75316b1b81d16a000105)
