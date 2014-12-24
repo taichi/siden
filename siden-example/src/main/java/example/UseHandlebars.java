@@ -48,6 +48,8 @@ public class UseHandlebars {
 		// read template from templates/say/hello.html
 		app.get("/hello",
 				(req, res) -> res.render(new User("peter"), "say/hello"));
+		
+		app.listen();
 	}
 
 	static class HandleBarsRepo implements RendererRepository {
