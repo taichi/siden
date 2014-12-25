@@ -45,7 +45,7 @@ import ninja.siden.AttributeContainer;
 import ninja.siden.Connection;
 import ninja.siden.Cookie;
 import ninja.siden.util.ExceptionalConsumer;
-import ninja.siden.util.Io;
+import ninja.siden.util.Using;
 
 import org.xnio.ChannelListener;
 
@@ -222,22 +222,16 @@ public class SidenConnection implements Connection {
 
 	@Override
 	public void sendStream(ExceptionalConsumer<OutputStream, Exception> fn) {
-		Io.using(
+		Using.consume(
 				() -> new BinaryOutputStream(this.channel
-						.send(WebSocketFrameType.BINARY)), os -> {
-					fn.accept(os);
-					return null;
-				});
+						.send(WebSocketFrameType.BINARY)), fn);
 	}
 
 	@Override
 	public void sendWriter(ExceptionalConsumer<Writer, Exception> fn) {
-		Io.using(() -> new OutputStreamWriter(new BinaryOutputStream(
+		Using.consume(() -> new OutputStreamWriter(new BinaryOutputStream(
 				this.channel.send(WebSocketFrameType.TEXT)),
-				StandardCharsets.UTF_8), os -> {
-			fn.accept(os);
-			return null;
-		});
+				StandardCharsets.UTF_8), fn);
 	}
 
 	@Override

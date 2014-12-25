@@ -23,7 +23,7 @@ import java.util.Scanner;
 
 import mockit.Mock;
 import mockit.MockUp;
-import ninja.siden.util.Io;
+import ninja.siden.util.Using;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -53,10 +53,7 @@ public interface Testing {
 
 	static void request(HttpUriRequest request, ResponseConsumer fn)
 			throws Exception {
-		Io.using(Testing::client, c -> {
-			fn.accept(c.execute(request));
-			return null;
-		});
+		Using.consume(Testing::client, c -> fn.accept(c.execute(request)));
 	}
 
 	static String read(HttpResponse response) throws Exception {

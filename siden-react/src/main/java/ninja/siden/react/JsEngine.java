@@ -24,7 +24,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import ninja.siden.util.Io;
+import ninja.siden.util.Using;
 import ninja.siden.util.Loggers;
 import ninja.siden.util.Suppress;
 
@@ -64,8 +64,6 @@ public class JsEngine {
 	}
 	
 	Object eval(ScriptEngine engine, Path path) {
-		return Io.using(() -> Files.newBufferedReader(path), r -> {
-			return engine.eval(r);
-		});
+		return Using.transform(() -> Files.newBufferedReader(path), engine::eval);
 	}
 }

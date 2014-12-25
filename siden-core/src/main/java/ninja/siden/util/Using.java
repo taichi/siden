@@ -18,13 +18,25 @@ package ninja.siden.util;
 /**
  * @author taichi
  */
-public interface Io {
+public interface Using {
 
-	static <IO extends AutoCloseable, R, E extends Exception> R using(
-			ExceptionalSupplier<IO, Exception> io,
-			ExceptionalFunction<IO, R, Exception> fn) {
-		try (IO t = io.get()) {
-			return fn.apply(t);
+	static <IO extends AutoCloseable, R> R transform(
+			ExceptionalSupplier<IO, Exception> supplier,
+			ExceptionalFunction<IO, R, Exception> transformer) {
+		try (IO t = supplier.get()) {
+			return transformer.apply(t);
+		} catch (RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	static <IO extends AutoCloseable> void consume(
+			ExceptionalSupplier<IO, Exception> supplier,
+			ExceptionalConsumer<IO, Exception> consumer) {
+		try (IO t = supplier.get()) {
+			consumer.accept(t);
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
