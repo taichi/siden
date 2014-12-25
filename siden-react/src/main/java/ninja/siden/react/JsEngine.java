@@ -53,13 +53,13 @@ public class JsEngine {
 	}
 
 	public Object eval(String script) {
-		LOG.finest(() -> manager.getBindings().keySet().toString());
+		LOG.finest(manager.getBindings().keySet()::toString);
 		ScriptEngine engine = newEngine();
 		return Suppress.get(() -> engine.eval(script));
 	}
 
 	public Object eval(Path path) {
-		LOG.finest(() -> manager.getBindings().keySet().toString());
+		LOG.finest(manager.getBindings().keySet()::toString);
 		return eval(newEngine(), path);
 	}
 	
