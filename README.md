@@ -29,7 +29,7 @@ apply plugin: 'java'
 repositories.jcenter()
 
 dependencies {
-	compile 'ninja.siden:siden-core:0.2.0'
+	compile 'ninja.siden:siden-core:0.3.1'
 }
 
 sourceCompatibility = targetCompatibility = 1.8
