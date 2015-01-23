@@ -67,6 +67,10 @@ public class FiltersHandler implements HttpHandler {
 		}
 	}
 
+	enum ChainState {
+		HasNext, NoMore;
+	}
+
 	class SimpleChain implements FilterChain {
 
 		int cursor;
@@ -85,15 +89,16 @@ public class FiltersHandler implements HttpHandler {
 		}
 
 		@Override
-		public void next() throws Exception {
+		public Object next() throws Exception {
 			for (int index = cursor++; index < filters.size(); index = cursor++) {
 				Filtering filtering = filters.get(index);
 				if (filtering.predicate.resolve(exchange)) {
 					filtering.filter.filter(request, response, this);
-					return;
+					return ChainState.HasNext;
 				}
 			}
 			next.handleRequest(exchange);
+			return ChainState.NoMore;
 		}
 	}
 }

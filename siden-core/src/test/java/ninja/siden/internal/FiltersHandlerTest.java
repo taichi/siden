@@ -57,7 +57,8 @@ public class FiltersHandlerTest {
 	public void testNoFilter() throws Exception {
 		new MockUp<SimpleChain>() {
 			@Mock(invocations = 0)
-			public void next() throws Exception {
+			public Object next() throws Exception {
+				return null;
 			}
 		};
 		boolean[] is = { false };

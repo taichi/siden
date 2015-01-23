@@ -21,5 +21,5 @@ package ninja.siden;
 @FunctionalInterface
 public interface FilterChain {
 
-	void next() throws Exception;
+	Object next() throws Exception;
 }
