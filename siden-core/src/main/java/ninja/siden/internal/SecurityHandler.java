@@ -62,7 +62,9 @@ public class SecurityHandler implements HttpHandler {
 			try {
 				if (rh.contains(Headers.CONTENT_TYPE) == false
 						&& rh.contains(Headers.SEC_WEB_SOCKET_ACCEPT) == false) {
-					LOG.warning(() -> "Content-Type header doesn't exist.");
+
+					LOG.warning(() -> ex.getRequestURI()
+							+ " Content-Type header doesn't exist.");
 				}
 			} finally {
 				next.proceed();
