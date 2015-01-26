@@ -26,18 +26,20 @@ import ninja.siden.RoutingCustomizer;
  * @author taichi
  */
 public class Routing implements RoutingCustomizer {
+	Predicate original;
 	Predicate predicate;
 	Route route;
 	Renderer<?> renderer;
 
 	public Routing(Predicate predicate, Route route) {
+		this.original = predicate;
 		this.predicate = predicate;
 		this.route = route;
 	}
 
 	@Override
 	public RoutingCustomizer type(String type) {
-		predicate = Predicates.and(this.predicate, MIMEPredicate.accept(type));
+		predicate = Predicates.and(this.original, MIMEPredicate.accept(type));
 		Route prev = this.route;
 		route = (req, res) -> {
 			Object result = prev.handle(req, res);
@@ -56,7 +58,7 @@ public class Routing implements RoutingCustomizer {
 
 	@Override
 	public RoutingCustomizer match(java.util.function.Predicate<Request> fn) {
-		predicate = Predicates.and(this.predicate, exchange -> {
+		predicate = Predicates.and(this.original, exchange -> {
 			Request request = exchange.getAttachment(Core.REQUEST);
 			return fn.test(request);
 		});
