@@ -279,6 +279,10 @@ public class App {
 		return this.assets.add(path, new File(root));
 	}
 
+	public void useDefaultFavicon() {
+		this.assets.useDefaultFavicon();
+	}
+
 	// Filter requests
 	public void use(Filter filter) {
 		this.filters.add(Predicates.truePredicate(), filter);

@@ -43,7 +43,6 @@ public class AssetsHandler implements HttpHandler {
 
 	public AssetsHandler(OptionMap config) {
 		this.config = config;
-		delegate.addExactPath("/favicon.ico", AssetsHandler::handleFavicon);
 	}
 
 	static void handleFavicon(HttpServerExchange exchange) throws Exception {
@@ -68,5 +67,10 @@ public class AssetsHandler implements HttpHandler {
 		rh.setMimeMappings(config.get(Config.MIME_MAPPINGS));
 		this.delegate.addPrefixPath(path, rh);
 		return new Assets(rh);
+	}
+
+	public void useDefaultFavicon() {
+		this.delegate
+				.addExactPath("/favicon.ico", AssetsHandler::handleFavicon);
 	}
 }
