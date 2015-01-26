@@ -58,6 +58,9 @@ public interface Config {
 	Option<Charset> CHARSET = Option.simple(Config.class, "CHARSET",
 			Charset.class);
 
+	Option<String> DEFAULT_CONTENT_TYPE = Option.simple(Config.class,
+			"DEFAULT_CONTENT_TYPE", String.class);
+
 	Option<MimeMappings> MIME_MAPPINGS = Option.simple(Config.class,
 			"MIME_MAPPINGS", MimeMappings.class);
 
@@ -120,6 +123,7 @@ public interface Config {
 		omb.set(DEFAULT_RENDERER, new RendererSelector<Object>());
 		omb.set(RENDERER_REPOSITORY, RendererRepository.EMPTY);
 		omb.set(CHARSET, StandardCharsets.UTF_8);
+		omb.set(DEFAULT_CONTENT_TYPE, "text/plain; charset=UTF-8");
 
 		MimeMappings.Builder mmb = MimeMappings.builder();
 		mmb.addMapping("ico", "image/x-icon");

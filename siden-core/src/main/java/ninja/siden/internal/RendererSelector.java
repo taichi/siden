@@ -253,10 +253,8 @@ public class RendererSelector<T> implements Renderer<T> {
 				throws IOException {
 			OptionMap config = sink.getAttachment(Core.CONFIG);
 			String s = model.toString();
-			SecurityHandler.addContentType(
-					sink,
-					String.format("text/plain; charset=%s",
-							config.get(Config.CHARSET)));
+			SecurityHandler.addContentType(sink,
+					config.get(Config.DEFAULT_CONTENT_TYPE));
 			sink.getResponseSender().send(s, config.get(Config.CHARSET));
 		}
 	}
