@@ -346,11 +346,17 @@ public class App {
 		Undertow.Builder builder = fn.apply(Undertow.builder());
 		Undertow server = builder.setHandler(this.shared).build();
 		server.start();
-		return server::stop;
-	}
+		return new Stoppable() {
 
-	@FunctionalInterface
-	public interface Stoppable {
-		void stop();
+			@Override
+			public void stop() {
+				server.stop();
+			}
+
+			@Override
+			public void asShutdownHook() {
+				Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+			}
+		};
 	}
 }

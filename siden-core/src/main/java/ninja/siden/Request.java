@@ -31,10 +31,22 @@ public interface Request extends AttributeContainer {
 
 	String path();
 
+	/**
+	 * get path parameter
+	 * 
+	 * @param key
+	 * @return
+	 */
 	Optional<String> params(String key);
 
 	Map<String, String> params();
 
+	/**
+	 * get query parameter
+	 * 
+	 * @param key
+	 * @return
+	 */
 	Optional<String> query(String key);
 
 	Optional<String> header(String name);

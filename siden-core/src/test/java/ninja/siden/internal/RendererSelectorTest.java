@@ -25,7 +25,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 import ninja.siden.App;
-import ninja.siden.App.Stoppable;
+import ninja.siden.Stoppable;
 
 import org.apache.http.client.methods.HttpGet;
 import org.junit.After;

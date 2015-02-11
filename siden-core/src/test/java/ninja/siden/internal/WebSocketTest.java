@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import mockit.integration.junit4.JMockit;
 import ninja.siden.App;
-import ninja.siden.App.Stoppable;
+import ninja.siden.Stoppable;
 import ninja.siden.WebSocketCustomizer;
 
 import org.junit.After;
