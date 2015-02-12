@@ -5,6 +5,7 @@ buildscript {
 
 	dependencies {
 		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+		classpath 'com.netflix.nebula:gradle-info-plugin:2.2.0'
 	}
 }
 
@@ -13,6 +14,7 @@ apply plugin: 'idea'
 configure(subprojects) {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
+	apply plugin: 'nebula.info'
 	
 	group = 'ninja.siden'
 	version = "0.4.0"
@@ -43,16 +45,6 @@ configure(subprojects) {
 }
 
 configure([project("siden-core"), project("siden-react")]) {
-	jar.manifest {
-		attributes(
-			'Implementation-Title' : name,
-			'Implementation-Version': version,
-			'Implementation-Vendor': 'siden.ninja',
-			'Built-JDK': "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})",
-			'Built-Gradle': gradle.gradleVersion
-		)
-	}
-	
 	task sourcesJar(type: Jar, dependsOn: classes) {
 		classifier = 'sources'
 		from sourceSets.main.allSource
