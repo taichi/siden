@@ -354,7 +354,7 @@ public class App {
 			}
 
 			@Override
-			public void asShutdownHook() {
+			public void addShutdownHook() {
 				Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 			}
 		};

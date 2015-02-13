@@ -22,5 +22,5 @@ public interface Stoppable {
 
 	void stop();
 
-	void asShutdownHook();
+	void addShutdownHook();
 }
