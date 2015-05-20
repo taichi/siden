@@ -23,7 +23,6 @@ import io.undertow.websockets.core.BufferedBinaryMessage;
 import io.undertow.websockets.core.BufferedTextMessage;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSocketFrameType;
-import io.undertow.websockets.core.WebSocketVersion;
 import io.undertow.websockets.core.WebSockets;
 
 import java.io.IOException;
@@ -126,10 +125,13 @@ public class WebSocketTest {
 					(c, buf) -> closelatch.countDown()));
 			stopper = app.listen(port);
 			CountDownLatch latch = new CountDownLatch(1);
-			WebSocketChannel channel = WebSocketClient.connect(worker, buffer,
-					OptionMap.EMPTY,
-					new URI(String.format("http://localhost:%d/ws", port)),
-					WebSocketVersion.V13).get();
+			WebSocketChannel channel = WebSocketClient
+					.connectionBuilder(
+							worker,
+							buffer,
+							new URI(String.format("http://localhost:%d/ws",
+									port))).connect().get();
+
 			channel.addCloseTask(c -> closelatch.countDown());
 			channel.getReceiveSetter().set(listener(latch));
 			channel.resumeReceives();
