@@ -21,6 +21,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -89,15 +90,13 @@ public class RoutingHandler implements HttpHandler {
 			throws Exception {
 		if (exchange.isRequestChannelAvailable()) {
 			exchange.setResponseCode(responseCode);
-			List<ErrorCodeRouting> list = this.errorCodeMappings
-					.get(responseCode);
-			if (list != null && list.isEmpty() == false) {
-				for (ErrorCodeRouting route : list) {
-					if (handle(exchange,
-							(req, res) -> route.route.handle(req, res),
-							route.renderer)) {
-						return true;
-					}
+			List<ErrorCodeRouting> list = this.errorCodeMappings.getOrDefault(
+					responseCode, Collections.emptyList());
+			for (ErrorCodeRouting route : list) {
+				if (handle(exchange,
+						(req, res) -> route.route.handle(req, res),
+						route.renderer)) {
+					return true;
 				}
 			}
 		}
