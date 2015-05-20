@@ -18,6 +18,7 @@ package ninja.siden.internal;
 import static org.junit.Assert.assertEquals;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HeaderMap;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -157,6 +158,37 @@ public class RoutingHandlerTest {
 							throws IOException {
 					}
 				}.getMockInstance());
+
+		target.handleRequest(this.exchange);
+	}
+
+	@Test
+	public void testResponseCodeSettigIsOnce() throws Exception {
+		this.exchange = new MockUp<HttpServerExchange>() {
+
+			@Mock
+			public HeaderMap getResponseHeaders() {
+				return new HeaderMap();
+			}
+
+			@Mock(invocations = 1)
+			public HttpServerExchange setResponseCode(final int responseCode) {
+				return getMockInstance();
+			}
+
+			@Mock(invocations = 1)
+			public HttpServerExchange endExchange() {
+				return getMockInstance();
+			}
+		}.getMockInstance();
+
+		this.exchange.putAttachment(Core.CONFIG, Config.defaults().getMap());
+		this.exchange.putAttachment(Core.RESPONSE, new SidenResponse(
+				this.exchange));
+
+		RoutingHandler target = new RoutingHandler(Testing.empty());
+		target.add(Predicates.truePredicate(),
+				(q, s) -> s.redirect("/hoge/fuga/moge"));
 
 		target.handleRequest(this.exchange);
 	}

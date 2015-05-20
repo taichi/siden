@@ -41,10 +41,6 @@ import org.xnio.OptionMap;
  */
 public class SidenResponse implements Response {
 	
-	enum ExchangeState {
-		Rendered, Redirected;
-	}
-
 	final HttpServerExchange exchange;
 
 	public SidenResponse(HttpServerExchange exchange) {

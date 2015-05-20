@@ -139,6 +139,9 @@ public class RoutingHandler implements HttpHandler {
 			if (model instanceof Integer) {
 				return handle((Integer) model, exchange);
 			}
+			if (model instanceof ExchangeState) {
+				return true;
+			}
 			if (contains(model.getClass()) == false) {
 				resolve(renderer, exchange).render(model, exchange);
 				return true;
