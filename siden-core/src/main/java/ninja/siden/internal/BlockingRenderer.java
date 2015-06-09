@@ -35,7 +35,9 @@ public class BlockingRenderer<T> implements Renderer<T> {
 
 	@Override
 	public void render(T model, HttpServerExchange sink) throws IOException {
-		sink.startBlocking();
+		if (sink.isBlocking() == false) {
+			sink.startBlocking();
+		}
 		if (sink.isInIoThread()) {
 			sink.dispatch(exchange -> {
 				renderer.render(model, exchange);

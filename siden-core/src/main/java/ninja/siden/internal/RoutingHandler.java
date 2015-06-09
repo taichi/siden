@@ -66,24 +66,13 @@ public class RoutingHandler implements HttpHandler {
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
-		try {
-			for (Routing route : routings) {
-				if (route.predicate.resolve(exchange)) {
-					handle(exchange,
-							(req, res) -> route.route.handle(req, res),
-							route.renderer);
-					return;
-				}
+		for (Routing route : routings) {
+			if (route.predicate.resolve(exchange)) {
+				handle(exchange, route.route::handle, route.renderer);
+				return;
 			}
-			this.next.handleRequest(exchange);
-		} catch (Exception ex) {
-			if (exchange.isRequestChannelAvailable()) {
-				if (handle(ex, exchange)) {
-					return;
-				}
-			}
-			throw ex;
 		}
+		this.next.handleRequest(exchange);
 	}
 
 	boolean handle(Integer responseCode, HttpServerExchange exchange)
@@ -93,9 +82,7 @@ public class RoutingHandler implements HttpHandler {
 			List<ErrorCodeRouting> list = this.errorCodeMappings.getOrDefault(
 					responseCode, Collections.emptyList());
 			for (ErrorCodeRouting route : list) {
-				if (handle(exchange,
-						(req, res) -> route.route.handle(req, res),
-						route.renderer)) {
+				if (handle(exchange, route.route::handle, route.renderer)) {
 					return true;
 				}
 			}
@@ -127,27 +114,36 @@ public class RoutingHandler implements HttpHandler {
 
 	boolean handle(HttpServerExchange exchange, Route fn, Renderer<?> renderer)
 			throws Exception {
-		Request request = exchange.getAttachment(Core.REQUEST);
-		Response response = exchange.getAttachment(Core.RESPONSE);
-		Object model = fn.handle(request, response);
-		if (model != null) {
-			if (model instanceof Optional) {
-				@SuppressWarnings("unchecked")
-				Optional<Object> opt = (Optional<Object>) model;
-				model = opt.map(v -> v).orElse(null);
+		try {
+			Request request = exchange.getAttachment(Core.REQUEST);
+			Response response = exchange.getAttachment(Core.RESPONSE);
+			Object model = fn.handle(request, response);
+			if (model != null) {
+				if (model instanceof Optional) {
+					@SuppressWarnings("unchecked")
+					Optional<Object> opt = (Optional<Object>) model;
+					model = opt.map(v -> v).orElse(null);
+				}
+				if (model instanceof Integer) {
+					return handle((Integer) model, exchange);
+				}
+				if (model instanceof ExchangeState) {
+					return true;
+				}
+				if (contains(model.getClass()) == false) {
+					resolve(renderer, exchange).render(model, exchange);
+					return true;
+				}
 			}
-			if (model instanceof Integer) {
-				return handle((Integer) model, exchange);
+			return handle(exchange.getResponseCode(), exchange);
+		} catch (Exception ex) {
+			if (exchange.isRequestChannelAvailable()) {
+				if (handle(ex, exchange)) {
+					return true;
+				}
 			}
-			if (model instanceof ExchangeState) {
-				return true;
-			}
-			if (contains(model.getClass()) == false) {
-				resolve(renderer, exchange).render(model, exchange);
-				return true;
-			}
+			throw ex;
 		}
-		return handle(exchange.getResponseCode(), exchange);
 	}
 
 	@SuppressWarnings("unchecked")
