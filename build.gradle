@@ -17,18 +17,19 @@ configure(subprojects) {
 	apply plugin: 'nebula.info'
 	
 	group = 'ninja.siden'
-	version = "0.4.0"
+	version = "0.5.0"
 
 	sourceCompatibility = targetCompatibility = 1.8
+	tasks.withType(AbstractCompile)*.options*.encoding = "UTF-8"
 	
 	repositories.mavenCentral()
 
 	dependencies {
-		compile 'io.undertow:undertow-core:1.2.6.Final'
+		compile 'io.undertow:undertow-core:1.2.7.Final'
 		testCompile 'junit:junit:4.+'
 		testCompile 'org.jmockit:jmockit:1.+'
-		testCompile 'org.apache.httpcomponents:httpcomponents-client:4.3.6'
-		testCompile 'org.apache.httpcomponents:httpmime:4.3.6'
+		testCompile 'org.apache.httpcomponents:httpcomponents-client:4.3.+'
+		testCompile 'org.apache.httpcomponents:httpmime:4.3.+'
 	}
 	
 	test {
