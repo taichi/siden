@@ -68,7 +68,13 @@ public class RoutingHandler implements HttpHandler {
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
 		for (Routing route : routings) {
 			if (route.predicate.resolve(exchange)) {
-				handle(exchange, route.route::handle, route.renderer);
+				HttpHandler hh = ex -> handle(ex, route.route::handle,
+						route.renderer);
+				if (exchange.isInIoThread()) {
+					exchange.dispatch(hh);
+				} else {
+					hh.handleRequest(exchange);
+				}
 				return;
 			}
 		}

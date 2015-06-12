@@ -46,7 +46,12 @@ public class RoutingHandlerTest {
 
 	@Before
 	public void setUp() {
-		this.exchange = new HttpServerExchange(null);
+		this.exchange = new MockUp<HttpServerExchange>() {
+			@Mock
+			public boolean isInIoThread() {
+				return false;
+			}
+		}.getMockInstance();
 	}
 
 	@Test
@@ -165,6 +170,10 @@ public class RoutingHandlerTest {
 	@Test
 	public void testResponseCodeSettigIsOnce() throws Exception {
 		this.exchange = new MockUp<HttpServerExchange>() {
+			@Mock
+			public boolean isInIoThread() {
+				return false;
+			}
 
 			@Mock
 			public HeaderMap getResponseHeaders() {
@@ -200,6 +209,11 @@ public class RoutingHandlerTest {
 	@Test
 	public void testExceptionalRouting() throws Exception {
 		this.exchange = new MockUp<HttpServerExchange>() {
+			@Mock
+			public boolean isInIoThread() {
+				return false;
+			}
+
 			@Mock
 			public boolean isRequestChannelAvailable() {
 				return true;
