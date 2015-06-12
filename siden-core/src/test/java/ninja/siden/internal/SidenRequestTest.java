@@ -16,8 +16,11 @@
 package ninja.siden.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -69,29 +72,33 @@ public class SidenRequestTest {
 		for (int i = 0; i < 100; i++) {
 			stb.append("abcd\r\n");
 		}
-		stringBody(stb.toString());
+		String s = stb.toString();
+		Optional<String> opt = stringBody(s);
+		assertEquals(s, opt.get());
 	}
 
 	@Test
 	public void stringBodySwithJapanese() throws Exception {
-		stringBody("abcd～～wayway美豚");
+		String s = "abcd～～wayway美豚";
+		Optional<String> opt = stringBody(s);
+		assertEquals(s, opt.get());
 	}
 
 	@Test
 	public void smallStringBody() throws Exception {
-		stringBody("hoge");
+		assertTrue(stringBody("hoge").isPresent());
 	}
 
 	@Test
 	public void noBody() throws Exception {
-		stringBody("");
+		assertFalse(stringBody("").isPresent());
 	}
 
-	public void stringBody(String body) throws Exception {
+	public Optional<String> stringBody(String body) throws Exception {
 		CountDownLatch latch = new CountDownLatch(2);
-		BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
+		BlockingQueue<Optional<String>> queue = new ArrayBlockingQueue<>(1);
 		this.app.post("/string", (req, res) -> {
-			String content = req.body();
+			Optional<String> content = req.body();
 			queue.add(content);
 			latch.countDown();
 			return content;
@@ -113,7 +120,7 @@ public class SidenRequestTest {
 				latch.countDown();
 			}
 		});
-		assertEquals(body, queue.poll());
 		latch.await();
+		return queue.poll();
 	}
 }

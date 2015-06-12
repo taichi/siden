@@ -29,7 +29,7 @@ public class URLShortener {
 		App app = new App();
 		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
 		app.post("/", (req, res) -> {
-			Optional<String> opt = req.forms().keySet().stream().findFirst();
+			Optional<String> opt = req.body();
 			return opt.map(s -> {
 				String k = Integer.toHexString(s.hashCode());
 				map.put(k, s);

@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import ninja.siden.AttributeContainer;
 import ninja.siden.Config;
@@ -248,19 +249,24 @@ public class SidenRequest implements Request {
 		return defaultCs;
 	}
 
+	static final AttachmentKey<String> STRING_BODY = AttachmentKey
+			.create(String.class);
+
 	@Override
-	public String body() {
-		long length = exchange.getRequestContentLength();
-		if (length < 1) {
-			return "";
-		}
+	public Optional<String> body() {
 		FormData existing = exchange.getAttachment(FormDataParser.FORM_DATA);
 		if (existing != null) {
-			return "";
+			return StreamSupport.stream(existing.spliterator(), false)
+					.findFirst();
 		}
-		StreamSourceChannel channel = exchange.getRequestChannel();
-		if (channel == null) {
-			return "";
+		String parsedBody = exchange.getAttachment(STRING_BODY);
+		if (parsedBody != null) {
+			return Optional.of(parsedBody);
+		}
+
+		long length = exchange.getRequestContentLength();
+		if (length < 1 || exchange.isRequestChannelAvailable() == false) {
+			return Optional.empty();
 		}
 		try (Pooled<ByteBuffer> pooled = exchange.getConnection()
 				.getBufferPool().allocate()) {
@@ -268,10 +274,10 @@ public class SidenRequest implements Request {
 			CharsetDecoder decoder = charset.newDecoder();
 			StringBuilder builder = new StringBuilder();
 			final ByteBuffer buffer = pooled.getResource();
-			int read = 0;
+			StreamSourceChannel channel = exchange.getRequestChannel();
 			do {
 				buffer.clear();
-				read = Channels.readBlocking(channel, buffer);
+				int read = Channels.readBlocking(channel, buffer);
 				if (0 < buffer.position()) {
 					buffer.flip();
 					builder.append(decoder.decode(buffer));
@@ -281,7 +287,10 @@ public class SidenRequest implements Request {
 				}
 				length -= read;
 			} while (0 < length);
-			return new String(builder);
+
+			String s = new String(builder);
+			this.exchange.putAttachment(STRING_BODY, s);
+			return Optional.of(s);
 		} catch (IOException ioe) {
 			throw new UncheckedIOException(ioe);
 		}
