@@ -23,6 +23,11 @@ import io.undertow.util.HeaderValues;
 import io.undertow.util.Sessions;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Formatter;
@@ -36,12 +41,18 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import ninja.siden.AttributeContainer;
+import ninja.siden.Config;
 import ninja.siden.Cookie;
 import ninja.siden.HttpMethod;
 import ninja.siden.Request;
 import ninja.siden.SecurityHeaders;
 import ninja.siden.Session;
 import ninja.siden.util.Predicates;
+
+import org.xnio.OptionMap;
+import org.xnio.Pooled;
+import org.xnio.channels.Channels;
+import org.xnio.channels.StreamSourceChannel;
 
 /**
  * @author taichi
@@ -223,6 +234,57 @@ public class SidenRequest implements Request {
 	@Override
 	public Map<String, List<File>> files() {
 		return translateFiles();
+	}
+
+	static Charset parseCharset(HttpServerExchange exchange) {
+		// TODO support force charset
+		OptionMap config = exchange.getAttachment(Core.CONFIG);
+		Charset defaultCs = config.get(Config.CHARSET);
+		String cs = exchange.getRequestCharset();
+		if (defaultCs.displayName().equalsIgnoreCase(cs) == false && cs != null
+				&& Charset.isSupported(cs)) {
+			return Charset.forName(cs);
+		}
+		return defaultCs;
+	}
+
+	@Override
+	public String body() {
+		long length = exchange.getRequestContentLength();
+		if (length < 1) {
+			return "";
+		}
+		FormData existing = exchange.getAttachment(FormDataParser.FORM_DATA);
+		if (existing != null) {
+			return "";
+		}
+		StreamSourceChannel channel = exchange.getRequestChannel();
+		if (channel == null) {
+			return "";
+		}
+		try (Pooled<ByteBuffer> pooled = exchange.getConnection()
+				.getBufferPool().allocate()) {
+			Charset charset = parseCharset(exchange);
+			CharsetDecoder decoder = charset.newDecoder();
+			StringBuilder builder = new StringBuilder();
+			final ByteBuffer buffer = pooled.getResource();
+			int read = 0;
+			do {
+				buffer.clear();
+				read = Channels.readBlocking(channel, buffer);
+				if (0 < buffer.position()) {
+					buffer.flip();
+					builder.append(decoder.decode(buffer));
+				}
+				if (read < 1) {
+					break;
+				}
+				length -= read;
+			} while (0 < length);
+			return new String(builder);
+		} catch (IOException ioe) {
+			throw new UncheckedIOException(ioe);
+		}
 	}
 
 	static final AttachmentKey<Session> SESSION = AttachmentKey

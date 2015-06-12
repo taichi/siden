@@ -71,6 +71,8 @@ public interface Request extends AttributeContainer {
 
 	Map<String, List<File>> files();
 
+	String body();
+
 	/**
 	 * get current session or create new session.
 	 * 

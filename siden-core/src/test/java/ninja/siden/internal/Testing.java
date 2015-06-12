@@ -40,7 +40,7 @@ public interface Testing {
 
 	static CloseableHttpClient client() {
 		HttpClientBuilder builder = HttpClientBuilder.create();
-		builder.setDefaultSocketConfig(SocketConfig.custom().setSoTimeout(200)
+		builder.setDefaultSocketConfig(SocketConfig.custom().setSoTimeout(2000)
 				.build());
 		builder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
 		return builder.build();
