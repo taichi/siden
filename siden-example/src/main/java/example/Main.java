@@ -88,6 +88,6 @@ public class Main {
 		sub.get("/admin", (req, res) -> "I'm in secret area");
 		app.use("/secret", sub);
 
-		Runtime.getRuntime().addShutdownHook(new Thread(app.listen()::stop));
+		app.listen().addShutdownHook();
 	}
 }

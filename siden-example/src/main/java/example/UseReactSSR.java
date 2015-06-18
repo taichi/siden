@@ -48,6 +48,6 @@ public class UseReactSSR {
 				// server side rendering
 				return "<html><body>" + rc.toHtml(props) + "</body></html>";
 			}).type("text/html");
-		app.listen();
+		app.listen().addShutdownHook();
 	}
 }

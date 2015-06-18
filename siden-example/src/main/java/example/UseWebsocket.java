@@ -30,6 +30,6 @@ public class UseWebsocket {
 		app.websocket("/ws").onText(
 				(con, txt) -> con.peers().forEach(c -> c.send(txt)));
 
-		app.listen(8181);
+		app.listen(8181).addShutdownHook();
 	}
 }

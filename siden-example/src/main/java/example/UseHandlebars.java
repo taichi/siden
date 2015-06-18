@@ -49,7 +49,7 @@ public class UseHandlebars {
 		app.get("/hello",
 				(req, res) -> res.render(new User("peter"), "say/hello"));
 		
-		app.listen();
+		app.listen().addShutdownHook();
 	}
 
 	static class HandleBarsRepo implements RendererRepository {

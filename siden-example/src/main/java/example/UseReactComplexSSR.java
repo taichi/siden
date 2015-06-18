@@ -93,7 +93,7 @@ public class UseReactComplexSSR {
 
 		app.assets("build");
 		app.assets("/static", "assets");
-		app.listen();
+		app.listen().addShutdownHook();
 	}
 
 	static void json(RoutingCustomizer route) {
