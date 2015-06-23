@@ -40,6 +40,9 @@ public interface Config {
 
 	Option<Boolean> SIDEN_FAVICON = Option.simple(Config.class,
 			"SIDEN_FAVICON", Boolean.class);
+
+	Option<Long> WAIT_FOR_GRACEFUL_SHUTDOWN = Option.simple(Config.class,
+			"WAIT_FOR_GRACEFUL_SHUTDOWN", Long.class);
 	/**
 	 * Use _method magic to allow put/delete forms in browsers that don't
 	 * support it.
@@ -122,6 +125,7 @@ public interface Config {
 		omb.set(ENV,
 				Objects.toString(System.getenv("SIDEN_ENV"), "development"));
 		omb.set(SIDEN_FAVICON, false);
+		omb.set(WAIT_FOR_GRACEFUL_SHUTDOWN, 30 * 1000);
 		omb.set(METHOD_OVERRIDE, false);
 		omb.set(DEFAULT_RENDERER, new RendererSelector<Object>());
 		omb.set(RENDERER_REPOSITORY, RendererRepository.EMPTY);

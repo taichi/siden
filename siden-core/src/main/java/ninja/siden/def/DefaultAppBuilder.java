@@ -18,6 +18,7 @@ package ninja.siden.def;
 import io.undertow.Handlers;
 import io.undertow.predicate.PredicatesHandler;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.form.EagerFormParsingHandler;
 import io.undertow.server.handlers.form.FormEncodedDataDefinition;
@@ -122,6 +123,18 @@ public class DefaultAppBuilder implements AppBuilder {
 
 		if (Config.isInDev(config)) {
 			hh = Handlers.disableCache(hh);
+		} else {
+			GracefulShutdownHandler gsh = Handlers.gracefulShutdown(hh);
+			root.stopOn(app -> {
+				gsh.shutdown();
+				try {
+					gsh.awaitShutdown(config.get(
+							Config.WAIT_FOR_GRACEFUL_SHUTDOWN, 500));
+				} catch (InterruptedException e) {
+					// ignore
+				}
+			});
+			hh = gsh;
 		}
 
 		hh = new SecurityHandler(hh);
