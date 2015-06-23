@@ -38,6 +38,8 @@ public interface Config {
 	 */
 	Option<String> ENV = Option.simple(Config.class, "ENV", String.class);
 
+	Option<Boolean> SIDEN_FAVICON = Option.simple(Config.class,
+			"SIDEN_FAVICON", Boolean.class);
 	/**
 	 * Use _method magic to allow put/delete forms in browsers that don't
 	 * support it.
@@ -119,6 +121,7 @@ public interface Config {
 		OptionMap.Builder omb = OptionMap.builder();
 		omb.set(ENV,
 				Objects.toString(System.getenv("SIDEN_ENV"), "development"));
+		omb.set(SIDEN_FAVICON, false);
 		omb.set(METHOD_OVERRIDE, false);
 		omb.set(DEFAULT_RENDERER, new RendererSelector<Object>());
 		omb.set(RENDERER_REPOSITORY, RendererRepository.EMPTY);
@@ -147,5 +150,9 @@ public interface Config {
 		omb.set(USE_CONTENT_TYPE_OPTIONS, true);
 
 		return omb;
+	}
+
+	public static boolean isInDev(OptionMap config) {
+		return "development".equalsIgnoreCase(config.get(Config.ENV));
 	}
 }

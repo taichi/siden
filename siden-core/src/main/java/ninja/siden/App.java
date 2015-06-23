@@ -15,36 +15,25 @@
  */
 package ninja.siden;
 
-import io.undertow.Handlers;
 import io.undertow.Undertow;
-import io.undertow.predicate.Predicate;
 import io.undertow.predicate.Predicates;
-import io.undertow.predicate.PredicatesHandler;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.PathHandler;
-import io.undertow.server.handlers.form.EagerFormParsingHandler;
-import io.undertow.server.handlers.form.FormEncodedDataDefinition;
-import io.undertow.server.handlers.form.FormParserFactory;
-import io.undertow.server.handlers.form.MultiPartParserDefinition;
-import io.undertow.server.session.InMemorySessionManager;
-import io.undertow.server.session.SessionAttachmentHandler;
-import io.undertow.server.session.SessionCookieConfig;
-import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
 
-import java.io.File;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import ninja.siden.internal.AssetsHandler;
-import ninja.siden.internal.ConnectionCallback;
-import ninja.siden.internal.Core;
-import ninja.siden.internal.FiltersHandler;
+import ninja.siden.def.AppBuilder;
+import ninja.siden.def.AppContext;
+import ninja.siden.def.AppDef;
+import ninja.siden.def.DefaultAppBuilder;
 import ninja.siden.internal.LambdaWebSocketFactory;
-import ninja.siden.internal.MethodOverrideHandler;
 import ninja.siden.internal.PathPredicate;
-import ninja.siden.internal.RoutingHandler;
-import ninja.siden.internal.SecurityHandler;
+import ninja.siden.jmx.MetricsAppBuilder;
+import ninja.siden.util.Publisher;
 
+import org.jboss.logging.Logger;
 import org.xnio.OptionMap;
 
 /**
@@ -52,75 +41,19 @@ import org.xnio.OptionMap;
  */
 public class App {
 
-	AssetsHandler assets;
+	static final Logger LOG = Logger.getLogger(App.class);
 
-	RoutingHandler router;
+	protected AppDef def;
 
-	PredicatesHandler websockets;
-
-	PathHandler subapp;
-
-	FiltersHandler filters;
-
-	HttpHandler shared;
+	protected Publisher<App> stop = new Publisher<>();
 
 	public App() {
 		this(Config.defaults().getMap());
 	}
 
 	protected App(OptionMap config) {
-		this.assets = new AssetsHandler(config);
-		this.router = new RoutingHandler(this.assets);
-		this.subapp = new PathHandler(this.router);
-		this.websockets = new PredicatesHandler(this.subapp);
-		this.filters = new FiltersHandler(this.websockets);
-		this.shared = wrap(config, this.filters);
-	}
-
-	protected HttpHandler wrap(OptionMap config, HttpHandler handler) {
-		HttpHandler hh = handler;
-		if (config.get(Config.METHOD_OVERRIDE)) {
-			hh = new MethodOverrideHandler(hh);
-		}
-		hh = makeSessionHandler(config, hh);
-		hh = makeFormHandler(config, hh);
-
-		if ("development".equalsIgnoreCase(config.get(Config.ENV))) {
-			hh = Handlers.disableCache(hh);
-		}
-
-		hh = new SecurityHandler(hh);
-		return new Core(config, hh);
-	}
-
-	protected HttpHandler makeSessionHandler(OptionMap config, HttpHandler next) {
-		InMemorySessionManager sessionManager = new InMemorySessionManager(
-				"SessionManagerOfSiden", config.get(Config.MAX_SESSIONS));
-		sessionManager.setDefaultSessionTimeout(config
-				.get(Config.DEFAULT_SESSION_TIMEOUT_SECONDS));
-		SessionCookieConfig sessionConfig = new SessionCookieConfig();
-		sessionConfig.setCookieName(config.get(Config.SESSION_COOKIE_NAME));
-
-		return new SessionAttachmentHandler(next, sessionManager, sessionConfig);
-	}
-
-	protected HttpHandler makeFormHandler(OptionMap config, HttpHandler next) {
-		FormParserFactory.Builder builder = FormParserFactory.builder(false);
-		FormEncodedDataDefinition form = new FormEncodedDataDefinition();
-		String cn = config.get(Config.CHARSET).name();
-		form.setDefaultEncoding(cn);
-
-		MultiPartParserDefinition mult = new MultiPartParserDefinition(
-				config.get(Config.TEMP_DIR));
-		mult.setDefaultEncoding(cn);
-		mult.setMaxIndividualFileSize(config.get(Config.MAX_FILE_SIZE));
-
-		builder.addParsers(form, mult);
-
-		EagerFormParsingHandler efp = new EagerFormParsingHandler(
-				builder.build());
-		efp.setNext(next);
-		return efp;
+		Objects.requireNonNull(config);
+		this.def = new AppDef(config);
 	}
 
 	public static App configure(
@@ -130,65 +63,52 @@ public class App {
 	}
 
 	// request handling
-	protected RoutingCustomizer verb(HttpMethod method, Predicate pred,
-			Route route) {
-		return this.router.add(Predicates.and(method, pred), route);
-	}
-
-	protected RoutingCustomizer verb(HttpMethod method, String path, Route route) {
-		return this.verb(method, new PathPredicate(path), route);
-	}
-
-	protected RoutingCustomizer verb(HttpMethod method, Pattern p, Route route) {
-		return this.verb(method, new PathPredicate(p), route);
-	}
-
 	public RoutingCustomizer get(String path, Route route) {
-		return verb(HttpMethod.GET, path, route);
+		return this.def.add(HttpMethod.GET, path, route);
 	}
 
 	public RoutingCustomizer head(String path, Route route) {
-		return verb(HttpMethod.HEAD, path, route);
+		return this.def.add(HttpMethod.HEAD, path, route);
 	}
 
 	public RoutingCustomizer post(String path, Route route) {
-		return verb(HttpMethod.POST, path, route);
+		return this.def.add(HttpMethod.POST, path, route);
 	}
 
 	public RoutingCustomizer put(String path, Route route) {
-		return verb(HttpMethod.PUT, path, route);
+		return this.def.add(HttpMethod.PUT, path, route);
 	}
 
 	public RoutingCustomizer delete(String path, Route route) {
-		return verb(HttpMethod.DELETE, path, route);
+		return this.def.add(HttpMethod.DELETE, path, route);
 	}
 
 	public RoutingCustomizer trace(String path, Route route) {
-		return verb(HttpMethod.TRACE, path, route);
+		return this.def.add(HttpMethod.TRACE, path, route);
 	}
 
 	public RoutingCustomizer options(String path, Route route) {
-		return verb(HttpMethod.OPTIONS, path, route);
+		return this.def.add(HttpMethod.OPTIONS, path, route);
 	}
 
 	public RoutingCustomizer connect(String path, Route route) {
-		return verb(HttpMethod.CONNECT, path, route);
+		return this.def.add(HttpMethod.CONNECT, path, route);
 	}
 
 	public RoutingCustomizer patch(String path, Route route) {
-		return verb(HttpMethod.PATCH, path, route);
+		return this.def.add(HttpMethod.PATCH, path, route);
 	}
 
 	public RoutingCustomizer link(String path, Route route) {
-		return verb(HttpMethod.LINK, path, route);
+		return this.def.add(HttpMethod.LINK, path, route);
 	}
 
 	public RoutingCustomizer unlink(String path, Route route) {
-		return verb(HttpMethod.UNLINK, path, route);
+		return this.def.add(HttpMethod.UNLINK, path, route);
 	}
 
 	public void websocket(String path, WebSocketFactory factory) {
-		websocket(new PathPredicate(path), factory);
+		this.def.add(path, new PathPredicate(path), factory);
 	}
 
 	public WebSocketCustomizer websocket(String path) {
@@ -197,59 +117,52 @@ public class App {
 		return factory;
 	}
 
-	protected void websocket(Predicate pred, WebSocketFactory factory) {
-		this.websockets.addPredicatedHandler(pred, next -> {
-			return new WebSocketProtocolHandshakeHandler(
-					new ConnectionCallback(factory), next);
-		});
-	}
-
 	public RoutingCustomizer get(Pattern p, Route route) {
-		return verb(HttpMethod.GET, p, route);
+		return this.def.add(HttpMethod.GET, p, route);
 	}
 
 	public RoutingCustomizer head(Pattern p, Route route) {
-		return verb(HttpMethod.HEAD, p, route);
+		return this.def.add(HttpMethod.HEAD, p, route);
 	}
 
 	public RoutingCustomizer post(Pattern p, Route route) {
-		return verb(HttpMethod.POST, p, route);
+		return this.def.add(HttpMethod.POST, p, route);
 	}
 
 	public RoutingCustomizer put(Pattern p, Route route) {
-		return verb(HttpMethod.PUT, p, route);
+		return this.def.add(HttpMethod.PUT, p, route);
 	}
 
 	public RoutingCustomizer delete(Pattern p, Route route) {
-		return verb(HttpMethod.DELETE, p, route);
+		return this.def.add(HttpMethod.DELETE, p, route);
 	}
 
 	public RoutingCustomizer trace(Pattern p, Route route) {
-		return verb(HttpMethod.TRACE, p, route);
+		return this.def.add(HttpMethod.TRACE, p, route);
 	}
 
 	public RoutingCustomizer options(Pattern p, Route route) {
-		return verb(HttpMethod.OPTIONS, p, route);
+		return this.def.add(HttpMethod.OPTIONS, p, route);
 	}
 
 	public RoutingCustomizer connect(Pattern p, Route route) {
-		return verb(HttpMethod.CONNECT, p, route);
+		return this.def.add(HttpMethod.CONNECT, p, route);
 	}
 
 	public RoutingCustomizer patch(Pattern p, Route route) {
-		return verb(HttpMethod.PATCH, p, route);
+		return this.def.add(HttpMethod.PATCH, p, route);
 	}
 
 	public RoutingCustomizer link(Pattern p, Route route) {
-		return verb(HttpMethod.LINK, p, route);
+		return this.def.add(HttpMethod.LINK, p, route);
 	}
 
 	public RoutingCustomizer unlink(Pattern p, Route route) {
-		return verb(HttpMethod.UNLINK, p, route);
+		return this.def.add(HttpMethod.UNLINK, p, route);
 	}
 
 	public void websocket(Pattern path, WebSocketFactory factory) {
-		websocket(new PathPredicate(path), factory);
+		this.def.add(path.pattern(), new PathPredicate(path), factory);
 	}
 
 	public WebSocketCustomizer websocket(Pattern path) {
@@ -276,29 +189,25 @@ public class App {
 	 * @return
 	 */
 	public AssetsCustomizer assets(String path, String root) {
-		return this.assets.add(path, new File(root));
-	}
-
-	public void useDefaultFavicon() {
-		this.assets.useDefaultFavicon();
+		return this.def.add(path, root);
 	}
 
 	// Filter requests
 	public void use(Filter filter) {
-		this.filters.add(Predicates.truePredicate(), filter);
+		this.def.add(Predicates.truePredicate(), filter);
 	}
 
 	public void use(String path, Filter filter) {
-		this.filters.add(new PathPredicate(path), filter);
+		this.def.add(new PathPredicate(path), filter);
 	}
 
 	public <T extends Throwable> RendererCustomizer<?> error(Class<T> type,
 			ExceptionalRoute<T> route) {
-		return this.router.add(type, route);
+		return this.def.add(type, route);
 	}
 
-	public RendererCustomizer<?> error(int errorCode, Route route) {
-		return this.router.add(errorCode, route);
+	public RendererCustomizer<?> error(int statusCode, Route route) {
+		return this.def.add(statusCode, route);
 	}
 
 	/**
@@ -308,7 +217,7 @@ public class App {
 	 * @param sub
 	 */
 	public void use(String path, App sub) {
-		this.subapp.addPrefixPath(path, sub.filters);
+		this.def.add(path, sub.def);
 	}
 
 	/**
@@ -344,13 +253,14 @@ public class App {
 	 */
 	public Stoppable listen(Function<Undertow.Builder, Undertow.Builder> fn) {
 		Undertow.Builder builder = fn.apply(Undertow.builder());
-		Undertow server = builder.setHandler(this.shared).build();
+		Undertow server = builder.setHandler(buildHandlers()).build();
 		server.start();
+		stop.on(stop -> server.stop());
 		return new Stoppable() {
 
 			@Override
 			public void stop() {
-				server.stop();
+				stop.post(App.this);
 			}
 
 			@Override
@@ -358,5 +268,21 @@ public class App {
 				Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 			}
 		};
+	}
+
+	protected HttpHandler buildHandlers() {
+		AppBuilder visitor = newBuilder().apply(this.def.config());
+		visitor.begin();
+		this.def.accept(new AppContext(this), visitor);
+		return visitor.end(this);
+	}
+
+	protected Function<OptionMap, AppBuilder> newBuilder() {
+		return Config.isInDev(this.def.config()) ? DefaultAppBuilder::new
+				: MetricsAppBuilder::new;
+	}
+
+	public void stopOn(Consumer<App> fn) {
+		stop.on(fn);
 	}
 }

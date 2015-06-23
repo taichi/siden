@@ -15,17 +15,16 @@
  */
 package ninja.siden.internal;
 
-import io.undertow.predicate.Predicate;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ninja.siden.Filter;
 import ninja.siden.FilterChain;
 import ninja.siden.Request;
 import ninja.siden.Response;
+import ninja.siden.def.FilterDef;
 
 /**
  * @author taichi
@@ -34,10 +33,9 @@ public class FiltersHandler implements HttpHandler {
 
 	HttpHandler next;
 
-	List<Filtering> filters = new ArrayList<>();
+	List<FilterDef> filters = new ArrayList<>();
 
 	public FiltersHandler(HttpHandler next) {
-		super();
 		this.next = next;
 	}
 
@@ -51,20 +49,8 @@ public class FiltersHandler implements HttpHandler {
 		chain.next();
 	}
 
-	public void add(Predicate predicate, Filter filter) {
-		this.filters.add(new Filtering(predicate, filter));
-	}
-
-	static class Filtering {
-		Predicate predicate;
-
-		Filter filter;
-
-		public Filtering(Predicate predicate, Filter filter) {
-			super();
-			this.predicate = predicate;
-			this.filter = filter;
-		}
+	public void add(FilterDef model) {
+		this.filters.add(model);
 	}
 
 	enum ChainState {
@@ -91,9 +77,9 @@ public class FiltersHandler implements HttpHandler {
 		@Override
 		public Object next() throws Exception {
 			for (int index = cursor++; index < filters.size(); index = cursor++) {
-				Filtering filtering = filters.get(index);
-				if (filtering.predicate.resolve(exchange)) {
-					filtering.filter.filter(request, response, this);
+				FilterDef f = filters.get(index);
+				if (f.resolve(exchange)) {
+					f.filter(request, response, this);
 					return ChainState.HasNext;
 				}
 			}

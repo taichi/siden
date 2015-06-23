@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,41 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden.def;
 
-import java.util.function.Predicate;
+import ninja.siden.App;
 
 /**
  * @author taichi
  */
-public interface HandlerCustomizer {
+public class AppContext {
 
-	HandlerCustomizer type(String type);
+	final App root;
 
-	HandlerCustomizer accept(String type);
+	AppDef app;
 
-	HandlerCustomizer match(Predicate<Request> fn);
+	String prefix = "";
 
-	<T> HandlerCustomizer render(Renderer<T> renderer);
+	public AppContext(App root) {
+		this.root = root;
+	}
 
-	<T> HandlerCustomizer render(Renderer.OutputStreamConsumer<T> fn);
+	public AppContext(AppContext parent, SubAppDef sam) {
+		this.root = parent.root();
+		this.app = sam.app();
+		this.prefix = parent.prefix() + sam.prefix();
+	}
 
-	<T> HandlerCustomizer render(Renderer.WriterConsumer<T> fn);
+	public App root() {
+		return this.root;
+	}
+
+	public AppDef app() {
+		return this.app;
+	}
+
+	public String prefix() {
+		return this.prefix;
+	}
+
 }

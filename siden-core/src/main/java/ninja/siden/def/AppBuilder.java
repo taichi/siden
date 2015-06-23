@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden.def;
+
+import io.undertow.server.HttpHandler;
+import ninja.siden.App;
 
 /**
  * @author taichi
  */
-public interface AssetsCustomizer {
+public interface AppBuilder {
 
-	AssetsCustomizer cacheTime(Integer time);
+	void begin();
 
-	AssetsCustomizer directoryListing(boolean is);
+	void apply(AppContext context, AssetDef def);
 
-	AssetsCustomizer welcomeFiles(String... files);
+	void apply(AppContext context, RoutingDef def);
 
-	// AssetsCustomizer etag(Boolean is);
+	void apply(AppContext context, ErrorCodeRoutingDef def);
 
-	AssetsCustomizer from(ClassLoader loader);
+	void apply(AppContext context, ExceptionalRoutingDef<?> def);
+
+	void apply(AppContext context, SubAppDef def);
+
+	void apply(AppContext context, WebSocketDef def);
+
+	void apply(AppContext context, FilterDef def);
+
+	HttpHandler end(App root);
 }

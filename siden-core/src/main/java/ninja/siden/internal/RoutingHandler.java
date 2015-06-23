@@ -31,13 +31,12 @@ import java.util.Set;
 
 import ninja.siden.App;
 import ninja.siden.Config;
-import ninja.siden.ExceptionalRoute;
 import ninja.siden.Renderer;
-import ninja.siden.RendererCustomizer;
 import ninja.siden.Request;
 import ninja.siden.Response;
 import ninja.siden.Route;
-import ninja.siden.RoutingCustomizer;
+import ninja.siden.def.ErrorCodeRoutingDef;
+import ninja.siden.def.ExceptionalRoutingDef;
 
 import org.xnio.OptionMap;
 
@@ -54,9 +53,9 @@ public class RoutingHandler implements HttpHandler {
 
 	final List<Routing> routings = new ArrayList<>();
 
-	final Map<Class<? extends Throwable>, ExceptionalRouting<? extends Throwable>> exceptionalMappings = new HashMap<>();
+	final Map<Class<? extends Throwable>, ExceptionalRoutingDef<? extends Throwable>> exceptionalMappings = new HashMap<>();
 
-	final Map<Integer, List<ErrorCodeRouting>> errorCodeMappings = new HashMap<>();
+	final Map<Integer, List<ErrorCodeRoutingDef>> errorCodeMappings = new HashMap<>();
 
 	final HttpHandler next;
 
@@ -85,10 +84,10 @@ public class RoutingHandler implements HttpHandler {
 			throws Exception {
 		if (exchange.isRequestChannelAvailable()) {
 			exchange.setResponseCode(responseCode);
-			List<ErrorCodeRouting> list = this.errorCodeMappings.getOrDefault(
-					responseCode, Collections.emptyList());
-			for (ErrorCodeRouting route : list) {
-				if (handle(exchange, route.route::handle, route.renderer)) {
+			List<ErrorCodeRoutingDef> list = this.errorCodeMappings
+					.getOrDefault(responseCode, Collections.emptyList());
+			for (ErrorCodeRoutingDef route : list) {
+				if (handle(exchange, route.route()::handle, route.renderer())) {
 					return true;
 				}
 			}
@@ -96,11 +95,11 @@ public class RoutingHandler implements HttpHandler {
 		return false;
 	}
 
-	<T extends Throwable> ExceptionalRouting<T> find(T exception) {
+	<T extends Throwable> ExceptionalRoutingDef<T> find(T exception) {
 		for (Class<?> c = exception.getClass(); c != null; c = c
 				.getSuperclass()) {
 			@SuppressWarnings("unchecked")
-			ExceptionalRouting<T> route = (ExceptionalRouting<T>) this.exceptionalMappings
+			ExceptionalRoutingDef<T> route = (ExceptionalRoutingDef<T>) this.exceptionalMappings
 					.get(c);
 			if (route != null) {
 				return route;
@@ -111,11 +110,11 @@ public class RoutingHandler implements HttpHandler {
 
 	<T extends Throwable> boolean handle(T exception,
 			HttpServerExchange exchange) throws Exception {
-		ExceptionalRouting<T> route = find(exception);
-		return route != null && handle(exchange, (req, res) -> {
+		ExceptionalRoutingDef<T> def = find(exception);
+		return def != null && handle(exchange, (req, res) -> {
 			exchange.setResponseCode(500);
-			return route.route.handle(exception, req, res);
-		}, route.renderer);
+			return def.route().handle(exception, req, res);
+		}, def.renderer());
 	}
 
 	boolean handle(HttpServerExchange exchange, Route fn, Renderer<?> renderer)
@@ -166,27 +165,33 @@ public class RoutingHandler implements HttpHandler {
 		return ignorePackages.stream().anyMatch(s -> n.startsWith(s));
 	}
 
-	public RoutingCustomizer add(Predicate predicate, Route route) {
-		Routing r = new Routing(predicate, route);
-		this.routings.add(r);
-		return r;
+	public void add(Predicate predicate, Route route, Renderer<?> renderer) {
+		this.routings.add(new Routing(predicate, route, renderer));
 	}
 
-	public <EX extends Throwable> RendererCustomizer<?> add(Class<EX> type,
-			ExceptionalRoute<EX> route) {
-		ExceptionalRouting<EX> er = new ExceptionalRouting<>(type, route);
-		this.exceptionalMappings.put(type, er);
-		return er;
+	public void add(ExceptionalRoutingDef<?> model) {
+		this.exceptionalMappings.put(model.type(), model);
 	}
 
-	public RendererCustomizer<?> add(Integer errorCode, Route route) {
-		ErrorCodeRouting ecr = new ErrorCodeRouting(route);
-		List<ErrorCodeRouting> list = this.errorCodeMappings.get(errorCode);
+	public void add(ErrorCodeRoutingDef model) {
+		List<ErrorCodeRoutingDef> list = this.errorCodeMappings.get(model
+				.code());
 		if (list == null) {
 			list = new ArrayList<>();
 		}
-		list.add(ecr);
-		this.errorCodeMappings.put(errorCode, list);
-		return ecr;
+		list.add(model);
+		this.errorCodeMappings.put(model.code(), list);
+	}
+
+	class Routing {
+		Predicate predicate;
+		Route route;
+		Renderer<?> renderer;
+
+		Routing(Predicate predicate, Route route, Renderer<?> renderer) {
+			this.predicate = predicate;
+			this.route = route;
+			this.renderer = renderer;
+		}
 	}
 }

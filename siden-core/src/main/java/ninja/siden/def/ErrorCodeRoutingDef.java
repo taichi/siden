@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,43 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.internal;
+package ninja.siden.def;
 
-import ninja.siden.ExceptionalRoute;
 import ninja.siden.Renderer;
 import ninja.siden.RendererCustomizer;
+import ninja.siden.Route;
 
 /**
  * @author taichi
  */
-class ExceptionalRouting<EX extends Throwable> implements
-		RendererCustomizer<ExceptionalRouting<EX>> {
-	Class<EX> type;
-	ExceptionalRoute<EX> route;
+public class ErrorCodeRoutingDef implements
+		RendererCustomizer<ErrorCodeRoutingDef> {
+
+	final int code;
+	final Route route;
 	Renderer<?> renderer;
 
-	public ExceptionalRouting(Class<EX> type, ExceptionalRoute<EX> route) {
+	public ErrorCodeRoutingDef(int code, Route route) {
 		super();
-		this.type = type;
+		this.code = code;
 		this.route = route;
 	}
 
 	@Override
-	public <MODEL> ExceptionalRouting<EX> render(Renderer<MODEL> renderer) {
+	public <MODEL> ErrorCodeRoutingDef render(Renderer<MODEL> renderer) {
 		this.renderer = renderer;
 		return this;
+	}
+
+	public int code() {
+		return this.code;
+	}
+
+	public Route route() {
+		return this.route;
+	}
+
+	public Renderer<?> renderer() {
+		return this.renderer;
 	}
 }

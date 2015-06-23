@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.internal;
+package ninja.siden.def;
 
-import ninja.siden.Renderer;
-import ninja.siden.RendererCustomizer;
-import ninja.siden.Route;
 
 /**
  * @author taichi
  */
-class ErrorCodeRouting implements RendererCustomizer<ErrorCodeRouting> {
-	Route route;
-	Renderer<?> renderer;
+public class SubAppDef {
 
-	public ErrorCodeRouting(Route route) {
+	final String prefix;
+
+	final AppDef app;
+
+	public SubAppDef(String prefix, AppDef app) {
 		super();
-		this.route = route;
+		this.prefix = prefix;
+		this.app = app;
 	}
 
-	@Override
-	public <MODEL> ErrorCodeRouting render(Renderer<MODEL> renderer) {
-		this.renderer = renderer;
-		return this;
+	public String prefix() {
+		return this.prefix;
+	}
+
+	public AppDef app() {
+		return this.app;
 	}
 }

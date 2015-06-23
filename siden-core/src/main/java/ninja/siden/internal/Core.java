@@ -18,6 +18,9 @@ package ninja.siden.internal;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.AttachmentKey;
+
+import java.util.function.Predicate;
+
 import ninja.siden.Request;
 import ninja.siden.Response;
 
@@ -61,5 +64,12 @@ public class Core implements HttpHandler {
 			}
 		});
 		next.handleRequest(exchange);
+	}
+
+	public static io.undertow.predicate.Predicate adapt(Predicate<Request> fn) {
+		return exchange -> {
+			Request request = exchange.getAttachment(Core.REQUEST);
+			return fn.test(request);
+		};
 	}
 }

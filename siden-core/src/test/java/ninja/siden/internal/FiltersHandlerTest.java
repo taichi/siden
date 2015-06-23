@@ -26,6 +26,7 @@ import ninja.siden.Filter;
 import ninja.siden.FilterChain;
 import ninja.siden.Request;
 import ninja.siden.Response;
+import ninja.siden.def.FilterDef;
 import ninja.siden.internal.FiltersHandler.SimpleChain;
 
 import org.junit.Before;
@@ -80,11 +81,12 @@ public class FiltersHandlerTest {
 		}.getMockInstance();
 
 		FiltersHandler target = new FiltersHandler(Testing.mustCall());
-		target.add(Predicates.truePredicate(), filter);
-		target.add(Predicates.falsePredicate(), (req, res, ch) -> {
-			throw new AssertionError();
-		});
-		target.add(Predicates.truePredicate(), filter);
+		target.add(new FilterDef(Predicates.truePredicate(), filter));
+		target.add(new FilterDef(Predicates.falsePredicate(),
+				(req, res, ch) -> {
+					throw new AssertionError();
+				}));
+		target.add(new FilterDef(Predicates.truePredicate(), filter));
 
 		target.handleRequest(this.exchange);
 	}

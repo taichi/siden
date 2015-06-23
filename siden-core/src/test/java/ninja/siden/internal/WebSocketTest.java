@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -110,7 +111,7 @@ public class WebSocketTest {
 		}
 	}
 
-	static int counter = 8000;
+	static int counter = 2000;
 
 	abstract class TT {
 		int port = counter++;
@@ -138,8 +139,10 @@ public class WebSocketTest {
 			try {
 				assertion(channel, latch);
 			} finally {
-				channel.sendClose();
-				closelatch.await(1, TimeUnit.SECONDS);
+				if (channel.isOpen()) {
+					channel.sendClose();
+					closelatch.await(1, TimeUnit.SECONDS);
+				}
 			}
 		}
 
@@ -153,7 +156,7 @@ public class WebSocketTest {
 
 	@Test
 	public void testString() throws Exception {
-		AtomicReference<String> ref = new AtomicReference<>();
+		LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
 		new TT() {
 			@Override
 			void server(WebSocketCustomizer ws) {
@@ -169,8 +172,7 @@ public class WebSocketTest {
 					@Override
 					protected void onFullTextMessage(WebSocketChannel channel,
 							BufferedTextMessage message) throws IOException {
-						ref.set(message.getData());
-						latch.countDown();
+						queue.add(message.getData());
 					}
 				};
 			}
@@ -180,8 +182,7 @@ public class WebSocketTest {
 					throws Exception {
 				new StringWriteChannelListener("TestTest").setup(channel
 						.send(WebSocketFrameType.TEXT));
-				latch.await(3, TimeUnit.SECONDS);
-				assertEquals("TestTest", ref.get());
+				assertEquals("TestTest", queue.take());
 			}
 		};
 	}
