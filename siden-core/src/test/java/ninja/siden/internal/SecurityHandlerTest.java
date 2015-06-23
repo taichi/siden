@@ -22,10 +22,8 @@ import io.undertow.util.HttpString;
 import mockit.integration.junit4.JMockit;
 import ninja.siden.Config;
 import ninja.siden.SecurityHeaders;
-import ninja.siden.util.Loggers;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,11 +32,6 @@ import org.junit.runner.RunWith;
  */
 @RunWith(JMockit.class)
 public class SecurityHandlerTest {
-
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		Loggers.setFinest(SecurityHandler.LOG);
-	}
 
 	HttpServerExchange exchange;
 	HttpHandler target;

@@ -24,18 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ninja.siden.util.Loggers;
+import org.jboss.logging.Logger;
 
 /**
  * @author taichi
  */
 public class PathPredicate implements Predicate {
 
-	static final Logger LOG = Loggers.from(PathPredicate.class);
+	static final Logger LOG = Logger.getLogger(PathPredicate.class);
 
 	public static final AttachmentKey<Map<String, String>> PARAMS = AttachmentKey
 			.create(Map.class);
@@ -53,7 +52,7 @@ public class PathPredicate implements Predicate {
 		for (Matcher m = NAMED.matcher(template.pattern()); m.find();) {
 			names.add(m.group("name"));
 		}
-		LOG.finest(names::toString);
+		LOG.debug(names);
 	}
 
 	public PathPredicate(String template) {
@@ -62,14 +61,14 @@ public class PathPredicate implements Predicate {
 		int index = 0;
 		while (index < stb.length() && m.find(index)) {
 			names.add(m.group("name"));
-			LOG.finest(names::toString);
+			LOG.debug(names);
 			String v = makeReplacement(m.group("prefix"));
 			index = m.start() + v.length();
 			stb.replace(m.start(), m.end(), v);
 			m = SEGMENT.matcher(stb);
 		}
 		stb.append("(?:.*)");
-		LOG.finest(stb::toString);
+		LOG.debug(stb);
 		this.template = Pattern.compile(stb.toString());
 	}
 

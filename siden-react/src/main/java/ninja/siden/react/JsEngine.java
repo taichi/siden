@@ -18,22 +18,22 @@ package ninja.siden.react;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import ninja.siden.util.Using;
-import ninja.siden.util.Loggers;
 import ninja.siden.util.Suppress;
+import ninja.siden.util.Using;
+
+import org.jboss.logging.Logger;
 
 /**
  * @author taichi
  */
 public class JsEngine {
-	
-	static final Logger LOG = Loggers.from(JsEngine.class);
+
+	static final Logger LOG = Logger.getLogger(JsEngine.class);
 
 	final ScriptEngineManager manager;
 
@@ -53,17 +53,18 @@ public class JsEngine {
 	}
 
 	public Object eval(String script) {
-		LOG.finest(manager.getBindings().keySet()::toString);
+		LOG.debug(manager.getBindings().keySet());
 		ScriptEngine engine = newEngine();
 		return Suppress.get(() -> engine.eval(script));
 	}
 
 	public Object eval(Path path) {
-		LOG.finest(manager.getBindings().keySet()::toString);
+		LOG.debug(manager.getBindings().keySet());
 		return eval(newEngine(), path);
 	}
-	
+
 	Object eval(ScriptEngine engine, Path path) {
-		return Using.transform(() -> Files.newBufferedReader(path), engine::eval);
+		return Using.transform(() -> Files.newBufferedReader(path),
+				engine::eval);
 	}
 }

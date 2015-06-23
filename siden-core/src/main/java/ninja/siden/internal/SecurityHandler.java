@@ -22,12 +22,11 @@ import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import ninja.siden.Config;
 import ninja.siden.SecurityHeaders;
-import ninja.siden.util.Loggers;
 
+import org.jboss.logging.Logger;
 import org.xnio.OptionMap;
 
 /**
@@ -35,7 +34,7 @@ import org.xnio.OptionMap;
  */
 public class SecurityHandler implements HttpHandler {
 
-	static final Logger LOG = Loggers.from(SecurityHandler.class);
+	static final Logger LOG = Logger.getLogger(SecurityHandler.class);
 
 	HttpHandler next;
 
@@ -63,7 +62,7 @@ public class SecurityHandler implements HttpHandler {
 				if (rh.contains(Headers.CONTENT_TYPE) == false
 						&& rh.contains(Headers.SEC_WEB_SOCKET_ACCEPT) == false) {
 
-					LOG.warning(() -> ex.getRequestURI()
+					LOG.warn(ex.getRequestURI()
 							+ " Content-Type header doesn't exist.");
 				}
 			} finally {

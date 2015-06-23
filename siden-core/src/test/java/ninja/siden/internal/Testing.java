@@ -20,6 +20,9 @@ import io.undertow.server.HttpServerExchange;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import mockit.Mock;
 import mockit.MockUp;
@@ -81,4 +84,13 @@ public interface Testing {
 			throw new AssertionError();
 		};
 	}
+
+	static void useALL(Class<?> target) {
+		ConsoleHandler h = new ConsoleHandler();
+		h.setLevel(Level.ALL);
+		Logger logger = Logger.getLogger(target.getName());
+		logger.addHandler(h);
+		logger.setLevel(Level.ALL);
+	}
+
 }
