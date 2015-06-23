@@ -271,10 +271,10 @@ public class App {
 	}
 
 	protected HttpHandler buildHandlers() {
-		AppBuilder visitor = newBuilder().apply(this.def.config());
-		visitor.begin();
-		this.def.accept(new AppContext(this), visitor);
-		return visitor.end(this);
+		AppBuilder ab = newBuilder().apply(this.def.config());
+		ab.begin();
+		this.def.accept(new AppContext(this), ab);
+		return ab.end(this);
 	}
 
 	protected Function<OptionMap, AppBuilder> newBuilder() {

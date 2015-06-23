@@ -63,9 +63,9 @@ public class AppDef {
 	}
 
 	public AssetsCustomizer add(String path, String root) {
-		AssetDef am = new AssetDef(path, root);
-		this.assets.add(am);
-		return am;
+		AssetDef def = new AssetDef(path, root);
+		this.assets.add(def);
+		return def;
 	}
 
 	public RoutingCustomizer add(HttpMethod method, String path, Route route) {
@@ -78,9 +78,9 @@ public class AppDef {
 
 	public RoutingCustomizer add(String template, PathPredicate path,
 			HttpMethod method, Route route) {
-		RoutingDef rm = new RoutingDef(template, path, method, route);
-		this.router.add(rm);
-		return rm;
+		RoutingDef def = new RoutingDef(template, path, method, route);
+		this.router.add(def);
+		return def;
 	}
 
 	public void add(String template, Predicate predicate,
@@ -98,16 +98,15 @@ public class AppDef {
 
 	public <T extends Throwable> RendererCustomizer<?> add(Class<T> type,
 			ExceptionalRoute<T> route) {
-		ExceptionalRoutingDef<T> model = new ExceptionalRoutingDef<>(type,
-				route);
-		this.exceptionRouter.add(model);
-		return model;
+		ExceptionalRoutingDef<T> def = new ExceptionalRoutingDef<>(type, route);
+		this.exceptionRouter.add(def);
+		return def;
 	}
 
 	public RendererCustomizer<?> add(int errorCode, Route route) {
-		ErrorCodeRoutingDef model = new ErrorCodeRoutingDef(errorCode, route);
-		this.errorRouter.add(model);
-		return model;
+		ErrorCodeRoutingDef def = new ErrorCodeRoutingDef(errorCode, route);
+		this.errorRouter.add(def);
+		return def;
 	}
 
 	public void accept(AppContext context, AppBuilder ab) {
