@@ -4,7 +4,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
 		classpath 'com.netflix.nebula:gradle-info-plugin:2.2.0'
 	}
 }
@@ -20,8 +20,8 @@ configure(subprojects) {
 	version = "0.6.0"
 
 	sourceCompatibility = targetCompatibility = 1.8
-	tasks.withType(AbstractCompile)*.options*.encoding = "UTF-8"
-	
+	tasks.withType(SourceTask).findAll { it.hasProperty('options') } *.options*.encoding = 'UTF-8'
+
 	repositories.mavenCentral()
 
 	dependencies {
@@ -139,7 +139,6 @@ project("siden-example") {
 }
 
 project("siden-sandbox") {
-	apply from: rootProject.file('gradle/dagger.gradle')
 	dependencies {
 		compile project(":siden-core")
 		compile "io.fastjson:boon:0.30"
