@@ -20,27 +20,27 @@ package ninja.siden.util;
  */
 public interface Using {
 
-	static <IO extends AutoCloseable, R> R transform(
-			ExceptionalSupplier<IO, Exception> supplier,
-			ExceptionalFunction<IO, R, Exception> transformer) {
-		try (IO t = supplier.get()) {
-			return transformer.apply(t);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    static <IO extends AutoCloseable, R> R transform(
+            ExceptionalSupplier<IO, Exception> supplier,
+            ExceptionalFunction<IO, R, Exception> transformer) {
+        try (IO t = supplier.get()) {
+            return transformer.apply(t);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	static <IO extends AutoCloseable> void consume(
-			ExceptionalSupplier<IO, Exception> supplier,
-			ExceptionalConsumer<IO, Exception> consumer) {
-		try (IO t = supplier.get()) {
-			consumer.accept(t);
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    static <IO extends AutoCloseable> void consume(
+            ExceptionalSupplier<IO, Exception> supplier,
+            ExceptionalConsumer<IO, Exception> consumer) {
+        try (IO t = supplier.get()) {
+            consumer.accept(t);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -20,13 +20,13 @@ package ninja.siden.util;
  */
 public interface Suppress {
 
-	static <T, EX extends Exception> T get(ExceptionalSupplier<T, EX> supplier) {
-		try {
-			return supplier.get();
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    static <T, EX extends Exception> T get(ExceptionalSupplier<T, EX> supplier) {
+        try {
+            return supplier.get();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

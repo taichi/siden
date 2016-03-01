@@ -13,31 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.def;
+package ninja.siden.def
 
-import io.undertow.server.HttpHandler;
-import ninja.siden.App;
+import ninja.siden.Renderer
+import ninja.siden.RendererCustomizer
+import ninja.siden.Route
 
 /**
  * @author taichi
  */
-public interface AppBuilder {
+class ErrorCodeRoutingDef(val code: Int, val route: Route) : RendererCustomizer<ErrorCodeRoutingDef> {
+    var renderer: Renderer<*>? = null
+        internal set
 
-	void begin();
+    override fun <MODEL> render(renderer: Renderer<MODEL>): ErrorCodeRoutingDef {
+        this.renderer = renderer
+        return this
+    }
 
-	void apply(AppContext context, AssetDef def);
-
-	void apply(AppContext context, RoutingDef def);
-
-	void apply(AppContext context, ErrorCodeRoutingDef def);
-
-	void apply(AppContext context, ExceptionalRoutingDef<?> def);
-
-	void apply(AppContext context, SubAppDef def);
-
-	void apply(AppContext context, WebSocketDef def);
-
-	void apply(AppContext context, FilterDef def);
-
-	HttpHandler end(App root);
 }

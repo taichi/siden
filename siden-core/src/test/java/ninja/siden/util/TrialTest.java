@@ -15,42 +15,42 @@
  */
 package ninja.siden.util;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
  */
 public class TrialTest {
 
-	static File ok(String s) throws IOException {
-		return new File(s);
-	}
+    static File ok(String s) throws IOException {
+        return new File(s);
+    }
 
-	static File ng(String s) throws IOException {
-		throw new IOException(s);
-	}
+    static File ng(String s) throws IOException {
+        throw new IOException(s);
+    }
 
-	@Test
-	public void success() throws Exception {
-		int ret = Optional.of("aaa").map(Trial.of(TrialTest::ok))
-				.<Integer> map(t -> t.either(f -> 200, ioex -> 400))
-				.map(i -> i + 10).get();
-		assertEquals(210, ret);
-	}
+    @Test
+    public void success() throws Exception {
+        int ret = Optional.of("aaa").map(Trial.of(TrialTest::ok))
+                .<Integer>map(t -> t.either(f -> 200, ioex -> 400))
+                .map(i -> i + 10).get();
+        assertEquals(210, ret);
+    }
 
-	@Test
-	public void failed() throws Exception {
-		int ret = Optional.of("aaa").map(Trial.of(TrialTest::ng))
-				.<Integer> map(t -> t.either(f -> 200, ioex -> 400))
-				.map(i -> i + 11).get();
+    @Test
+    public void failed() throws Exception {
+        int ret = Optional.of("aaa").map(Trial.of(TrialTest::ng))
+                .<Integer>map(t -> t.either(f -> 200, ioex -> 400))
+                .map(i -> i + 11).get();
 
-		assertEquals(411, ret);
-	}
+        assertEquals(411, ret);
+    }
 
 }

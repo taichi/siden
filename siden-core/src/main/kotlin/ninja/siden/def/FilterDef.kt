@@ -13,41 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.def;
+package ninja.siden.def
 
-import ninja.siden.App;
+import io.undertow.predicate.Predicate
+import io.undertow.server.HttpServerExchange
+
+import ninja.siden.Filter
+import ninja.siden.FilterChain
+import ninja.siden.Request
+import ninja.siden.Response
 
 /**
  * @author taichi
  */
-public class AppContext {
+class FilterDef(val predicate: Predicate, val filter: Filter) : Predicate, Filter {
 
-	final App root;
+    override fun resolve(value: HttpServerExchange): Boolean {
+        return this.predicate.resolve(value)
+    }
 
-	AppDef app;
-
-	String prefix = "";
-
-	public AppContext(App root) {
-		this.root = root;
-	}
-
-	public AppContext(AppContext parent, SubAppDef sam) {
-		this.root = parent.root();
-		this.app = sam.app();
-		this.prefix = parent.prefix() + sam.prefix();
-	}
-
-	public App root() {
-		return this.root;
-	}
-
-	public AppDef app() {
-		return this.app;
-	}
-
-	public String prefix() {
-		return this.prefix;
-	}
-
+    override fun filter(req: Request, res: Response, chain: FilterChain) {
+        this.filter.filter(req, res, chain)
+    }
 }

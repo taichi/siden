@@ -15,17 +15,17 @@
  */
 package ninja.siden.internal;
 
-import static org.junit.Assert.assertNotNull;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import mockit.integration.junit4.JMockit;
 import ninja.siden.Config;
 import ninja.siden.SecurityHeaders;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author taichi
@@ -33,27 +33,27 @@ import org.junit.runner.RunWith;
 @RunWith(JMockit.class)
 public class SecurityHandlerTest {
 
-	HttpServerExchange exchange;
-	HttpHandler target;
+    HttpServerExchange exchange;
+    HttpHandler target;
 
-	@Before
-	public void setUp() {
-		this.exchange = new HttpServerExchange(null);
-		this.exchange.putAttachment(Core.CONFIG, Config.defaults().getMap());
+    @Before
+    public void setUp() {
+        this.exchange = new HttpServerExchange(null);
+        this.exchange.putAttachment(Core.CONFIG, Config.defaults().getMap());
 
-		this.target = new SecurityHandler(Testing.mustCall());
-	}
+        this.target = new SecurityHandler(Testing.mustCall());
+    }
 
-	void assertHeader(HttpString name) {
-		assertNotNull(this.exchange.getResponseHeaders().get(name));
-	}
+    void assertHeader(HttpString name) {
+        assertNotNull(this.exchange.getResponseHeaders().get(name));
+    }
 
-	@Test
-	public void testHeaders() throws Exception {
-		this.target.handleRequest(this.exchange);
-		assertHeader(SecurityHeaders.FRAME_OPTIONS);
-		assertHeader(SecurityHeaders.XSS_PROTECTION);
-		assertHeader(SecurityHeaders.CONTENT_TYPE_OPTIONS);
-	}
+    @Test
+    public void testHeaders() throws Exception {
+        this.target.handleRequest(this.exchange);
+        assertHeader(SecurityHeaders.FRAME_OPTIONS);
+        assertHeader(SecurityHeaders.XSS_PROTECTION);
+        assertHeader(SecurityHeaders.CONTENT_TYPE_OPTIONS);
+    }
 
 }

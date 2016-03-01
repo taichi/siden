@@ -15,146 +15,144 @@
  */
 package ninja.siden.jmx;
 
-import static org.junit.Assert.assertEquals;
-
-import java.lang.management.ManagementFactory;
+import ninja.siden.App;
+import ninja.siden.Config;
+import ninja.siden.Stoppable;
+import ninja.siden.internal.Testing;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 
-import ninja.siden.App;
-import ninja.siden.Config;
-import ninja.siden.Stoppable;
-import ninja.siden.internal.Testing;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
  */
 public class MetricsAppBuilderTest {
 
-	@BeforeClass
-	public static void beforeClass() throws Exception {
-		Testing.useALL(App.class);
-	}
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        Testing.useALL(App.class);
+    }
 
-	MBeanServer server;
-	App target;
-	Stoppable stopper;
+    MBeanServer server;
+    App target;
+    Stoppable stopper;
 
-	@Before
-	public void setUp() throws Exception {
-		this.server = ManagementFactory.getPlatformMBeanServer();
-		this.target = App.configure(b -> b.set(Config.ENV, "prod"));
-	}
+    @Before
+    public void setUp() throws Exception {
+        this.server = ManagementFactory.getPlatformMBeanServer();
+        this.target = App.configure(b -> b.set(Config.ENV, "prod"));
+    }
 
-	@After
-	public void tearDown() throws Exception {
-		this.stopper.stop();
-	}
+    @After
+    public void tearDown() throws Exception {
+        this.stopper.stop();
+    }
 
-	static int port = 9000;
+    static int port = 9000;
 
-	protected void listen() {
-		this.stopper = this.target.listen(port++);
-	}
+    protected void listen() {
+        this.stopper = this.target.listen(port++);
+    }
 
-	@Test
-	public void session() throws Exception {
-		this.listen();
+    @Test
+    public void session() throws Exception {
+        this.listen();
 
-		ObjectName on = new ObjectName("ninja.siden:type=Session");
-		MBeanInfo info = server.getMBeanInfo(on);
-		MBeanAttributeInfo attr = info.getAttributes()[0];
-		assertEquals("Metrics", attr.getName());
-	}
+        ObjectName on = new ObjectName("ninja.siden:type=Session");
+        MBeanInfo info = server.getMBeanInfo(on);
+        MBeanAttributeInfo attr = info.getAttributes()[0];
+        assertEquals("Metrics", attr.getName());
+    }
 
-	@Test
-	public void global() throws Exception {
-		this.listen();
+    @Test
+    public void global() throws Exception {
+        this.listen();
 
-		ObjectName on = new ObjectName("ninja.siden:type=Request,name=Global");
-		MBeanInfo info = server.getMBeanInfo(on);
-		MBeanAttributeInfo attr = info.getAttributes()[0];
-		assertEquals("Metrics", attr.getName());
-	}
+        ObjectName on = new ObjectName("ninja.siden:type=Request,name=Global");
+        MBeanInfo info = server.getMBeanInfo(on);
+        MBeanAttributeInfo attr = info.getAttributes()[0];
+        assertEquals("Metrics", attr.getName());
+    }
 
-	@Test
-	public void routes() throws Exception {
-		target.get("/aaa", (req, res) -> "abc");
-		this.listen();
+    @Test
+    public void routes() throws Exception {
+        target.get("/aaa", (req, res) -> "abc");
+        this.listen();
 
-		ObjectName on = new ObjectName(
-				"ninja.siden:type=Request,path=\"/aaa\",method=GET");
-		MBeanInfo info = server.getMBeanInfo(on);
-		MBeanAttributeInfo attr = info.getAttributes()[0];
-		assertEquals("Metrics", attr.getName());
-	}
+        ObjectName on = new ObjectName(
+                "ninja.siden:type=Request,path=\"/aaa\",method=GET");
+        MBeanInfo info = server.getMBeanInfo(on);
+        MBeanAttributeInfo attr = info.getAttributes()[0];
+        assertEquals("Metrics", attr.getName());
+    }
 
-	@Test
-	public void nestedRoutes() throws Exception {
-		App sub = new App();
-		sub.head("/def", (req, res) -> "def");
-		target.use("/abc", sub);
-		this.listen();
-		ObjectName abc = new ObjectName(
-				"ninja.siden:type=Request,path=\"/abc/def\",method=HEAD");
-		server.getMBeanInfo(abc);
-	}
+    @Test
+    public void nestedRoutes() throws Exception {
+        App sub = new App();
+        sub.head("/def", (req, res) -> "def");
+        target.use("/abc", sub);
+        this.listen();
+        ObjectName abc = new ObjectName(
+                "ninja.siden:type=Request,path=\"/abc/def\",method=HEAD");
+        server.getMBeanInfo(abc);
+    }
 
-	@Test
-	public void nestedRoutesTwoTimes() throws Exception {
-		App sub = new App();
-		sub.head("/def", (req, res) -> "def");
-		target.use("/abc", sub);
-		target.use("/efg", sub);
-		this.listen();
+    @Test
+    public void nestedRoutesTwoTimes() throws Exception {
+        App sub = new App();
+        sub.head("/def", (req, res) -> "def");
+        target.use("/abc", sub);
+        target.use("/efg", sub);
+        this.listen();
 
-		ObjectName abc = new ObjectName(
-				"ninja.siden:type=Request,path=\"/abc/def\",method=HEAD");
-		server.getMBeanInfo(abc);
+        ObjectName abc = new ObjectName(
+                "ninja.siden:type=Request,path=\"/abc/def\",method=HEAD");
+        server.getMBeanInfo(abc);
 
-		ObjectName efg = new ObjectName(
-				"ninja.siden:type=Request,path=\"/efg/def\",method=HEAD");
-		server.getMBeanInfo(efg);
-	}
+        ObjectName efg = new ObjectName(
+                "ninja.siden:type=Request,path=\"/efg/def\",method=HEAD");
+        server.getMBeanInfo(efg);
+    }
 
-	@Test
-	public void deeplyNestedRoutes() throws Exception {
-		App subsub = new App();
-		subsub.get("/jkl", (req, res) -> "eee");
-		App sub = new App();
-		sub.head("/def", (req, res) -> "def");
-		sub.use("/ghi", subsub);
+    @Test
+    public void deeplyNestedRoutes() throws Exception {
+        App subsub = new App();
+        subsub.get("/jkl", (req, res) -> "eee");
+        App sub = new App();
+        sub.head("/def", (req, res) -> "def");
+        sub.use("/ghi", subsub);
 
-		target.use("/abc", sub);
-		this.listen();
+        target.use("/abc", sub);
+        this.listen();
 
-		ObjectName def = new ObjectName(
-				"ninja.siden:type=Request,path=\"/abc/def\",method=HEAD");
-		server.getMBeanInfo(def);
+        ObjectName def = new ObjectName(
+                "ninja.siden:type=Request,path=\"/abc/def\",method=HEAD");
+        server.getMBeanInfo(def);
 
-		ObjectName jkl = new ObjectName(
-				"ninja.siden:type=Request,path=\"/abc/ghi/jkl\",method=GET");
-		server.getMBeanInfo(jkl);
-	}
+        ObjectName jkl = new ObjectName(
+                "ninja.siden:type=Request,path=\"/abc/ghi/jkl\",method=GET");
+        server.getMBeanInfo(jkl);
+    }
 
-	@Test
-	public void websockets() throws Exception {
-		App sub = new App();
-		sub.websocket("/ws").onText((c, s) -> c.send(s));
-		target.use("/aaa", sub);
-		this.listen();
+    @Test
+    public void websockets() throws Exception {
+        App sub = new App();
+        sub.websocket("/ws").onText((c, s) -> c.send(s));
+        target.use("/aaa", sub);
+        this.listen();
 
-		ObjectName ws = new ObjectName(
-				"ninja.siden:type=WebSocket,path=\"/aaa/ws\"");
-		server.getMBeanInfo(ws);
-	}
+        ObjectName ws = new ObjectName(
+                "ninja.siden:type=WebSocket,path=\"/aaa/ws\"");
+        server.getMBeanInfo(ws);
+    }
 
 }

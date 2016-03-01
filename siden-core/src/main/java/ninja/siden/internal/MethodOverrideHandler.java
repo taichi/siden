@@ -21,45 +21,44 @@ import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import io.undertow.util.HttpString;
 import io.undertow.util.Methods;
+import ninja.siden.HttpMethod;
 
 import java.util.Optional;
-
-import ninja.siden.HttpMethod;
 
 /**
  * @author taichi
  */
 public class MethodOverrideHandler implements HttpHandler {
 
-	static final HttpString HEADER = new HttpString("X-HTTP-Method-Override");
+    static final HttpString HEADER = new HttpString("X-HTTP-Method-Override");
 
-	static final String FORM = "_method";
+    static final String FORM = "_method";
 
-	HttpHandler next;
+    HttpHandler next;
 
-	public MethodOverrideHandler(HttpHandler next) {
-		this.next = next;
-	}
+    public MethodOverrideHandler(HttpHandler next) {
+        this.next = next;
+    }
 
-	@Override
-	public void handleRequest(HttpServerExchange exchange) throws Exception {
-		if (Methods.POST.equals(exchange.getRequestMethod())) {
-			String newMethod = exchange.getRequestHeaders().getFirst(HEADER);
-			Optional<HttpString> opt = HttpMethod.find(newMethod);
-			if (opt.isPresent()) {
-				exchange.setRequestMethod(opt.get());
-			} else {
-				FormData data = exchange
-						.getAttachment(FormDataParser.FORM_DATA);
-				if (data != null) {
-					FormData.FormValue fv = data.getFirst(FORM);
-					if (fv != null && fv.isFile() == false) {
-						HttpMethod.find(fv.getValue()).map(
-								exchange::setRequestMethod);
-					}
-				}
-			}
-		}
-		this.next.handleRequest(exchange);
-	}
+    @Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+        if (Methods.POST.equals(exchange.getRequestMethod())) {
+            String newMethod = exchange.getRequestHeaders().getFirst(HEADER);
+            Optional<HttpString> opt = HttpMethod.find(newMethod);
+            if (opt.isPresent()) {
+                exchange.setRequestMethod(opt.get());
+            } else {
+                FormData data = exchange
+                        .getAttachment(FormDataParser.FORM_DATA);
+                if (data != null) {
+                    FormData.FormValue fv = data.getFirst(FORM);
+                    if (fv != null && fv.isFile() == false) {
+                        HttpMethod.find(fv.getValue()).map(
+                                exchange::setRequestMethod);
+                    }
+                }
+            }
+        }
+        this.next.handleRequest(exchange);
+    }
 }

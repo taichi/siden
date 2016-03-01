@@ -15,7 +15,6 @@
  */
 package ninja.siden.internal;
 
-import static org.junit.Assert.assertEquals;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.form.FormData;
@@ -26,10 +25,11 @@ import io.undertow.util.Methods;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.integration.junit4.JMockit;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
@@ -37,51 +37,51 @@ import org.junit.runner.RunWith;
 @RunWith(JMockit.class)
 public class MethodOverrideHandlerTest {
 
-	HttpHandler target;
+    HttpHandler target;
 
-	@Before
-	public void setUp() {
-		this.target = new MethodOverrideHandler(Testing.mustCall());
-	}
+    @Before
+    public void setUp() {
+        this.target = new MethodOverrideHandler(Testing.mustCall());
+    }
 
-	@Test
-	public void testNotOverride() throws Exception {
-		HttpServerExchange exchange = new MockUp<HttpServerExchange>() {
-			@Mock
-			public HeaderMap getRequestHeaders() {
-				throw new AssertionError();
-			}
+    @Test
+    public void testNotOverride() throws Exception {
+        HttpServerExchange exchange = new MockUp<HttpServerExchange>() {
+            @Mock
+            public HeaderMap getRequestHeaders() {
+                throw new AssertionError();
+            }
 
-			@Mock
-			public <T> T getAttachment(final AttachmentKey<T> key) {
-				throw new AssertionError();
-			}
-		}.getMockInstance();
+            @Mock
+            public <T> T getAttachment(final AttachmentKey<T> key) {
+                throw new AssertionError();
+            }
+        }.getMockInstance();
 
-		exchange.setRequestMethod(Methods.GET);
+        exchange.setRequestMethod(Methods.GET);
 
-		this.target.handleRequest(exchange);
-	}
+        this.target.handleRequest(exchange);
+    }
 
-	@Test
-	public void testOverrideFromHeader() throws Exception {
-		HttpServerExchange exchange = new HttpServerExchange(null);
-		exchange.setRequestMethod(Methods.POST);
-		exchange.getRequestHeaders().put(MethodOverrideHandler.HEADER,
-				"CONNECT");
-		this.target.handleRequest(exchange);
-		assertEquals(Methods.CONNECT, exchange.getRequestMethod());
-	}
+    @Test
+    public void testOverrideFromHeader() throws Exception {
+        HttpServerExchange exchange = new HttpServerExchange(null);
+        exchange.setRequestMethod(Methods.POST);
+        exchange.getRequestHeaders().put(MethodOverrideHandler.HEADER,
+                "CONNECT");
+        this.target.handleRequest(exchange);
+        assertEquals(Methods.CONNECT, exchange.getRequestMethod());
+    }
 
-	@Test
-	public void testOverrideFromForm() throws Exception {
-		HttpServerExchange exchange = new HttpServerExchange(null);
-		exchange.setRequestMethod(Methods.POST);
+    @Test
+    public void testOverrideFromForm() throws Exception {
+        HttpServerExchange exchange = new HttpServerExchange(null);
+        exchange.setRequestMethod(Methods.POST);
 
-		FormData fd = new FormData(3);
-		fd.add(MethodOverrideHandler.FORM, "PUT");
-		exchange.putAttachment(FormDataParser.FORM_DATA, fd);
-		this.target.handleRequest(exchange);
-		assertEquals(Methods.PUT, exchange.getRequestMethod());
-	}
+        FormData fd = new FormData(3);
+        fd.add(MethodOverrideHandler.FORM, "PUT");
+        exchange.putAttachment(FormDataParser.FORM_DATA, fd);
+        this.target.handleRequest(exchange);
+        assertEquals(Methods.PUT, exchange.getRequestMethod());
+    }
 }

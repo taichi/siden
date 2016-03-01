@@ -26,61 +26,61 @@ import java.util.Date;
  */
 public class RequestMetrics {
 
-	Date metricsStartDate;
+    Date metricsStartDate;
 
-	long totalRequestTime;
-	long maxRequestTime;
-	long minRequestTime;
-	long totalRequests;
+    long totalRequestTime;
+    long maxRequestTime;
+    long minRequestTime;
+    long totalRequests;
 
-	@ConstructorProperties({ "metricsStartDate", "totalRequestTime",
-			"maxRequestTime", "minRequestTime", "totalRequests" })
-	public RequestMetrics(Date metricsStartDate, long totalRequestTime,
-			long maxRequestTime, long minRequestTime, long totalRequests) {
-		super();
-		this.metricsStartDate = metricsStartDate;
-		this.totalRequestTime = totalRequestTime;
-		this.maxRequestTime = maxRequestTime;
-		this.minRequestTime = minRequestTime;
-		this.totalRequests = totalRequests;
-	}
+    @ConstructorProperties({"metricsStartDate", "totalRequestTime",
+            "maxRequestTime", "minRequestTime", "totalRequests"})
+    public RequestMetrics(Date metricsStartDate, long totalRequestTime,
+                          long maxRequestTime, long minRequestTime, long totalRequests) {
+        super();
+        this.metricsStartDate = metricsStartDate;
+        this.totalRequestTime = totalRequestTime;
+        this.maxRequestTime = maxRequestTime;
+        this.minRequestTime = minRequestTime;
+        this.totalRequests = totalRequests;
+    }
 
-	public static RequestMXBean to(MetricsHandler handler) {
-		return new RequestMXBean() {
+    public static RequestMXBean to(MetricsHandler handler) {
+        return new RequestMXBean() {
 
-			@Override
-			public void reset() {
-				handler.reset();
-			}
+            @Override
+            public void reset() {
+                handler.reset();
+            }
 
-			@Override
-			public RequestMetrics getMetrics() {
-				MetricResult result = handler.getMetrics();
-				return new RequestMetrics(result.getMetricsStartDate(),
-						result.getTotalRequestTime(),
-						result.getMaxRequestTime(), result.getMinRequestTime(),
-						result.getTotalRequests());
-			}
-		};
-	}
+            @Override
+            public RequestMetrics getMetrics() {
+                MetricResult result = handler.getMetrics();
+                return new RequestMetrics(result.getMetricsStartDate(),
+                        result.getTotalRequestTime(),
+                        result.getMaxRequestTime(), result.getMinRequestTime(),
+                        result.getTotalRequests());
+            }
+        };
+    }
 
-	public Date getMetricsStartDate() {
-		return this.metricsStartDate;
-	}
+    public Date getMetricsStartDate() {
+        return this.metricsStartDate;
+    }
 
-	public long getTotalRequestTime() {
-		return this.totalRequestTime;
-	}
+    public long getTotalRequestTime() {
+        return this.totalRequestTime;
+    }
 
-	public long getMaxRequestTime() {
-		return this.maxRequestTime;
-	}
+    public long getMaxRequestTime() {
+        return this.maxRequestTime;
+    }
 
-	public long getMinRequestTime() {
-		return this.minRequestTime;
-	}
+    public long getMinRequestTime() {
+        return this.minRequestTime;
+    }
 
-	public long getTotalRequests() {
-		return this.totalRequests;
-	}
+    public long getTotalRequests() {
+        return this.totalRequests;
+    }
 }

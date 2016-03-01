@@ -20,30 +20,30 @@ import io.undertow.util.HttpString;
 /**
  * @author taichi
  * @see <a
- *      href="https://www.owasp.org/index.php/List_of_useful_HTTP_headers">List_of_useful_HTTP_headers</a>
+ * href="https://www.owasp.org/index.php/List_of_useful_HTTP_headers">List_of_useful_HTTP_headers</a>
  */
 public interface SecurityHeaders {
 
-	String REQUESTED_WITH_STRING = "X-Requested-With";
+    String REQUESTED_WITH_STRING = "X-Requested-With";
 
-	String STRICT_TRANSPORT_SECURITY_STRING = "Strict-Transport-Security";
-	String FRAME_OPTIONS_STRING = "X-Frame-Options";
-	String XSS_PROTECTION_STRING = "X-XSS-Protection";
-	String CONTENT_TYPE_OPTIONS_STRING = "X-Content-Type-Options";
-	String CONTENT_SECURITY_POLICY_STRING = "Content-Security-Policy";
-	String CONTENT_SECURITY_POLICY_REPORT_ONLY_STRING = "Content-Security-Policy-Report-Only";
+    String STRICT_TRANSPORT_SECURITY_STRING = "Strict-Transport-Security";
+    String FRAME_OPTIONS_STRING = "X-Frame-Options";
+    String XSS_PROTECTION_STRING = "X-XSS-Protection";
+    String CONTENT_TYPE_OPTIONS_STRING = "X-Content-Type-Options";
+    String CONTENT_SECURITY_POLICY_STRING = "Content-Security-Policy";
+    String CONTENT_SECURITY_POLICY_REPORT_ONLY_STRING = "Content-Security-Policy-Report-Only";
 
-	HttpString REQUESTED_WITH = new HttpString(REQUESTED_WITH_STRING);
+    HttpString REQUESTED_WITH = new HttpString(REQUESTED_WITH_STRING);
 
-	HttpString STRICT_TRANSPORT_SECURITY = new HttpString(
-			STRICT_TRANSPORT_SECURITY_STRING);
-	HttpString FRAME_OPTIONS = new HttpString(FRAME_OPTIONS_STRING);
-	HttpString XSS_PROTECTION = new HttpString(XSS_PROTECTION_STRING);
-	HttpString CONTENT_TYPE_OPTIONS = new HttpString(
-			CONTENT_TYPE_OPTIONS_STRING);
-	HttpString CONTENT_SECURITY_POLICY = new HttpString(
-			CONTENT_SECURITY_POLICY_STRING);
-	HttpString CONTENT_SECURITY_REPORT_ONLY_POLICY = new HttpString(
-			CONTENT_SECURITY_POLICY_REPORT_ONLY_STRING);
+    HttpString STRICT_TRANSPORT_SECURITY = new HttpString(
+            STRICT_TRANSPORT_SECURITY_STRING);
+    HttpString FRAME_OPTIONS = new HttpString(FRAME_OPTIONS_STRING);
+    HttpString XSS_PROTECTION = new HttpString(XSS_PROTECTION_STRING);
+    HttpString CONTENT_TYPE_OPTIONS = new HttpString(
+            CONTENT_TYPE_OPTIONS_STRING);
+    HttpString CONTENT_SECURITY_POLICY = new HttpString(
+            CONTENT_SECURITY_POLICY_STRING);
+    HttpString CONTENT_SECURITY_REPORT_ONLY_POLICY = new HttpString(
+            CONTENT_SECURITY_POLICY_REPORT_ONLY_STRING);
 
 }

@@ -20,11 +20,11 @@ package ninja.siden;
  */
 public interface Session extends AttributeContainer {
 
-	String id();
+    String id();
 
-	void invalidate();
+    void invalidate();
 
-	Session regenerate();
+    Session regenerate();
 
-	io.undertow.server.session.Session raw();
+    io.undertow.server.session.Session raw();
 }

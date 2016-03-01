@@ -29,39 +29,40 @@ import java.util.Optional;
  */
 public enum HttpMethod implements Predicate {
 
-	GET(Methods.GET), HEAD(Methods.HEAD), POST(Methods.POST), PUT(Methods.PUT), DELETE(
-			Methods.DELETE), TRACE(Methods.TRACE), OPTIONS(Methods.OPTIONS), CONNECT(
-			Methods.CONNECT), PATCH(new HttpString("PATCH")), LINK(
-			new HttpString("LINK")), UNLINK(new HttpString("UNLINK"));
+    GET(Methods.GET), HEAD(Methods.HEAD), POST(Methods.POST), PUT(Methods.PUT), DELETE(
+            Methods.DELETE), TRACE(Methods.TRACE), OPTIONS(Methods.OPTIONS), CONNECT(
+            Methods.CONNECT), PATCH(new HttpString("PATCH")), LINK(
+            new HttpString("LINK")), UNLINK(new HttpString("UNLINK"));
 
-	static final Map<HttpString, HttpMethod> methods = new HashMap<>();
-	static {
-		for (HttpMethod hm : HttpMethod.values()) {
-			methods.put(hm.rawdata, hm);
-		}
-	}
+    static final Map<HttpString, HttpMethod> methods = new HashMap<>();
 
-	HttpString rawdata;
+    static {
+        for (HttpMethod hm : HttpMethod.values()) {
+            methods.put(hm.rawdata, hm);
+        }
+    }
 
-	private HttpMethod(HttpString string) {
-		this.rawdata = string;
-	}
+    HttpString rawdata;
 
-	@Override
-	public boolean resolve(HttpServerExchange value) {
-		return this.rawdata.equals(value.getRequestMethod());
-	}
+    private HttpMethod(HttpString string) {
+        this.rawdata = string;
+    }
 
-	public static HttpMethod of(HttpServerExchange exchange) {
-		return methods.getOrDefault(exchange.getRequestMethod(), GET);
-	}
+    @Override
+    public boolean resolve(HttpServerExchange value) {
+        return this.rawdata.equals(value.getRequestMethod());
+    }
 
-	public static Optional<HttpString> find(String method) {
-		if (method == null || method.isEmpty()) {
-			return Optional.empty();
-		}
-		String m = method.toUpperCase();
-		return Optional.ofNullable(methods.get(new HttpString(m))).map(
-				hm -> hm.rawdata);
-	}
+    public static HttpMethod of(HttpServerExchange exchange) {
+        return methods.getOrDefault(exchange.getRequestMethod(), GET);
+    }
+
+    public static Optional<HttpString> find(String method) {
+        if (method == null || method.isEmpty()) {
+            return Optional.empty();
+        }
+        String m = method.toUpperCase();
+        return Optional.ofNullable(methods.get(new HttpString(m))).map(
+                hm -> hm.rawdata);
+    }
 }

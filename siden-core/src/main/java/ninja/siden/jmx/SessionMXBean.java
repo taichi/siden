@@ -20,6 +20,6 @@ package ninja.siden.jmx;
  */
 public interface SessionMXBean {
 
-	SessionMetrics getMetrics();
+    SessionMetrics getMetrics();
 
 }

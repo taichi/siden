@@ -19,5 +19,5 @@ package ninja.siden.internal;
  * @author taichi
  */
 enum ExchangeState {
-	Rendered, Redirected;
+    Rendered, Redirected;
 }

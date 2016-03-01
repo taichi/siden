@@ -22,28 +22,26 @@ import java.util.Optional;
  */
 public interface AttributeContainer extends Iterable<AttributeContainer.Attr> {
 
-	/**
-	 * @param key
-	 *            attribute name
-	 * @param newone
-	 *            new attribute
-	 * @return existing value
-	 */
-	<T> Optional<T> attr(String key, T newone);
+    /**
+     * @param key    attribute name
+     * @param newone new attribute
+     * @return existing value
+     */
+    <T> Optional<T> attr(String key, T newone);
 
-	<T> Optional<T> attr(String key);
+    <T> Optional<T> attr(String key);
 
-	/**
-	 * @param key
-	 * @return existing value
-	 */
-	<T> Optional<T> remove(String key);
+    /**
+     * @param key
+     * @return existing value
+     */
+    <T> Optional<T> remove(String key);
 
-	interface Attr {
-		String name();
+    interface Attr {
+        String name();
 
-		<T> T value();
+        <T> T value();
 
-		<T> T remove();
-	}
+        <T> T remove();
+    }
 }

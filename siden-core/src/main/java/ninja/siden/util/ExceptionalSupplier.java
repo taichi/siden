@@ -21,5 +21,5 @@ package ninja.siden.util;
 @FunctionalInterface
 public interface ExceptionalSupplier<T, EX extends Exception> {
 
-	T get() throws EX;
+    T get() throws EX;
 }

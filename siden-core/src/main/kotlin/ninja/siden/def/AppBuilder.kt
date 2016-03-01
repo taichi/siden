@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden.def
+
+import io.undertow.server.HttpHandler
+import ninja.siden.App
 
 /**
  * @author taichi
  */
-public interface WebSocketFactory {
+interface AppBuilder {
 
-    WebSocket create(Connection connection);
+    fun begin()
+
+    fun apply(context: AppContext, def: AssetDef)
+
+    fun apply(context: AppContext, def: RoutingDef)
+
+    fun apply(context: AppContext, def: ErrorCodeRoutingDef)
+
+    fun apply(context: AppContext, def: ExceptionalRoutingDef<*>)
+
+    fun apply(context: AppContext, def: SubAppDef)
+
+    fun apply(context: AppContext, def: WebSocketDef)
+
+    fun apply(context: AppContext, def: FilterDef)
+
+    fun end(root: App): HttpHandler
 }

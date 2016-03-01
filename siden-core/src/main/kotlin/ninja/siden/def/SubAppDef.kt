@@ -13,29 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.def;
+package ninja.siden.def
 
 
 /**
  * @author taichi
  */
-public class SubAppDef {
-
-	final String prefix;
-
-	final AppDef app;
-
-	public SubAppDef(String prefix, AppDef app) {
-		super();
-		this.prefix = prefix;
-		this.app = app;
-	}
-
-	public String prefix() {
-		return this.prefix;
-	}
-
-	public AppDef app() {
-		return this.app;
-	}
+class SubAppDef(val prefix: String, val app: AppDef) {
 }

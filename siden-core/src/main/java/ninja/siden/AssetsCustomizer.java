@@ -20,13 +20,13 @@ package ninja.siden;
  */
 public interface AssetsCustomizer {
 
-	AssetsCustomizer cacheTime(Integer time);
+    AssetsCustomizer cacheTime(Integer time);
 
-	AssetsCustomizer directoryListing(boolean is);
+    AssetsCustomizer directoryListing(boolean is);
 
-	AssetsCustomizer welcomeFiles(String... files);
+    AssetsCustomizer welcomeFiles(String... files);
 
-	// AssetsCustomizer etag(Boolean is);
+    // AssetsCustomizer etag(Boolean is);
 
-	AssetsCustomizer from(ClassLoader loader);
+    AssetsCustomizer from(ClassLoader loader);
 }

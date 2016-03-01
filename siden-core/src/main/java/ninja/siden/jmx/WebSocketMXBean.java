@@ -20,17 +20,17 @@ package ninja.siden.jmx;
  */
 public interface WebSocketMXBean {
 
-	RequestMetrics getOnConnect();
+    RequestMetrics getOnConnect();
 
-	RequestMetrics getOnText();
+    RequestMetrics getOnText();
 
-	RequestMetrics getOnBinary();
+    RequestMetrics getOnBinary();
 
-	RequestMetrics getOnPong();
+    RequestMetrics getOnPong();
 
-	RequestMetrics getOnPing();
+    RequestMetrics getOnPing();
 
-	RequestMetrics getOnClose();
+    RequestMetrics getOnClose();
 
-	void reset();
+    void reset();
 }

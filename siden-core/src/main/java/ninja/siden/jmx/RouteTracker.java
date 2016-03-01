@@ -24,25 +24,25 @@ import ninja.siden.Route;
  */
 public class RouteTracker implements Route, RequestMXBean {
 
-	Route original;
-	RequestMeter totalResult = new RequestMeter();
+    Route original;
+    RequestMeter totalResult = new RequestMeter();
 
-	public RouteTracker(Route original) {
-		this.original = original;
-	}
+    public RouteTracker(Route original) {
+        this.original = original;
+    }
 
-	@Override
-	public Object handle(Request request, Response response) throws Exception {
-		return totalResult.apply(m -> original.handle(request, response));
-	}
+    @Override
+    public Object handle(Request request, Response response) throws Exception {
+        return totalResult.apply(m -> original.handle(request, response));
+    }
 
-	@Override
-	public void reset() {
-		this.totalResult.reset();
-	}
+    @Override
+    public void reset() {
+        this.totalResult.reset();
+    }
 
-	@Override
-	public RequestMetrics getMetrics() {
-		return this.totalResult.toMetrics();
-	}
+    @Override
+    public RequestMetrics getMetrics() {
+        return this.totalResult.toMetrics();
+    }
 }

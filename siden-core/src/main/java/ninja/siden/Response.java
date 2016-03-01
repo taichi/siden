@@ -24,41 +24,41 @@ import java.util.Map;
  */
 public interface Response {
 
-	Response status(int code);
+    Response status(int code);
 
-	Response header(String name, String... values);
+    Response header(String name, String... values);
 
-	/**
-	 * set RFC1123 date pattern to Response header.
-	 * 
-	 * @param name
-	 * @param date
-	 * @return this
-	 */
-	Response header(String name, long date);
+    /**
+     * set RFC1123 date pattern to Response header.
+     *
+     * @param name
+     * @param date
+     * @return this
+     */
+    Response header(String name, long date);
 
-	Response headers(Map<String, String> headers);
+    Response headers(Map<String, String> headers);
 
-	Cookie cookie(String name, String value);
+    Cookie cookie(String name, String value);
 
-	/**
-	 * @param name
-	 * @return existing value
-	 */
-	Cookie removeCookie(String name);
+    /**
+     * @param name
+     * @return existing value
+     */
+    Cookie removeCookie(String name);
 
-	/**
-	 * @param contentType
-	 */
-	Response type(String contentType);
+    /**
+     * @param contentType
+     */
+    Response type(String contentType);
 
-	Object redirect(String location);
+    Object redirect(String location);
 
-	Object redirect(int code, String location);
+    Object redirect(int code, String location);
 
-	<MODEL> Object render(MODEL model, Renderer<MODEL> renderer);
+    <MODEL> Object render(MODEL model, Renderer<MODEL> renderer);
 
-	<MODEL> Object render(MODEL model, String template);
+    <MODEL> Object render(MODEL model, String template);
 
-	HttpServerExchange raw();
+    HttpServerExchange raw();
 }

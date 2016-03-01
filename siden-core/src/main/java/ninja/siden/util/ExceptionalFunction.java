@@ -21,5 +21,5 @@ package ninja.siden.util;
 @FunctionalInterface
 public interface ExceptionalFunction<T, R, EX extends Exception> {
 
-	R apply(T t) throws EX;
+    R apply(T t) throws EX;
 }

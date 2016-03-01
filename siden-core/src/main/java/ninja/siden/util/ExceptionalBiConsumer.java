@@ -21,5 +21,5 @@ package ninja.siden.util;
 @FunctionalInterface
 public interface ExceptionalBiConsumer<T, U, EX extends Exception> {
 
-	void accept(T t, U u) throws EX;
+    void accept(T t, U u) throws EX;
 }

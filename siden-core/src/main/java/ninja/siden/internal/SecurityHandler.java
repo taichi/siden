@@ -20,69 +20,67 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HeaderMap;
 import io.undertow.util.HeaderValues;
 import io.undertow.util.Headers;
-
-import java.util.Objects;
-
 import ninja.siden.Config;
 import ninja.siden.SecurityHeaders;
-
 import org.jboss.logging.Logger;
 import org.xnio.OptionMap;
+
+import java.util.Objects;
 
 /**
  * @author taichi
  */
 public class SecurityHandler implements HttpHandler {
 
-	static final Logger LOG = Logger.getLogger(SecurityHandler.class);
+    static final Logger LOG = Logger.getLogger(SecurityHandler.class);
 
-	HttpHandler next;
+    HttpHandler next;
 
-	public SecurityHandler(HttpHandler next) {
-		this.next = next;
-	}
+    public SecurityHandler(HttpHandler next) {
+        this.next = next;
+    }
 
-	@Override
-	public void handleRequest(HttpServerExchange exchange) throws Exception {
-		OptionMap config = exchange.getAttachment(Core.CONFIG);
-		HeaderMap rh = exchange.getResponseHeaders();
+    @Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+        OptionMap config = exchange.getAttachment(Core.CONFIG);
+        HeaderMap rh = exchange.getResponseHeaders();
 
-		rh.add(SecurityHeaders.FRAME_OPTIONS, config.get(Config.FRAME_OPTIONS));
+        rh.add(SecurityHeaders.FRAME_OPTIONS, config.get(Config.FRAME_OPTIONS));
 
-		if (config.get(Config.USE_XSS_PROTECTION)) {
-			rh.add(SecurityHeaders.XSS_PROTECTION, "1; mode=block");
-		}
+        if (config.get(Config.USE_XSS_PROTECTION)) {
+            rh.add(SecurityHeaders.XSS_PROTECTION, "1; mode=block");
+        }
 
-		if (config.get(Config.USE_CONTENT_TYPE_OPTIONS)) {
-			rh.add(SecurityHeaders.CONTENT_TYPE_OPTIONS, "nosniff");
-		}
+        if (config.get(Config.USE_CONTENT_TYPE_OPTIONS)) {
+            rh.add(SecurityHeaders.CONTENT_TYPE_OPTIONS, "nosniff");
+        }
 
-		exchange.addExchangeCompleteListener((ex, next) -> {
-			try {
-				if (rh.contains(Headers.CONTENT_TYPE) == false
-						&& rh.contains(Headers.SEC_WEB_SOCKET_ACCEPT) == false) {
+        exchange.addExchangeCompleteListener((ex, next) -> {
+            try {
+                if (rh.contains(Headers.CONTENT_TYPE) == false
+                        && rh.contains(Headers.SEC_WEB_SOCKET_ACCEPT) == false) {
 
-					LOG.warn(ex.getRequestURI()
-							+ " Content-Type header doesn't exist.");
-				}
-			} finally {
-				next.proceed();
-			}
-		});
+                    LOG.warn(ex.getRequestURI()
+                            + " Content-Type header doesn't exist.");
+                }
+            } finally {
+                next.proceed();
+            }
+        });
 
-		next.handleRequest(exchange);
-	}
+        next.handleRequest(exchange);
+    }
 
-	static void addContentType(HttpServerExchange exchange) {
-		SecurityHandler.addContentType(exchange, null);
-	}
+    static void addContentType(HttpServerExchange exchange) {
+        SecurityHandler.addContentType(exchange, null);
+    }
 
-	static void addContentType(HttpServerExchange exchange, String type) {
-		String t = Objects.toString(type, "application/octet-stream");
-		HeaderMap hm = exchange.getResponseHeaders();
-		HeaderValues hv = hm.get(Headers.CONTENT_TYPE);
-		if (hv == null || hv.isEmpty()) {
-			hm.add(Headers.CONTENT_TYPE, t);
-		}
-	}
+    static void addContentType(HttpServerExchange exchange, String type) {
+        String t = Objects.toString(type, "application/octet-stream");
+        HeaderMap hm = exchange.getResponseHeaders();
+        HeaderValues hv = hm.get(Headers.CONTENT_TYPE);
+        if (hv == null || hv.isEmpty()) {
+            hm.add(Headers.CONTENT_TYPE, t);
+        }
+    }
 }

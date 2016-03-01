@@ -21,12 +21,12 @@ import java.util.function.Predicate;
  * @author taichi
  */
 public interface RoutingCustomizer extends
-		RendererCustomizer<RoutingCustomizer> {
+        RendererCustomizer<RoutingCustomizer> {
 
-	RoutingCustomizer type(String type);
+    RoutingCustomizer type(String type);
 
-	RoutingCustomizer accept(String type);
+    RoutingCustomizer accept(String type);
 
-	RoutingCustomizer match(Predicate<Request> fn);
+    RoutingCustomizer match(Predicate<Request> fn);
 
 }

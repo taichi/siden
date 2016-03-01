@@ -13,21 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.util;
+package ninja.siden.def
 
-import java.util.concurrent.atomic.LongAccumulator;
+import io.undertow.predicate.Predicate
+import io.undertow.predicate.PredicatesHandler
+import io.undertow.server.HandlerWrapper
+import io.undertow.websockets.WebSocketProtocolHandshakeHandler
+import ninja.siden.WebSocketFactory
+import ninja.siden.internal.ConnectionCallback
 
 /**
  * @author taichi
  */
-public interface LongAccumulators {
+class WebSocketDef(val template: String, val predicate: Predicate, val factory: WebSocketFactory) {
 
-    static LongAccumulator max() {
-        return new LongAccumulator((x, y) -> x < y ? y : x, 0);
-    }
-
-    static LongAccumulator min() {
-        return new LongAccumulator(
-                (x, y) -> y < x || (x < 0 && -1 < y) ? y : x, -1);
+    fun addTo(ph: PredicatesHandler) {
+        ph.addPredicatedHandler(this.predicate,
+                HandlerWrapper {
+                    WebSocketProtocolHandshakeHandler(ConnectionCallback(this.factory), it)
+                })
     }
 }

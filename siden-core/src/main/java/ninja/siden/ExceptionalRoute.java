@@ -21,6 +21,6 @@ package ninja.siden;
 @FunctionalInterface
 public interface ExceptionalRoute<EX extends Throwable> {
 
-	Object handle(EX ex, Request request, Response response);
+    Object handle(EX ex, Request request, Response response);
 
 }

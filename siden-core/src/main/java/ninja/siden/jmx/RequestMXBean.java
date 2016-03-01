@@ -20,7 +20,7 @@ package ninja.siden.jmx;
  */
 public interface RequestMXBean {
 
-	RequestMetrics getMetrics();
+    RequestMetrics getMetrics();
 
-	void reset();
+    void reset();
 }

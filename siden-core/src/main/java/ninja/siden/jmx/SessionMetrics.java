@@ -24,103 +24,95 @@ import java.beans.ConstructorProperties;
  */
 public class SessionMetrics {
 
-	final long startTime;
-	final long createdSessionCount;
-	final long maxActiveSessions;
-	final long activeSessionCount;
-	final long expiredSessionCount;
-	final long rejectedSessionCount;
-	final long maxSessionAliveTime;
-	final long averageSessionAliveTime;
+    final long startTime;
+    final long createdSessionCount;
+    final long maxActiveSessions;
+    final long activeSessionCount;
+    final long expiredSessionCount;
+    final long rejectedSessionCount;
+    final long maxSessionAliveTime;
+    final long averageSessionAliveTime;
 
-	@ConstructorProperties({ "startTime", "createdSessionCount",
-			"maxActiveSessions", "activeSessionCount", "expiredSessionCount",
-			"rejectedSessionCount", "maxSessionAliveTime",
-			"averageSessionAliveTime" })
-	public SessionMetrics(long startTime, long createdSessionCount,
-			long maxActiveSessions, long activeSessionCount,
-			long expiredSessionCount, long rejectedSessionCount,
-			long maxSessionAliveTime, long averageSessionAliveTime) {
-		super();
-		this.startTime = startTime;
-		this.createdSessionCount = createdSessionCount;
-		this.maxActiveSessions = maxActiveSessions;
-		this.activeSessionCount = activeSessionCount;
-		this.expiredSessionCount = expiredSessionCount;
-		this.rejectedSessionCount = rejectedSessionCount;
-		this.maxSessionAliveTime = maxSessionAliveTime;
-		this.averageSessionAliveTime = averageSessionAliveTime;
-	}
+    @ConstructorProperties({"startTime", "createdSessionCount",
+            "maxActiveSessions", "activeSessionCount", "expiredSessionCount",
+            "rejectedSessionCount", "maxSessionAliveTime",
+            "averageSessionAliveTime"})
+    public SessionMetrics(long startTime, long createdSessionCount,
+                          long maxActiveSessions, long activeSessionCount,
+                          long expiredSessionCount, long rejectedSessionCount,
+                          long maxSessionAliveTime, long averageSessionAliveTime) {
+        super();
+        this.startTime = startTime;
+        this.createdSessionCount = createdSessionCount;
+        this.maxActiveSessions = maxActiveSessions;
+        this.activeSessionCount = activeSessionCount;
+        this.expiredSessionCount = expiredSessionCount;
+        this.rejectedSessionCount = rejectedSessionCount;
+        this.maxSessionAliveTime = maxSessionAliveTime;
+        this.averageSessionAliveTime = averageSessionAliveTime;
+    }
 
-	public static SessionMXBean to(SessionManagerStatistics stats) {
-		return () -> new SessionMetrics(stats.getStartTime(),
-				stats.getCreatedSessionCount(), stats.getMaxActiveSessions(),
-				stats.getActiveSessionCount(), stats.getExpiredSessionCount(),
-				stats.getRejectedSessions(), stats.getMaxSessionAliveTime(),
-				stats.getAverageSessionAliveTime());
-	}
+    public static SessionMXBean to(SessionManagerStatistics stats) {
+        return () -> new SessionMetrics(stats.getStartTime(),
+                stats.getCreatedSessionCount(), stats.getMaxActiveSessions(),
+                stats.getActiveSessionCount(), stats.getExpiredSessionCount(),
+                stats.getRejectedSessions(), stats.getMaxSessionAliveTime(),
+                stats.getAverageSessionAliveTime());
+    }
 
-	/**
-	 *
-	 * @return The number of sessions that this session manager has created
-	 */
-	public long getCreatedSessionCount() {
-		return this.createdSessionCount;
-	}
+    /**
+     * @return The number of sessions that this session manager has created
+     */
+    public long getCreatedSessionCount() {
+        return this.createdSessionCount;
+    }
 
-	/**
-	 *
-	 * @return the maximum number of sessions this session manager supports
-	 */
-	public long getMaxActiveSessions() {
-		return this.maxActiveSessions;
-	}
+    /**
+     * @return the maximum number of sessions this session manager supports
+     */
+    public long getMaxActiveSessions() {
+        return this.maxActiveSessions;
+    }
 
-	/**
-	 *
-	 * @return The number of active sessions
-	 */
-	public long getActiveSessionCount() {
-		return this.activeSessionCount;
-	}
+    /**
+     * @return The number of active sessions
+     */
+    public long getActiveSessionCount() {
+        return this.activeSessionCount;
+    }
 
-	/**
-	 *
-	 * @return The number of expired sessions
-	 */
-	public long getExpiredSessionCount() {
-		return this.expiredSessionCount;
-	}
+    /**
+     * @return The number of expired sessions
+     */
+    public long getExpiredSessionCount() {
+        return this.expiredSessionCount;
+    }
 
-	/**
-	 *
-	 * @return The number of rejected sessions
-	 */
-	public long getRejectedSessions() {
-		return this.rejectedSessionCount;
-	}
+    /**
+     * @return The number of rejected sessions
+     */
+    public long getRejectedSessions() {
+        return this.rejectedSessionCount;
+    }
 
-	/**
-	 *
-	 * @return The longest a session has been alive for in milliseconds
-	 */
-	public long getMaxSessionAliveTime() {
-		return this.maxSessionAliveTime;
-	}
+    /**
+     * @return The longest a session has been alive for in milliseconds
+     */
+    public long getMaxSessionAliveTime() {
+        return this.maxSessionAliveTime;
+    }
 
-	/**
-	 *
-	 * @return The average session lifetime in milliseconds
-	 */
-	public long getAverageSessionAliveTime() {
-		return this.averageSessionAliveTime;
-	}
+    /**
+     * @return The average session lifetime in milliseconds
+     */
+    public long getAverageSessionAliveTime() {
+        return this.averageSessionAliveTime;
+    }
 
-	/**
-	 *
-	 * @return The timestamp at which the session manager started
-	 */
-	public long getStartTime() {
-		return this.startTime;
-	}
+    /**
+     * @return The timestamp at which the session manager started
+     */
+    public long getStartTime() {
+        return this.startTime;
+    }
 }

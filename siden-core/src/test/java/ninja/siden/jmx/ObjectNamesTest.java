@@ -15,35 +15,32 @@
  */
 package ninja.siden.jmx;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
+import javax.management.ObjectName;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.management.ObjectName;
-
-import ninja.siden.jmx.ObjectNames;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
  */
 public class ObjectNamesTest {
 
-	@Test
-	public void to() throws Exception {
-		ObjectName name = ObjectNames.to("aaa.bbb:type=Z");
-		assertEquals("aaa.bbb", name.getDomain());
-		assertEquals("Z", name.getKeyProperty("type"));
-	}
+    @Test
+    public void to() throws Exception {
+        ObjectName name = ObjectNames.to("aaa.bbb:type=Z");
+        assertEquals("aaa.bbb", name.getDomain());
+        assertEquals("Z", name.getKeyProperty("type"));
+    }
 
-	@Test
-	public void withMap() throws Exception {
-		List<String> list = Arrays.asList("type", "Z", "aaa", "bbb", "ccc",
-				"ddd", "bbb", "zzz");
-		ObjectName name = ObjectNames.to("aaa.bbb", list);
-		assertEquals("aaa.bbb:type=Z,aaa=bbb,ccc=ddd,bbb=zzz", name.toString());
-	}
+    @Test
+    public void withMap() throws Exception {
+        List<String> list = Arrays.asList("type", "Z", "aaa", "bbb", "ccc",
+                "ddd", "bbb", "zzz");
+        ObjectName name = ObjectNames.to("aaa.bbb", list);
+        assertEquals("aaa.bbb:type=Z,aaa=bbb,ccc=ddd,bbb=zzz", name.toString());
+    }
 
 }

@@ -15,21 +15,21 @@
  */
 package ninja.siden.util;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
  */
 public class ExactlyOnceCloseableTest {
 
-	@Test
-	public void close() {
-		int[] counter = { 0 };
-		ExactlyOnceCloseable c = ExactlyOnceCloseable.wrap(() -> counter[0]++);
-		c.close();
-		c.close();
-		assertEquals(1, counter[0]);
-	}
+    @Test
+    public void close() {
+        int[] counter = {0};
+        ExactlyOnceCloseable c = ExactlyOnceCloseable.wrap(() -> counter[0]++);
+        c.close();
+        c.close();
+        assertEquals(1, counter[0]);
+    }
 }

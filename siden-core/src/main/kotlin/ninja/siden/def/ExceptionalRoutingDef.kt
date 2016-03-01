@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden.def
+
+import ninja.siden.ExceptionalRoute
+import ninja.siden.Renderer
+import ninja.siden.RendererCustomizer
 
 /**
  * @author taichi
  */
-public interface WebSocketFactory {
+class ExceptionalRoutingDef<EX : Throwable>(val type: Class<EX>, val route: ExceptionalRoute<EX>) : RendererCustomizer<ExceptionalRoutingDef<EX>> {
+    var renderer: Renderer<*>? = null
+        internal set
 
-    WebSocket create(Connection connection);
+    override fun <MODEL> render(renderer: Renderer<MODEL>): ExceptionalRoutingDef<EX> {
+        this.renderer = renderer
+        return this
+    }
 }

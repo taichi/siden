@@ -16,6 +16,7 @@
 package ninja.siden;
 
 import io.undertow.websockets.core.WebSocketChannel;
+import ninja.siden.util.ExceptionalConsumer;
 
 import java.io.OutputStream;
 import java.io.Writer;
@@ -26,69 +27,67 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import ninja.siden.util.ExceptionalConsumer;
-
 /**
  * @author taichi
  * @see io.undertow.websockets.core.WebSocketChannel
  */
 public interface Connection extends AttributeContainer {
 
-	// endpoint methods
+    // endpoint methods
 
-	CompletableFuture<Void> send(String text);
+    CompletableFuture<Void> send(String text);
 
-	CompletableFuture<Void> send(ByteBuffer payload);
+    CompletableFuture<Void> send(ByteBuffer payload);
 
-	CompletableFuture<Void> ping(ByteBuffer payload);
+    CompletableFuture<Void> ping(ByteBuffer payload);
 
-	CompletableFuture<Void> pong(ByteBuffer payload);
+    CompletableFuture<Void> pong(ByteBuffer payload);
 
-	CompletableFuture<Void> close();
+    CompletableFuture<Void> close();
 
-	CompletableFuture<Void> close(int code, String reason);
+    CompletableFuture<Void> close(int code, String reason);
 
-	void sendStream(ExceptionalConsumer<OutputStream, Exception> fn);
+    void sendStream(ExceptionalConsumer<OutputStream, Exception> fn);
 
-	void sendWriter(ExceptionalConsumer<Writer, Exception> fn);
+    void sendWriter(ExceptionalConsumer<Writer, Exception> fn);
 
-	// informations
+    // informations
 
-	String protocolVersion();
+    String protocolVersion();
 
-	String subProtocol();
+    String subProtocol();
 
-	boolean secure();
+    boolean secure();
 
-	boolean open();
+    boolean open();
 
-	Set<Connection> peers();
+    Set<Connection> peers();
 
-	// from request
+    // from request
 
-	Optional<String> params(String key);
+    Optional<String> params(String key);
 
-	Map<String, String> params();
+    Map<String, String> params();
 
-	Optional<String> query(String key);
+    Optional<String> query(String key);
 
-	Optional<String> header(String name);
+    Optional<String> header(String name);
 
-	List<String> headers(String name);
+    List<String> headers(String name);
 
-	Map<String, List<String>> headers();
+    Map<String, List<String>> headers();
 
-	Map<String, Cookie> cookies();
+    Map<String, Cookie> cookies();
 
-	Optional<Cookie> cookie(String name);
+    Optional<Cookie> cookie(String name);
 
-	/**
-	 * get current session
-	 * 
-	 * @return session or empty
-	 */
-	Optional<Session> current();
+    /**
+     * get current session
+     *
+     * @return session or empty
+     */
+    Optional<Session> current();
 
-	WebSocketChannel raw();
+    WebSocketChannel raw();
 
 }

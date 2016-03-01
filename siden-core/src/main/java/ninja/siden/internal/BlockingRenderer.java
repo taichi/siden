@@ -16,34 +16,33 @@
 package ninja.siden.internal;
 
 import io.undertow.server.HttpServerExchange;
+import ninja.siden.Renderer;
 
 import java.io.IOException;
-
-import ninja.siden.Renderer;
 
 /**
  * @author taichi
  */
 public class BlockingRenderer<T> implements Renderer<T> {
 
-	final Renderer<T> renderer;
+    final Renderer<T> renderer;
 
-	public BlockingRenderer(Renderer<T> renderer) {
-		super();
-		this.renderer = renderer;
-	}
+    public BlockingRenderer(Renderer<T> renderer) {
+        super();
+        this.renderer = renderer;
+    }
 
-	@Override
-	public void render(T model, HttpServerExchange sink) throws IOException {
-		if (sink.isBlocking() == false) {
-			sink.startBlocking();
-		}
-		if (sink.isInIoThread()) {
-			sink.dispatch(exchange -> {
-				renderer.render(model, exchange);
-			});
-		} else {
-			renderer.render(model, sink);
-		}
-	}
+    @Override
+    public void render(T model, HttpServerExchange sink) throws IOException {
+        if (sink.isBlocking() == false) {
+            sink.startBlocking();
+        }
+        if (sink.isInIoThread()) {
+            sink.dispatch(exchange -> {
+                renderer.render(model, exchange);
+            });
+        } else {
+            renderer.render(model, sink);
+        }
+    }
 }

@@ -21,5 +21,5 @@ package ninja.siden;
 @FunctionalInterface
 public interface Filter {
 
-	void filter(Request req, Response res, FilterChain chain) throws Exception;
+    void filter(Request req, Response res, FilterChain chain) throws Exception;
 }

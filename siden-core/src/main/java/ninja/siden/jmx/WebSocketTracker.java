@@ -15,110 +15,110 @@
  */
 package ninja.siden.jmx;
 
-import java.nio.ByteBuffer;
-
 import ninja.siden.Connection;
 import ninja.siden.WebSocket;
 import ninja.siden.WebSocketFactory;
+
+import java.nio.ByteBuffer;
 
 /**
  * @author taichi
  */
 public class WebSocketTracker implements WebSocketFactory, WebSocketMXBean {
 
-	final WebSocketFactory original;
+    final WebSocketFactory original;
 
-	RequestMeter onConnect = new RequestMeter();
-	RequestMeter onText = new RequestMeter();
-	RequestMeter onBinary = new RequestMeter();
-	RequestMeter onPong = new RequestMeter();
-	RequestMeter onPing = new RequestMeter();
-	RequestMeter onClose = new RequestMeter();
+    RequestMeter onConnect = new RequestMeter();
+    RequestMeter onText = new RequestMeter();
+    RequestMeter onBinary = new RequestMeter();
+    RequestMeter onPong = new RequestMeter();
+    RequestMeter onPing = new RequestMeter();
+    RequestMeter onClose = new RequestMeter();
 
-	public WebSocketTracker(WebSocketFactory original) {
-		this.original = original;
-	}
+    public WebSocketTracker(WebSocketFactory original) {
+        this.original = original;
+    }
 
-	@Override
-	public WebSocket create(Connection connection) {
-		return new WsWrapper(this.original.create(connection));
-	}
+    @Override
+    public WebSocket create(Connection connection) {
+        return new WsWrapper(this.original.create(connection));
+    }
 
-	class WsWrapper implements WebSocket {
-		final WebSocket original;
+    class WsWrapper implements WebSocket {
+        final WebSocket original;
 
-		public WsWrapper(WebSocket original) {
-			this.original = original;
-		}
+        public WsWrapper(WebSocket original) {
+            this.original = original;
+        }
 
-		@Override
-		public void onConnect(Connection connection) throws Exception {
-			onConnect.accept(m -> original.onConnect(connection));
-		}
+        @Override
+        public void onConnect(Connection connection) throws Exception {
+            onConnect.accept(m -> original.onConnect(connection));
+        }
 
-		@Override
-		public void onText(String payload) throws Exception {
-			onText.accept(m -> original.onText(payload));
-		}
+        @Override
+        public void onText(String payload) throws Exception {
+            onText.accept(m -> original.onText(payload));
+        }
 
-		@Override
-		public void onBinary(ByteBuffer[] payload) throws Exception {
-			onBinary.accept(m -> original.onBinary(payload));
-		}
+        @Override
+        public void onBinary(ByteBuffer[] payload) throws Exception {
+            onBinary.accept(m -> original.onBinary(payload));
+        }
 
-		@Override
-		public void onPong(ByteBuffer[] payload) throws Exception {
-			onPong.accept(m -> original.onPong(payload));
-		}
+        @Override
+        public void onPong(ByteBuffer[] payload) throws Exception {
+            onPong.accept(m -> original.onPong(payload));
+        }
 
-		@Override
-		public void onPing(ByteBuffer[] payload) throws Exception {
-			onPing.accept(m -> original.onPing(payload));
-		}
+        @Override
+        public void onPing(ByteBuffer[] payload) throws Exception {
+            onPing.accept(m -> original.onPing(payload));
+        }
 
-		@Override
-		public void onClose(ByteBuffer[] payload) throws Exception {
-			onClose.accept(m -> original.onClose(payload));
-		}
-	}
+        @Override
+        public void onClose(ByteBuffer[] payload) throws Exception {
+            onClose.accept(m -> original.onClose(payload));
+        }
+    }
 
-	@Override
-	public void reset() {
-		this.onConnect.reset();
-		this.onText.reset();
-		this.onBinary.reset();
-		this.onPong.reset();
-		this.onPing.reset();
-		this.onClose.reset();
-	}
+    @Override
+    public void reset() {
+        this.onConnect.reset();
+        this.onText.reset();
+        this.onBinary.reset();
+        this.onPong.reset();
+        this.onPing.reset();
+        this.onClose.reset();
+    }
 
-	@Override
-	public RequestMetrics getOnConnect() {
-		return onConnect.toMetrics();
-	}
+    @Override
+    public RequestMetrics getOnConnect() {
+        return onConnect.toMetrics();
+    }
 
-	@Override
-	public RequestMetrics getOnText() {
-		return onText.toMetrics();
-	}
+    @Override
+    public RequestMetrics getOnText() {
+        return onText.toMetrics();
+    }
 
-	@Override
-	public RequestMetrics getOnBinary() {
-		return onBinary.toMetrics();
-	}
+    @Override
+    public RequestMetrics getOnBinary() {
+        return onBinary.toMetrics();
+    }
 
-	@Override
-	public RequestMetrics getOnPong() {
-		return onPong.toMetrics();
-	}
+    @Override
+    public RequestMetrics getOnPong() {
+        return onPong.toMetrics();
+    }
 
-	@Override
-	public RequestMetrics getOnPing() {
-		return onPing.toMetrics();
-	}
+    @Override
+    public RequestMetrics getOnPing() {
+        return onPing.toMetrics();
+    }
 
-	@Override
-	public RequestMetrics getOnClose() {
-		return onClose.toMetrics();
-	}
+    @Override
+    public RequestMetrics getOnClose() {
+        return onClose.toMetrics();
+    }
 }

@@ -30,74 +30,74 @@ import java.util.regex.Pattern;
  */
 public class MIMEPredicate implements Predicate {
 
-	static final Pattern MIME = Pattern
-			.compile("(?<type>[*\\w]+)/(?<subtype>[*-.\\w]+)(;(.*))?");
+    static final Pattern MIME = Pattern
+            .compile("(?<type>[*\\w]+)/(?<subtype>[*-.\\w]+)(;(.*))?");
 
-	final HttpString name;
+    final HttpString name;
 
-	final String type;
+    final String type;
 
-	final String subType;
+    final String subType;
 
-	public static Predicate accept(String type) {
-		return new MIMEPredicate(Headers.ACCEPT, type);
-	}
+    public static Predicate accept(String type) {
+        return new MIMEPredicate(Headers.ACCEPT, type);
+    }
 
-	public static Predicate contentType(String type) {
-		return new MIMEPredicate(Headers.CONTENT_TYPE, type);
-	}
+    public static Predicate contentType(String type) {
+        return new MIMEPredicate(Headers.CONTENT_TYPE, type);
+    }
 
-	public MIMEPredicate(HttpString name, String contentType) {
-		super();
-		this.name = name;
-		if (wildCard(contentType)) {
-			this.type = this.subType = "*";
-		} else {
-			Matcher m = MIME.matcher(contentType);
-			if (m.find()) {
-				this.type = m.group("type");
-				this.subType = m.group("subtype");
-			} else {
-				throw new IllegalArgumentException("contentType");
-			}
-		}
-	}
+    public MIMEPredicate(HttpString name, String contentType) {
+        super();
+        this.name = name;
+        if (wildCard(contentType)) {
+            this.type = this.subType = "*";
+        } else {
+            Matcher m = MIME.matcher(contentType);
+            if (m.find()) {
+                this.type = m.group("type");
+                this.subType = m.group("subtype");
+            } else {
+                throw new IllegalArgumentException("contentType");
+            }
+        }
+    }
 
-	@Override
-	public boolean resolve(HttpServerExchange value) {
-		final List<String> res = value.getRequestHeaders().get(name);
-		if (res == null || res.isEmpty()) {
-			return false;
-		}
-		final List<List<QValueParser.QValueResult>> found = QValueParser
-				.parse(res);
-		return found.stream().flatMap(List::stream).anyMatch(this::match);
-	}
+    @Override
+    public boolean resolve(HttpServerExchange value) {
+        final List<String> res = value.getRequestHeaders().get(name);
+        if (res == null || res.isEmpty()) {
+            return false;
+        }
+        final List<List<QValueParser.QValueResult>> found = QValueParser
+                .parse(res);
+        return found.stream().flatMap(List::stream).anyMatch(this::match);
+    }
 
-	boolean wildCard(String s) {
-		return s.equals("*");
-	}
+    boolean wildCard(String s) {
+        return s.equals("*");
+    }
 
-	boolean match(QValueParser.QValueResult result) {
-		String v = result.getValue();
-		if (wildCard(v) || wildCard(this.type)) {
-			return true;
-		}
-		Matcher m = MIME.matcher(v);
-		if (m.find() == false) {
-			return false;
-		}
-		String t = m.group("type");
-		if (wildCard(t)) {
-			return true;
-		}
-		if (this.type.equalsIgnoreCase(t)) {
-			String sub = m.group("subtype");
-			if (wildCard(sub) || wildCard(this.subType)
-					|| this.subType.equalsIgnoreCase(sub)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    boolean match(QValueParser.QValueResult result) {
+        String v = result.getValue();
+        if (wildCard(v) || wildCard(this.type)) {
+            return true;
+        }
+        Matcher m = MIME.matcher(v);
+        if (m.find() == false) {
+            return false;
+        }
+        String t = m.group("type");
+        if (wildCard(t)) {
+            return true;
+        }
+        if (this.type.equalsIgnoreCase(t)) {
+            String sub = m.group("subtype");
+            if (wildCard(sub) || wildCard(this.subType)
+                    || this.subType.equalsIgnoreCase(sub)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

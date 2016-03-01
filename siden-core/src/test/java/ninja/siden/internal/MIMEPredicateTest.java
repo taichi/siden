@@ -15,18 +15,18 @@
  */
 package ninja.siden.internal;
 
-import static org.junit.Assert.assertEquals;
 import io.undertow.predicate.Predicate;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
@@ -34,54 +34,54 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class MIMEPredicateTest {
 
-	HttpServerExchange exchange;
-	
-	@Before
-	public void setUp() {
-		this.exchange = new HttpServerExchange(null);
-	}
+    HttpServerExchange exchange;
 
-	String wait;
-	
-	String request;
-	
-	boolean is;
-	
-	public MIMEPredicateTest(String wait, String request, boolean is) {
-		this.wait = wait;
-		this.request = request;
-		this.is = is;
-	}
-	
-	@Parameters(name = "{0} {1}")
-	public static Iterable<Object[]> parameters() throws Exception {
-		return Arrays.asList(new Object[][] {
-				{"application/json", "application/json", true},
-				{"application/json", "APPLICATION/json", true},
-				{"application/json", "application/JSON", true},
-				
-				{"application/*", "application/json", true},
-				{"*/json", "text/html", true},
-				{"*/*", "application/json", true},
-				{"*", "application/json", true},
-				
-				{"application/json", "application/*", true},
-				{"text/html", "*/json",true},
-				{"application/json", "*/*",true},
-				{"application/json", "*", true},
-				
-				{"application/json", "application/xml", false},
-				{"application/json", "text/json", false},
-				{"application/*", "text/json", false},
+    @Before
+    public void setUp() {
+        this.exchange = new HttpServerExchange(null);
+    }
 
-				{"application/json", "text/*", false},
-		});
-	}
-	
-	@Test
-	public void test() throws Exception {
-		Predicate p = MIMEPredicate.accept(wait);
-		this.exchange.getRequestHeaders().add(Headers.ACCEPT, request);
-		assertEquals(is, p.resolve(exchange));
-	}
+    String wait;
+
+    String request;
+
+    boolean is;
+
+    public MIMEPredicateTest(String wait, String request, boolean is) {
+        this.wait = wait;
+        this.request = request;
+        this.is = is;
+    }
+
+    @Parameters(name = "{0} {1}")
+    public static Iterable<Object[]> parameters() throws Exception {
+        return Arrays.asList(new Object[][]{
+                {"application/json", "application/json", true},
+                {"application/json", "APPLICATION/json", true},
+                {"application/json", "application/JSON", true},
+
+                {"application/*", "application/json", true},
+                {"*/json", "text/html", true},
+                {"*/*", "application/json", true},
+                {"*", "application/json", true},
+
+                {"application/json", "application/*", true},
+                {"text/html", "*/json", true},
+                {"application/json", "*/*", true},
+                {"application/json", "*", true},
+
+                {"application/json", "application/xml", false},
+                {"application/json", "text/json", false},
+                {"application/*", "text/json", false},
+
+                {"application/json", "text/*", false},
+        });
+    }
+
+    @Test
+    public void test() throws Exception {
+        Predicate p = MIMEPredicate.accept(wait);
+        this.exchange.getRequestHeaders().add(Headers.ACCEPT, request);
+        assertEquals(is, p.resolve(exchange));
+    }
 }

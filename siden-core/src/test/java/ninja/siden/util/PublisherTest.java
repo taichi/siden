@@ -15,44 +15,42 @@
  */
 package ninja.siden.util;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.function.Consumer;
 
-import ninja.siden.util.Publisher;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
  */
 public class PublisherTest {
 
-	Publisher<String> target;
+    Publisher<String> target;
 
-	@Before
-	public void setUp() throws Exception {
-		this.target = new Publisher<>();
-	}
+    @Before
+    public void setUp() throws Exception {
+        this.target = new Publisher<>();
+    }
 
-	@Test
-	public void on() throws Exception {
-		String[] called = { null };
-		target.on(s -> called[0] = s);
-		target.post("aaa");
-		assertEquals("aaa", called[0]);
-		target.post("bbb");
-		assertEquals("aaa", called[0]);
-	}
+    @Test
+    public void on() throws Exception {
+        String[] called = {null};
+        target.on(s -> called[0] = s);
+        target.post("aaa");
+        assertEquals("aaa", called[0]);
+        target.post("bbb");
+        assertEquals("aaa", called[0]);
+    }
 
-	@Test
-	public void off() throws Exception {
-		String[] called = { "aaa" };
-		Consumer<String> fn = s -> called[0] = s;
-		target.on(fn);
-		target.off(fn);
-		target.post("bbb");
-		assertEquals("aaa", called[0]);
-	}
+    @Test
+    public void off() throws Exception {
+        String[] called = {"aaa"};
+        Consumer<String> fn = s -> called[0] = s;
+        target.on(fn);
+        target.off(fn);
+        target.post("bbb");
+        assertEquals("aaa", called[0]);
+    }
 }

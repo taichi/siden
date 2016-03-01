@@ -20,6 +20,6 @@ package ninja.siden;
  */
 public interface RendererCustomizer<T extends RendererCustomizer<T>> {
 
-	<MODEL> T render(Renderer<MODEL> renderer);
+    <MODEL> T render(Renderer<MODEL> renderer);
 
 }

@@ -15,7 +15,6 @@
  */
 package ninja.siden.internal;
 
-import static org.junit.Assert.assertTrue;
 import io.undertow.predicate.Predicates;
 import io.undertow.server.HttpServerExchange;
 import mockit.Mock;
@@ -28,10 +27,11 @@ import ninja.siden.Request;
 import ninja.siden.Response;
 import ninja.siden.def.FilterDef;
 import ninja.siden.internal.FiltersHandler.SimpleChain;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author taichi
@@ -39,55 +39,55 @@ import org.junit.runner.RunWith;
 @RunWith(JMockit.class)
 public class FiltersHandlerTest {
 
-	HttpServerExchange exchange;
+    HttpServerExchange exchange;
 
-	@Mocked
-	Request request;
+    @Mocked
+    Request request;
 
-	@Mocked
-	Response response;
+    @Mocked
+    Response response;
 
-	@Before
-	public void setUp() {
-		this.exchange = new HttpServerExchange(null);
-		this.exchange.putAttachment(Core.REQUEST, this.request);
-		this.exchange.putAttachment(Core.RESPONSE, this.response);
-	}
+    @Before
+    public void setUp() {
+        this.exchange = new HttpServerExchange(null);
+        this.exchange.putAttachment(Core.REQUEST, this.request);
+        this.exchange.putAttachment(Core.RESPONSE, this.response);
+    }
 
-	@Test
-	public void testNoFilter() throws Exception {
-		new MockUp<SimpleChain>() {
-			@Mock(invocations = 0)
-			public Object next() throws Exception {
-				return null;
-			}
-		};
-		boolean[] is = { false };
-		FiltersHandler target = new FiltersHandler(exc -> {
-			is[0] = true;
-		});
-		target.handleRequest(this.exchange);
-		assertTrue(is[0]);
-	}
+    @Test
+    public void testNoFilter() throws Exception {
+        new MockUp<SimpleChain>() {
+            @Mock(invocations = 0)
+            public Object next() throws Exception {
+                return null;
+            }
+        };
+        boolean[] is = {false};
+        FiltersHandler target = new FiltersHandler(exc -> {
+            is[0] = true;
+        });
+        target.handleRequest(this.exchange);
+        assertTrue(is[0]);
+    }
 
-	@Test
-	public void testSimpleCall() throws Exception {
-		Filter filter = new MockUp<Filter>() {
-			@Mock(invocations = 2)
-			public void filter(Request req, Response res, FilterChain chain)
-					throws Exception {
-				chain.next();
-			}
-		}.getMockInstance();
+    @Test
+    public void testSimpleCall() throws Exception {
+        Filter filter = new MockUp<Filter>() {
+            @Mock(invocations = 2)
+            public void filter(Request req, Response res, FilterChain chain)
+                    throws Exception {
+                chain.next();
+            }
+        }.getMockInstance();
 
-		FiltersHandler target = new FiltersHandler(Testing.mustCall());
-		target.add(new FilterDef(Predicates.truePredicate(), filter));
-		target.add(new FilterDef(Predicates.falsePredicate(),
-				(req, res, ch) -> {
-					throw new AssertionError();
-				}));
-		target.add(new FilterDef(Predicates.truePredicate(), filter));
+        FiltersHandler target = new FiltersHandler(Testing.mustCall());
+        target.add(new FilterDef(Predicates.truePredicate(), filter));
+        target.add(new FilterDef(Predicates.falsePredicate(),
+                (req, res, ch) -> {
+                    throw new AssertionError();
+                }));
+        target.add(new FilterDef(Predicates.truePredicate(), filter));
 
-		target.handleRequest(this.exchange);
-	}
+        target.handleRequest(this.exchange);
+    }
 }

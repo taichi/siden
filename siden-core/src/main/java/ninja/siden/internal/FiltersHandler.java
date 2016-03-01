@@ -17,74 +17,73 @@ package ninja.siden.internal;
 
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import ninja.siden.FilterChain;
 import ninja.siden.Request;
 import ninja.siden.Response;
 import ninja.siden.def.FilterDef;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author taichi
  */
 public class FiltersHandler implements HttpHandler {
 
-	HttpHandler next;
+    HttpHandler next;
 
-	List<FilterDef> filters = new ArrayList<>();
+    List<FilterDef> filters = new ArrayList<>();
 
-	public FiltersHandler(HttpHandler next) {
-		this.next = next;
-	}
+    public FiltersHandler(HttpHandler next) {
+        this.next = next;
+    }
 
-	@Override
-	public void handleRequest(HttpServerExchange exchange) throws Exception {
-		if (filters.size() < 1) {
-			next.handleRequest(exchange);
-			return;
-		}
-		SimpleChain chain = new SimpleChain(exchange);
-		chain.next();
-	}
+    @Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+        if (filters.size() < 1) {
+            next.handleRequest(exchange);
+            return;
+        }
+        SimpleChain chain = new SimpleChain(exchange);
+        chain.next();
+    }
 
-	public void add(FilterDef model) {
-		this.filters.add(model);
-	}
+    public void add(FilterDef model) {
+        this.filters.add(model);
+    }
 
-	enum ChainState {
-		HasNext, NoMore;
-	}
+    enum ChainState {
+        HasNext, NoMore;
+    }
 
-	class SimpleChain implements FilterChain {
+    class SimpleChain implements FilterChain {
 
-		int cursor;
+        int cursor;
 
-		HttpServerExchange exchange;
+        HttpServerExchange exchange;
 
-		Request request;
+        Request request;
 
-		Response response;
+        Response response;
 
-		public SimpleChain(HttpServerExchange exchange) {
-			super();
-			this.exchange = exchange;
-			this.request = exchange.getAttachment(Core.REQUEST);
-			this.response = exchange.getAttachment(Core.RESPONSE);
-		}
+        public SimpleChain(HttpServerExchange exchange) {
+            super();
+            this.exchange = exchange;
+            this.request = exchange.getAttachment(Core.REQUEST);
+            this.response = exchange.getAttachment(Core.RESPONSE);
+        }
 
-		@Override
-		public Object next() throws Exception {
-			for (int index = cursor++; index < filters.size(); index = cursor++) {
-				FilterDef f = filters.get(index);
-				if (f.resolve(exchange)) {
-					f.filter(request, response, this);
-					return ChainState.HasNext;
-				}
-			}
-			next.handleRequest(exchange);
-			return ChainState.NoMore;
-		}
-	}
+        @Override
+        public Object next() throws Exception {
+            for (int index = cursor++; index < filters.size(); index = cursor++) {
+                FilterDef f = filters.get(index);
+                if (f.resolve(exchange)) {
+                    f.filter(request, response, this);
+                    return ChainState.HasNext;
+                }
+            }
+            next.handleRequest(exchange);
+            return ChainState.NoMore;
+        }
+    }
 }

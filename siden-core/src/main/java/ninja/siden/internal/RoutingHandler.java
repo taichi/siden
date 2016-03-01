@@ -19,179 +19,165 @@ import io.undertow.Undertow;
 import io.undertow.predicate.Predicate;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import ninja.siden.App;
-import ninja.siden.Config;
-import ninja.siden.Renderer;
-import ninja.siden.Request;
-import ninja.siden.Response;
-import ninja.siden.Route;
+import ninja.siden.*;
 import ninja.siden.def.ErrorCodeRoutingDef;
 import ninja.siden.def.ExceptionalRoutingDef;
-
 import org.xnio.OptionMap;
+
+import java.util.*;
 
 /**
  * @author taichi
  */
 public class RoutingHandler implements HttpHandler {
 
-	static final Set<String> ignorePackages = new HashSet<>();
-	static {
-		ignorePackages.add(App.class.getPackage().getName());
-		ignorePackages.add(Undertow.class.getPackage().getName());
-	}
+    static final Set<String> ignorePackages = new HashSet<>();
 
-	final List<Routing> routings = new ArrayList<>();
+    static {
+        ignorePackages.add(App.class.getPackage().getName());
+        ignorePackages.add(Undertow.class.getPackage().getName());
+    }
 
-	final Map<Class<? extends Throwable>, ExceptionalRoutingDef<? extends Throwable>> exceptionalMappings = new HashMap<>();
+    final List<Routing> routings = new ArrayList<>();
 
-	final Map<Integer, List<ErrorCodeRoutingDef>> errorCodeMappings = new HashMap<>();
+    final Map<Class<? extends Throwable>, ExceptionalRoutingDef<? extends Throwable>> exceptionalMappings = new HashMap<>();
 
-	final HttpHandler next;
+    final Map<Integer, List<ErrorCodeRoutingDef>> errorCodeMappings = new HashMap<>();
 
-	public RoutingHandler(HttpHandler handler) {
-		this.next = handler;
-	}
+    final HttpHandler next;
 
-	@Override
-	public void handleRequest(HttpServerExchange exchange) throws Exception {
-		for (Routing route : routings) {
-			if (route.predicate.resolve(exchange)) {
-				HttpHandler hh = ex -> handle(ex, route.route::handle,
-						route.renderer);
-				if (exchange.isInIoThread()) {
-					exchange.dispatch(hh);
-				} else {
-					hh.handleRequest(exchange);
-				}
-				return;
-			}
-		}
-		this.next.handleRequest(exchange);
-	}
+    public RoutingHandler(HttpHandler handler) {
+        this.next = handler;
+    }
 
-	boolean handle(Integer responseCode, HttpServerExchange exchange)
-			throws Exception {
-		if (exchange.isRequestChannelAvailable()) {
-			exchange.setResponseCode(responseCode);
-			List<ErrorCodeRoutingDef> list = this.errorCodeMappings
-					.getOrDefault(responseCode, Collections.emptyList());
-			for (ErrorCodeRoutingDef route : list) {
-				if (handle(exchange, route.route()::handle, route.renderer())) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    @Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+        for (Routing route : routings) {
+            if (route.predicate.resolve(exchange)) {
+                HttpHandler hh = ex -> handle(ex, route.route::handle,
+                        route.renderer);
+                if (exchange.isInIoThread()) {
+                    exchange.dispatch(hh);
+                } else {
+                    hh.handleRequest(exchange);
+                }
+                return;
+            }
+        }
+        this.next.handleRequest(exchange);
+    }
 
-	<T extends Throwable> ExceptionalRoutingDef<T> find(T exception) {
-		for (Class<?> c = exception.getClass(); c != null; c = c
-				.getSuperclass()) {
-			@SuppressWarnings("unchecked")
-			ExceptionalRoutingDef<T> route = (ExceptionalRoutingDef<T>) this.exceptionalMappings
-					.get(c);
-			if (route != null) {
-				return route;
-			}
-		}
-		return null;
-	}
+    boolean handle(Integer responseCode, HttpServerExchange exchange)
+            throws Exception {
+        if (exchange.isRequestChannelAvailable()) {
+            exchange.setResponseCode(responseCode);
+            List<ErrorCodeRoutingDef> list = this.errorCodeMappings
+                    .getOrDefault(responseCode, Collections.emptyList());
+            for (ErrorCodeRoutingDef route : list) {
+                if (handle(exchange, route.getRoute()::handle, route.getRenderer())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	<T extends Throwable> boolean handle(T exception,
-			HttpServerExchange exchange) throws Exception {
-		ExceptionalRoutingDef<T> def = find(exception);
-		return def != null && handle(exchange, (req, res) -> {
-			exchange.setResponseCode(500);
-			return def.route().handle(exception, req, res);
-		}, def.renderer());
-	}
+    <T extends Throwable> ExceptionalRoutingDef<T> find(T exception) {
+        for (Class<?> c = exception.getClass(); c != null; c = c
+                .getSuperclass()) {
+            @SuppressWarnings("unchecked")
+            ExceptionalRoutingDef<T> route = (ExceptionalRoutingDef<T>) this.exceptionalMappings.get(c);
+            if (route != null) {
+                return route;
+            }
+        }
+        return null;
+    }
 
-	boolean handle(HttpServerExchange exchange, Route fn, Renderer<?> renderer)
-			throws Exception {
-		try {
-			Request request = exchange.getAttachment(Core.REQUEST);
-			Response response = exchange.getAttachment(Core.RESPONSE);
-			Object model = fn.handle(request, response);
-			if (model != null) {
-				if (model instanceof Optional) {
-					@SuppressWarnings("unchecked")
-					Optional<Object> opt = (Optional<Object>) model;
-					model = opt.map(v -> v).orElse(null);
-				}
-				if (model instanceof Integer) {
-					return handle((Integer) model, exchange);
-				}
-				if (model instanceof ExchangeState) {
-					return true;
-				}
-				if (model != null && contains(model.getClass()) == false) {
-					resolve(renderer, exchange).render(model, exchange);
-					return true;
-				}
-			}
-			return handle(exchange.getResponseCode(), exchange);
-		} catch (Exception ex) {
-			if (exchange.isRequestChannelAvailable()) {
-				if (handle(ex, exchange)) {
-					return true;
-				}
-			}
-			throw ex;
-		}
-	}
+    <T extends Throwable> boolean handle(T exception,
+                                         HttpServerExchange exchange) throws Exception {
+        ExceptionalRoutingDef<T> def = find(exception);
+        return def != null && handle(exchange, (req, res) -> {
+            exchange.setResponseCode(500);
+            return def.getRoute().handle(exception, req, res);
+        }, def.getRenderer());
+    }
 
-	@SuppressWarnings("unchecked")
-	Renderer<Object> resolve(Renderer<?> renderer, HttpServerExchange exchange) {
-		if (renderer == null) {
-			OptionMap config = exchange.getAttachment(Core.CONFIG);
-			return config.get(Config.DEFAULT_RENDERER);
-		}
-		return (Renderer<Object>) renderer;
-	}
+    boolean handle(HttpServerExchange exchange, Route fn, Renderer<?> renderer)
+            throws Exception {
+        try {
+            Request request = exchange.getAttachment(Core.REQUEST);
+            Response response = exchange.getAttachment(Core.RESPONSE);
+            Object model = fn.handle(request, response);
+            if (model != null) {
+                if (model instanceof Optional) {
+                    @SuppressWarnings("unchecked")
+                    Optional<Object> opt = (Optional<Object>) model;
+                    model = opt.map(v -> v).orElse(null);
+                }
+                if (model instanceof Integer) {
+                    return handle((Integer) model, exchange);
+                }
+                if (model instanceof ExchangeState) {
+                    return true;
+                }
+                if (model != null && contains(model.getClass()) == false) {
+                    resolve(renderer, exchange).render(model, exchange);
+                    return true;
+                }
+            }
+            return handle(exchange.getResponseCode(), exchange);
+        } catch (Exception ex) {
+            if (exchange.isRequestChannelAvailable()) {
+                if (handle(ex, exchange)) {
+                    return true;
+                }
+            }
+            throw ex;
+        }
+    }
 
-	boolean contains(Class<?> clazz) {
-		String n = clazz.getName();
-		return ignorePackages.stream().anyMatch(s -> n.startsWith(s));
-	}
+    @SuppressWarnings("unchecked")
+    Renderer<Object> resolve(Renderer<?> renderer, HttpServerExchange exchange) {
+        if (renderer == null) {
+            OptionMap config = exchange.getAttachment(Core.CONFIG);
+            return config.get(Config.DEFAULT_RENDERER);
+        }
+        return (Renderer<Object>) renderer;
+    }
 
-	public void add(Predicate predicate, Route route, Renderer<?> renderer) {
-		this.routings.add(new Routing(predicate, route, renderer));
-	}
+    boolean contains(Class<?> clazz) {
+        String n = clazz.getName();
+        return ignorePackages.stream().anyMatch(n::startsWith);
+    }
 
-	public void add(ExceptionalRoutingDef<?> model) {
-		this.exceptionalMappings.put(model.type(), model);
-	}
+    public void add(Predicate predicate, Route route, Renderer<?> renderer) {
+        this.routings.add(new Routing(predicate, route, renderer));
+    }
 
-	public void add(ErrorCodeRoutingDef model) {
-		List<ErrorCodeRoutingDef> list = this.errorCodeMappings.get(model
-				.code());
-		if (list == null) {
-			list = new ArrayList<>();
-		}
-		list.add(model);
-		this.errorCodeMappings.put(model.code(), list);
-	}
+    public void add(ExceptionalRoutingDef<?> model) {
+        this.exceptionalMappings.put(model.getType(), model);
+    }
 
-	class Routing {
-		Predicate predicate;
-		Route route;
-		Renderer<?> renderer;
+    public void add(ErrorCodeRoutingDef model) {
+        List<ErrorCodeRoutingDef> list = this.errorCodeMappings.get(model
+                .getCode());
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        list.add(model);
+        this.errorCodeMappings.put(model.getCode(), list);
+    }
 
-		Routing(Predicate predicate, Route route, Renderer<?> renderer) {
-			this.predicate = predicate;
-			this.route = route;
-			this.renderer = renderer;
-		}
-	}
+    class Routing {
+        Predicate predicate;
+        Route route;
+        Renderer<?> renderer;
+
+        Routing(Predicate predicate, Route route, Renderer<?> renderer) {
+            this.predicate = predicate;
+            this.route = route;
+            this.renderer = renderer;
+        }
+    }
 }

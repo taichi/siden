@@ -15,9 +15,13 @@
  */
 package ninja.siden.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import ninja.siden.App;
+import ninja.siden.Stoppable;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -25,102 +29,95 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
-import ninja.siden.App;
-import ninja.siden.Stoppable;
-
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author taichi
  */
 public class SidenRequestTest {
 
-	static int port = 7000;
+    static int port = 7000;
 
-	App app;
+    App app;
 
-	Stoppable stopper;
+    Stoppable stopper;
 
-	@Before
-	public void setUp() {
-		this.app = new App();
+    @Before
+    public void setUp() {
+        this.app = new App();
 
-	}
+    }
 
-	@After
-	public void tearDown() {
-		this.stopper.stop();
-		port++;
-	}
+    @After
+    public void tearDown() {
+        this.stopper.stop();
+        port++;
+    }
 
-	@Test
-	public void largeStringBody() throws Exception {
-		StringBuilder stb = new StringBuilder();
-		for (int i = 0; i < 1500; i++) {
-			stb.append("0123456789");
-		}
-		stringBody(stb.toString());
-	}
+    @Test
+    public void largeStringBody() throws Exception {
+        StringBuilder stb = new StringBuilder();
+        for (int i = 0; i < 1500; i++) {
+            stb.append("0123456789");
+        }
+        stringBody(stb.toString());
+    }
 
-	@Test
-	public void stringBodyWithLF() throws Exception {
-		StringBuilder stb = new StringBuilder();
-		for (int i = 0; i < 100; i++) {
-			stb.append("abcd\r\n");
-		}
-		String s = stb.toString();
-		Optional<String> opt = stringBody(s);
-		assertEquals(s, opt.get());
-	}
+    @Test
+    public void stringBodyWithLF() throws Exception {
+        StringBuilder stb = new StringBuilder();
+        for (int i = 0; i < 100; i++) {
+            stb.append("abcd\r\n");
+        }
+        String s = stb.toString();
+        Optional<String> opt = stringBody(s);
+        assertEquals(s, opt.get());
+    }
 
-	@Test
-	public void stringBodySwithJapanese() throws Exception {
-		String s = "abcd～～wayway美豚";
-		Optional<String> opt = stringBody(s);
-		assertEquals(s, opt.get());
-	}
+    @Test
+    public void stringBodySwithJapanese() throws Exception {
+        String s = "abcd～～wayway美豚";
+        Optional<String> opt = stringBody(s);
+        assertEquals(s, opt.get());
+    }
 
-	@Test
-	public void smallStringBody() throws Exception {
-		assertTrue(stringBody("hoge").isPresent());
-	}
+    @Test
+    public void smallStringBody() throws Exception {
+        assertTrue(stringBody("hoge").isPresent());
+    }
 
-	@Test
-	public void noBody() throws Exception {
-		assertFalse(stringBody("").isPresent());
-	}
+    @Test
+    public void noBody() throws Exception {
+        assertFalse(stringBody("").isPresent());
+    }
 
-	public Optional<String> stringBody(String body) throws Exception {
-		CountDownLatch latch = new CountDownLatch(2);
-		BlockingQueue<Optional<String>> queue = new ArrayBlockingQueue<>(1);
-		this.app.post("/string", (req, res) -> {
-			Optional<String> content = req.body();
-			queue.add(content);
-			latch.countDown();
-			return content;
-		});
-		this.stopper = this.app.listen(port);
+    public Optional<String> stringBody(String body) throws Exception {
+        CountDownLatch latch = new CountDownLatch(2);
+        BlockingQueue<Optional<String>> queue = new ArrayBlockingQueue<>(1);
+        this.app.post("/string", (req, res) -> {
+            Optional<String> content = req.body();
+            queue.add(content);
+            latch.countDown();
+            return content;
+        });
+        this.stopper = this.app.listen(port);
 
-		HttpPost post = new HttpPost(String.format(
-				"http://localhost:%d/string", port));
-		post.setHeader("Content-Type", "application/string;charset=UTF-8");
-		post.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
+        HttpPost post = new HttpPost(String.format(
+                "http://localhost:%d/string", port));
+        post.setHeader("Content-Type", "application/string;charset=UTF-8");
+        post.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
 
-		Testing.request(post, response -> {
-			try {
-				assertEquals(200, response.getStatusLine().getStatusCode());
-				if (body.isEmpty() == false) {
-					assertEquals(body, Testing.read(response));
-				}
-			} finally {
-				latch.countDown();
-			}
-		});
-		latch.await();
-		return queue.poll();
-	}
+        Testing.request(post, response -> {
+            try {
+                assertEquals(200, response.getStatusLine().getStatusCode());
+                if (body.isEmpty() == false) {
+                    assertEquals(body, Testing.read(response));
+                }
+            } finally {
+                latch.countDown();
+            }
+        });
+        latch.await();
+        return queue.poll();
+    }
 }

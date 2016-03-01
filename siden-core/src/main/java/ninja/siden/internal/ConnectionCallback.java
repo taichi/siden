@@ -19,46 +19,44 @@ import io.undertow.UndertowLogger;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
+import ninja.siden.Connection;
+import ninja.siden.WebSocket;
+import ninja.siden.WebSocketFactory;
+import org.xnio.IoUtils;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ninja.siden.Connection;
-import ninja.siden.WebSocket;
-import ninja.siden.WebSocketFactory;
-
-import org.xnio.IoUtils;
-
 /**
  * @author taichi
  */
 public class ConnectionCallback implements WebSocketConnectionCallback {
 
-	final WebSocketFactory factory;
-	final Set<Connection> peers = Collections
-			.newSetFromMap(new ConcurrentHashMap<>());
+    final WebSocketFactory factory;
+    final Set<Connection> peers = Collections
+            .newSetFromMap(new ConcurrentHashMap<>());
 
-	public ConnectionCallback(WebSocketFactory factory) {
-		this.factory = factory;
-	}
+    public ConnectionCallback(WebSocketFactory factory) {
+        this.factory = factory;
+    }
 
-	@Override
-	public void onConnect(WebSocketHttpExchange exchange,
-			WebSocketChannel channel) {
-		try {
-			Connection connection = new SidenConnection(exchange, channel,
-					peers);
-			WebSocket socket = factory.create(connection);
-			socket.onConnect(connection);
-			channel.getReceiveSetter().set(new ReceiveListenerAdapter(socket));
-			channel.resumeReceives();
-		} catch (IOException e) {
-			UndertowLogger.REQUEST_IO_LOGGER.ioException(e);
-			IoUtils.safeClose(channel);
-		} catch (Exception e) {
-			IoUtils.safeClose(channel);
-		}
-	}
+    @Override
+    public void onConnect(WebSocketHttpExchange exchange,
+                          WebSocketChannel channel) {
+        try {
+            Connection connection = new SidenConnection(exchange, channel,
+                    peers);
+            WebSocket socket = factory.create(connection);
+            socket.onConnect(connection);
+            channel.getReceiveSetter().set(new ReceiveListenerAdapter(socket));
+            channel.resumeReceives();
+        } catch (IOException e) {
+            UndertowLogger.REQUEST_IO_LOGGER.ioException(e);
+            IoUtils.safeClose(channel);
+        } catch (Exception e) {
+            IoUtils.safeClose(channel);
+        }
+    }
 }

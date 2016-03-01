@@ -15,39 +15,38 @@
  */
 package ninja.siden.jmx;
 
-import java.util.Iterator;
-import java.util.List;
-
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author taichi
  */
 public interface ObjectNames {
 
-	static ObjectName to(CharSequence name) {
-		try {
-			return new ObjectName(name.toString());
-		} catch (MalformedObjectNameException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
+    static ObjectName to(CharSequence name) {
+        try {
+            return new ObjectName(name.toString());
+        } catch (MalformedObjectNameException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
 
-	static ObjectName to(CharSequence domain, List<String> props) {
-		if (props.size() % 2 != 0) {
-			throw new IllegalArgumentException();
-		}
-		StringBuilder stb = new StringBuilder(domain);
-		stb.append(":");
-		for (Iterator<String> i = props.iterator(); i.hasNext();) {
-			stb.append(i.next());
-			stb.append('=');
-			stb.append(i.next());
-			if (i.hasNext()) {
-				stb.append(',');
-			}
-		}
-		return to(stb);
-	}
+    static ObjectName to(CharSequence domain, List<String> props) {
+        if (props.size() % 2 != 0) {
+            throw new IllegalArgumentException();
+        }
+        StringBuilder stb = new StringBuilder(domain);
+        stb.append(":");
+        for (Iterator<String> i = props.iterator(); i.hasNext(); ) {
+            stb.append(i.next());
+            stb.append('=');
+            stb.append(i.next());
+            if (i.hasNext()) {
+                stb.append(',');
+            }
+        }
+        return to(stb);
+    }
 }

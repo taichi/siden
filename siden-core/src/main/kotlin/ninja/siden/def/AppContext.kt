@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden.def
+
+import ninja.siden.App
 
 /**
  * @author taichi
  */
-public interface WebSocketFactory {
+class AppContext(val root: App) {
 
-    WebSocket create(Connection connection);
+    var app: AppDef? = null
+        private set
+
+    var prefix = ""
+        private set
+
+    constructor(parent: AppContext, sam: SubAppDef) : this(parent.root) {
+        this.app = sam.app
+        this.prefix = parent.prefix + sam.prefix
+    }
 }

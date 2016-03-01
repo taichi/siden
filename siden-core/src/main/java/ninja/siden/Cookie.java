@@ -22,45 +22,45 @@ import java.util.Date;
  */
 public interface Cookie {
 
-	String name();
+    String name();
 
-	String value();
+    String value();
 
-	Cookie value(final String value);
+    Cookie value(final String value);
 
-	String path();
+    String path();
 
-	Cookie path(final String path);
+    Cookie path(final String path);
 
-	String domain();
+    String domain();
 
-	Cookie domain(final String domain);
+    Cookie domain(final String domain);
 
-	Integer maxAge();
+    Integer maxAge();
 
-	Cookie maxAge(final Integer maxAge);
+    Cookie maxAge(final Integer maxAge);
 
-	boolean discard();
+    boolean discard();
 
-	Cookie discard(final boolean discard);
+    Cookie discard(final boolean discard);
 
-	boolean secure();
+    boolean secure();
 
-	Cookie secure(final boolean secure);
+    Cookie secure(final boolean secure);
 
-	int version();
+    int version();
 
-	Cookie version(final int version);
+    Cookie version(final int version);
 
-	boolean httpOnly();
+    boolean httpOnly();
 
-	Cookie httpOnly(final boolean httpOnly);
+    Cookie httpOnly(final boolean httpOnly);
 
-	Date expires();
+    Date expires();
 
-	Cookie expires(final Date expires);
+    Cookie expires(final Date expires);
 
-	String comment();
+    String comment();
 
-	Cookie comment(final String comment);
+    Cookie comment(final String comment);
 }

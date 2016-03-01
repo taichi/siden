@@ -20,7 +20,7 @@ package ninja.siden;
  */
 public interface Stoppable {
 
-	void stop();
+    void stop();
 
-	void addShutdownHook();
+    void addShutdownHook();
 }

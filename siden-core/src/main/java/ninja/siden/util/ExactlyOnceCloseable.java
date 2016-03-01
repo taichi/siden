@@ -24,28 +24,28 @@ import java.util.logging.Logger;
  */
 public class ExactlyOnceCloseable implements AutoCloseable {
 
-	static final AtomicReferenceFieldUpdater<ExactlyOnceCloseable, AutoCloseable> UPDATER = AtomicReferenceFieldUpdater
-			.newUpdater(ExactlyOnceCloseable.class, AutoCloseable.class,
-					"delegate");
+    static final AtomicReferenceFieldUpdater<ExactlyOnceCloseable, AutoCloseable> UPDATER = AtomicReferenceFieldUpdater
+            .newUpdater(ExactlyOnceCloseable.class, AutoCloseable.class,
+                    "delegate");
 
-	volatile AutoCloseable delegate;
+    volatile AutoCloseable delegate;
 
-	public ExactlyOnceCloseable(AutoCloseable closeable) {
-		this.delegate = closeable;
-	}
+    public ExactlyOnceCloseable(AutoCloseable closeable) {
+        this.delegate = closeable;
+    }
 
-	public static ExactlyOnceCloseable wrap(AutoCloseable c) {
-		return new ExactlyOnceCloseable(c);
-	}
+    public static ExactlyOnceCloseable wrap(AutoCloseable c) {
+        return new ExactlyOnceCloseable(c);
+    }
 
-	@Override
-	public void close() {
-		try {
-			UPDATER.getAndUpdate(this, c -> () -> {
-			}).close();
-		} catch (Exception ignore) {
-			Logger.getLogger(ExactlyOnceCloseable.class.getName()).log(
-					Level.FINER, ignore.getMessage(), ignore);
-		}
-	}
+    @Override
+    public void close() {
+        try {
+            UPDATER.getAndUpdate(this, c -> () -> {
+            }).close();
+        } catch (Exception ignore) {
+            Logger.getLogger(ExactlyOnceCloseable.class.getName()).log(
+                    Level.FINER, ignore.getMessage(), ignore);
+        }
+    }
 }

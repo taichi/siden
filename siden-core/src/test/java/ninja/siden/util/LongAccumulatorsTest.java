@@ -15,15 +15,15 @@
  */
 package ninja.siden.util;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.concurrent.atomic.LongAccumulator;
-
 import org.junit.experimental.runners.Enclosed;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+
+import java.util.concurrent.atomic.LongAccumulator;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author taichi
@@ -31,32 +31,32 @@ import org.junit.runner.RunWith;
 @RunWith(Enclosed.class)
 public class LongAccumulatorsTest {
 
-	@RunWith(Theories.class)
-	public static class Max {
-		@DataPoints
-		public static int[][] fixtures = { { 10, 11, 11 }, { 10, 9, 10 } };
+    @RunWith(Theories.class)
+    public static class Max {
+        @DataPoints
+        public static int[][] fixtures = {{10, 11, 11}, {10, 9, 10}};
 
-		@Theory
-		public void test(int[] fixture) {
-			LongAccumulator la = LongAccumulators.max();
-			la.accumulate(fixture[0]);
-			la.accumulate(fixture[1]);
-			assertEquals(fixture[2], la.get());
-		}
-	}
+        @Theory
+        public void test(int[] fixture) {
+            LongAccumulator la = LongAccumulators.max();
+            la.accumulate(fixture[0]);
+            la.accumulate(fixture[1]);
+            assertEquals(fixture[2], la.get());
+        }
+    }
 
-	@RunWith(Theories.class)
-	public static class Min {
-		@DataPoints
-		public static int[][] fixtures = { { 10, 11, 10 }, { 10, 9, 9 },
-				{ -10, 7, 7 } };
+    @RunWith(Theories.class)
+    public static class Min {
+        @DataPoints
+        public static int[][] fixtures = {{10, 11, 10}, {10, 9, 9},
+                {-10, 7, 7}};
 
-		@Theory
-		public void test(int[] fixture) {
-			LongAccumulator la = LongAccumulators.min();
-			la.accumulate(fixture[0]);
-			la.accumulate(fixture[1]);
-			assertEquals(fixture[2], la.get());
-		}
-	}
+        @Theory
+        public void test(int[] fixture) {
+            LongAccumulator la = LongAccumulators.min();
+            la.accumulate(fixture[0]);
+            la.accumulate(fixture[1]);
+            assertEquals(fixture[2], la.get());
+        }
+    }
 }

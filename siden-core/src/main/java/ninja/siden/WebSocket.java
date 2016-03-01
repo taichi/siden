@@ -22,21 +22,21 @@ import java.nio.ByteBuffer;
  */
 public interface WebSocket {
 
-	default void onConnect(Connection connection) throws Exception {
-	}
+    default void onConnect(Connection connection) throws Exception {
+    }
 
-	default void onText(String payload) throws Exception {
-	}
+    default void onText(String payload) throws Exception {
+    }
 
-	default void onBinary(ByteBuffer[] payload) throws Exception {
-	}
+    default void onBinary(ByteBuffer[] payload) throws Exception {
+    }
 
-	default void onPong(ByteBuffer[] payload) throws Exception {
-	}
+    default void onPong(ByteBuffer[] payload) throws Exception {
+    }
 
-	default void onPing(ByteBuffer[] payload) throws Exception {
-	}
+    default void onPing(ByteBuffer[] payload) throws Exception {
+    }
 
-	default void onClose(ByteBuffer[] payload) throws Exception {
-	}
+    default void onClose(ByteBuffer[] payload) throws Exception {
+    }
 }

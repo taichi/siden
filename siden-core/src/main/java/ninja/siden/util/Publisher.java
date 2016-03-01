@@ -26,24 +26,24 @@ import java.util.function.Consumer;
  */
 public class Publisher<E> {
 
-	List<Consumer<E>> listeners = Collections
-			.synchronizedList(new ArrayList<>());
+    List<Consumer<E>> listeners = Collections
+            .synchronizedList(new ArrayList<>());
 
-	public void on(Consumer<E> fn) {
-		this.listeners.add(fn);
-	}
+    public void on(Consumer<E> fn) {
+        this.listeners.add(fn);
+    }
 
-	public void off(Consumer<E> fn) {
-		this.listeners.remove(fn);
-	}
+    public void off(Consumer<E> fn) {
+        this.listeners.remove(fn);
+    }
 
-	public void post(E event) {
-		for (Iterator<Consumer<E>> i = this.listeners.iterator(); i.hasNext();) {
-			try {
-				i.next().accept(event);
-			} finally {
-				i.remove();
-			}
-		}
-	}
+    public void post(E event) {
+        for (Iterator<Consumer<E>> i = this.listeners.iterator(); i.hasNext(); ) {
+            try {
+                i.next().accept(event);
+            } finally {
+                i.remove();
+            }
+        }
+    }
 }

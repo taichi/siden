@@ -21,15 +21,15 @@ package ninja.siden;
 @FunctionalInterface
 public interface RendererRepository {
 
-	static RendererRepository EMPTY = new RendererRepository() {
-		@Override
-		public <T> Renderer<T> find(String path) {
-			throw new IllegalStateException(
-					"RendererRepository is not configured. see. "
-							+ Config.class.getName() + "#"
-							+ Config.RENDERER_REPOSITORY.getName());
-		}
-	};
+    static RendererRepository EMPTY = new RendererRepository() {
+        @Override
+        public <T> Renderer<T> find(String path) {
+            throw new IllegalStateException(
+                    "RendererRepository is not configured. see. "
+                            + Config.class.getName() + "#"
+                            + Config.RENDERER_REPOSITORY.getName());
+        }
+    };
 
-	<T> Renderer<T> find(String path);
+    <T> Renderer<T> find(String path);
 }

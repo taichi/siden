@@ -15,73 +15,73 @@
  */
 package ninja.siden.jmx;
 
+import ninja.siden.util.ExceptionalConsumer;
+import ninja.siden.util.ExceptionalFunction;
+import ninja.siden.util.LongAccumulators;
+
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
-
-import ninja.siden.util.ExceptionalConsumer;
-import ninja.siden.util.ExceptionalFunction;
-import ninja.siden.util.LongAccumulators;
 
 /**
  * @author taichi
  */
 public class RequestMeter {
 
-	static final AtomicLongFieldUpdater<RequestMeter> startTimeUpdater = AtomicLongFieldUpdater
-			.newUpdater(RequestMeter.class, "startTime");
+    static final AtomicLongFieldUpdater<RequestMeter> startTimeUpdater = AtomicLongFieldUpdater
+            .newUpdater(RequestMeter.class, "startTime");
 
-	volatile long startTime;
-	LongAdder totalRequestTime;
-	LongAccumulator maxRequestTime;
-	LongAccumulator minRequestTime;
-	LongAdder totalRequests;
+    volatile long startTime;
+    LongAdder totalRequestTime;
+    LongAccumulator maxRequestTime;
+    LongAccumulator minRequestTime;
+    LongAdder totalRequests;
 
-	public RequestMeter() {
-		this.startTime = System.currentTimeMillis();
-		this.totalRequestTime = new LongAdder();
-		this.maxRequestTime = LongAccumulators.max();
-		this.minRequestTime = LongAccumulators.min();
-		this.totalRequests = new LongAdder();
-	}
+    public RequestMeter() {
+        this.startTime = System.currentTimeMillis();
+        this.totalRequestTime = new LongAdder();
+        this.maxRequestTime = LongAccumulators.max();
+        this.minRequestTime = LongAccumulators.min();
+        this.totalRequests = new LongAdder();
+    }
 
-	protected void accept(final long requestTime) {
-		this.totalRequestTime.add(requestTime);
-		this.maxRequestTime.accumulate(requestTime);
-		this.minRequestTime.accumulate(requestTime);
-		this.totalRequests.increment();
-	}
+    protected void accept(final long requestTime) {
+        this.totalRequestTime.add(requestTime);
+        this.maxRequestTime.accumulate(requestTime);
+        this.minRequestTime.accumulate(requestTime);
+        this.totalRequests.increment();
+    }
 
-	public <EX extends Exception> void accept(
-			ExceptionalConsumer<RequestMeter, EX> fn) throws EX {
-		apply(m -> {
-			fn.accept(m);
-			return null;
-		});
-	}
+    public <EX extends Exception> void accept(
+            ExceptionalConsumer<RequestMeter, EX> fn) throws EX {
+        apply(m -> {
+            fn.accept(m);
+            return null;
+        });
+    }
 
-	public <R, EX extends Exception> R apply(
-			ExceptionalFunction<RequestMeter, R, EX> fn) throws EX {
-		final long start = System.currentTimeMillis();
-		try {
-			return fn.apply(this);
-		} finally {
-			accept(System.currentTimeMillis() - start);
-		}
-	}
+    public <R, EX extends Exception> R apply(
+            ExceptionalFunction<RequestMeter, R, EX> fn) throws EX {
+        final long start = System.currentTimeMillis();
+        try {
+            return fn.apply(this);
+        } finally {
+            accept(System.currentTimeMillis() - start);
+        }
+    }
 
-	public void reset() {
-		startTimeUpdater.set(this, System.currentTimeMillis());
-		this.totalRequestTime.reset();
-		this.maxRequestTime.reset();
-		this.minRequestTime.reset();
-		this.totalRequests.reset();
-	}
+    public void reset() {
+        startTimeUpdater.set(this, System.currentTimeMillis());
+        this.totalRequestTime.reset();
+        this.maxRequestTime.reset();
+        this.minRequestTime.reset();
+        this.totalRequests.reset();
+    }
 
-	public RequestMetrics toMetrics() {
-		return new RequestMetrics(new Date(this.startTime),
-				this.totalRequestTime.sum(), this.maxRequestTime.get(),
-				this.minRequestTime.get(), this.totalRequests.sum());
-	}
+    public RequestMetrics toMetrics() {
+        return new RequestMetrics(new Date(this.startTime),
+                this.totalRequestTime.sum(), this.maxRequestTime.get(),
+                this.minRequestTime.get(), this.totalRequests.sum());
+    }
 }
