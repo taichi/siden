@@ -13,14 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.jmx;
+package ninja.siden.jmx
+
+import ninja.siden.Request
+import ninja.siden.Response
+import ninja.siden.Route
 
 /**
  * @author taichi
  */
-public interface RequestMXBean {
+class RouteTracker(internal val original: Route) : Route, RequestMXBean {
+    internal val totalResult = RequestMeter()
 
-    RequestMetrics getMetrics();
+    override fun handle(request: Request, response: Response): Any {
+        return totalResult.record { original.handle(request, response) }
+    }
 
-    void reset();
+    override fun reset() {
+        this.totalResult.reset()
+    }
+
+    override val metrics: RequestMetrics
+        get() = this.totalResult.toMetrics()
 }

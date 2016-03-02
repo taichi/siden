@@ -25,9 +25,7 @@ import java.util.regex.Pattern
 /**
  * @author taichi
  */
-class AppDef(internal var config:
-
-             OptionMap) {
+class AppDef(val config: OptionMap) {
 
     internal var assets: MutableList<AssetDef> = ArrayList()
 
@@ -42,10 +40,6 @@ class AppDef(internal var config:
     internal var websockets: MutableList<WebSocketDef> = ArrayList()
 
     internal var filters: MutableList<FilterDef> = ArrayList()
-
-    fun config(): OptionMap {
-        return this.config
-    }
 
     fun add(path: String, root: String): AssetsCustomizer {
         val def = AssetDef(path, root)
@@ -95,12 +89,12 @@ class AppDef(internal var config:
     }
 
     fun accept(context: AppContext, ab: AppBuilder) {
-        this.assets.forEach { d -> ab.apply(context, d) }
-        this.router.forEach { d -> ab.apply(context, d) }
-        this.errorRouter.forEach { d -> ab.apply(context, d) }
-        this.exceptionRouter.forEach { d -> ab.apply(context, d) }
-        this.subapp.forEach { d -> ab.apply(context, d) }
-        this.websockets.forEach { d -> ab.apply(context, d) }
-        this.filters.forEach { d -> ab.apply(context, d) }
+        this.assets.forEach { ab.apply(context, it) }
+        this.router.forEach { ab.apply(context, it) }
+        this.errorRouter.forEach { ab.apply(context, it) }
+        this.exceptionRouter.forEach { ab.apply(context, it) }
+        this.subapp.forEach { ab.apply(context, it) }
+        this.websockets.forEach { ab.apply(context, it) }
+        this.filters.forEach { ab.apply(context, it) }
     }
 }

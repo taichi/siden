@@ -13,13 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.jmx;
+@file:JvmName("ObjectNames")
+
+package ninja.siden.jmx
+
+import javax.management.ObjectName
 
 /**
  * @author taichi
  */
-public interface SessionMXBean {
+fun CharSequence.to(): ObjectName = ObjectName(this.toString())
 
-    SessionMetrics getMetrics();
-
+fun CharSequence.to(props: List<String>): ObjectName {
+    require(props.size % 2 == 0)
+    val stb = StringBuilder(this)
+    stb.append(":")
+    val i = props.iterator()
+    while (i.hasNext()) {
+        stb.append(i.next())
+        stb.append('=')
+        stb.append(i.next())
+        if (i.hasNext()) {
+            stb.append(',')
+        }
+    }
+    return stb.to()
 }
+
+

@@ -13,24 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.jmx;
+package ninja.siden.jmx
 
 /**
  * @author taichi
  */
-public interface WebSocketMXBean {
-
-    RequestMetrics getOnConnect();
-
-    RequestMetrics getOnText();
-
-    RequestMetrics getOnBinary();
-
-    RequestMetrics getOnPong();
-
-    RequestMetrics getOnPing();
-
-    RequestMetrics getOnClose();
-
-    void reset();
+interface SessionMXBean {
+    val metrics: SessionMetrics
 }

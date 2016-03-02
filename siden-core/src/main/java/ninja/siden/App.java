@@ -269,14 +269,14 @@ public class App {
     }
 
     protected HttpHandler buildHandlers() {
-        AppBuilder ab = newBuilder().apply(this.def.config());
+        AppBuilder ab = newBuilder().apply(this.def.getConfig());
         ab.begin();
         this.def.accept(new AppContext(this), ab);
         return ab.end(this);
     }
 
     protected Function<OptionMap, AppBuilder> newBuilder() {
-        return Config.isInDev(this.def.config()) ? DefaultAppBuilder::new
+        return Config.isInDev(this.def.getConfig()) ? DefaultAppBuilder::new
                 : MetricsAppBuilder::new;
     }
 

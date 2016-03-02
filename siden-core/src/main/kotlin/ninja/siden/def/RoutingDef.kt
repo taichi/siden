@@ -72,7 +72,7 @@ class RoutingDef(val template: String,
                 result
             }
         }
-        list.addAll(this.accepts.filter(String::isNotEmpty).map({ s -> MIMEPredicate.contentType(s) }))
+        list.addAll(this.accepts.filter(String::isNotEmpty).map({ MIMEPredicate.contentType(it) }))
         rh.add(Predicates.and(*list.toArray<Predicate>(arrayOfNulls<Predicate>(list.size))), route, this.renderer)
     }
 }
