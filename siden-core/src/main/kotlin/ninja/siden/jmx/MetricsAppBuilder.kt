@@ -35,17 +35,16 @@ import javax.management.ObjectName
  */
 class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
 
-    override fun apply(context: AppContext, rd: RoutingDef) {
-        val def = RoutingDef(rd.template, rd.predicate,
-                rd.method, makeRouteTracker(context, rd))
-        val re = rd.renderer
+    override fun apply(context: AppContext, def: RoutingDef) {
+        val newone = RoutingDef(def.template, def.predicate, def.method, makeRouteTracker(context, def))
+        val re = newone.renderer
         if (re != null) {
-            def.render(re)
+            newone.render(re)
         }
-        def.type(rd.type)
-        def.accepts = rd.accepts
-        def.matches = rd.matches
-        def.addTo(this.router)
+        newone.type(newone.type)
+        newone.accepts = newone.accepts
+        newone.matches = newone.matches
+        newone.addTo(this.router)
     }
 
     protected fun makeRouteTracker(context: AppContext, original: RoutingDef): Route {
@@ -62,9 +61,9 @@ class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
         this.subapp.addPrefixPath(def.prefix, kids.filters)
     }
 
-    override fun apply(context: AppContext, original: WebSocketDef) {
-        val def = WebSocketDef(original.template, original.predicate, makeWebSocketTracker(context, original))
-        def.addTo(this.websockets)
+    override fun apply(context: AppContext, def: WebSocketDef) {
+        val newone = WebSocketDef(def.template, def.predicate, makeWebSocketTracker(context, def))
+        newone.addTo(this.websockets)
     }
 
     protected fun makeWebSocketTracker(context: AppContext, def: WebSocketDef): WebSocketFactory {

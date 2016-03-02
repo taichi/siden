@@ -13,52 +13,53 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden
 
-import io.undertow.server.HttpServerExchange;
-
-import java.util.Map;
+import io.undertow.server.HttpServerExchange
 
 /**
  * @author taichi
  */
-public interface Response {
+interface Response {
 
-    Response status(int code);
+    fun status(code: Int): Response
 
-    Response header(String name, String... values);
+    fun header(name: String, vararg values: String): Response
 
     /**
      * set RFC1123 date pattern to Response header.
-     *
+
      * @param name
+     * *
      * @param date
+     * *
      * @return this
      */
-    Response header(String name, long date);
+    fun header(name: String, date: Long): Response
 
-    Response headers(Map<String, String> headers);
+    fun headers(headers: Map<String, String>): Response
 
-    Cookie cookie(String name, String value);
+    fun cookie(name: String, value: String): Cookie
 
     /**
      * @param name
+     * *
      * @return existing value
      */
-    Cookie removeCookie(String name);
+    fun removeCookie(name: String): Cookie?
 
     /**
      * @param contentType
      */
-    Response type(String contentType);
+    fun type(contentType: String): Response
 
-    Object redirect(String location);
+    fun redirect(location: String): Any
 
-    Object redirect(int code, String location);
+    fun redirect(code: Int, location: String): Any
 
-    <MODEL> Object render(MODEL model, Renderer<MODEL> renderer);
+    fun <MODEL> render(model: MODEL, renderer: Renderer<MODEL>): Any
 
-    <MODEL> Object render(MODEL model, String template);
+    fun <MODEL> render(model: MODEL, template: String): Any
 
-    HttpServerExchange raw();
+    val raw: HttpServerExchange
 }

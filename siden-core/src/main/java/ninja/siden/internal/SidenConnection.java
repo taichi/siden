@@ -25,6 +25,7 @@ import ninja.siden.Connection;
 import ninja.siden.Cookie;
 import ninja.siden.util.ExceptionalConsumer;
 import ninja.siden.util.Using;
+import org.jetbrains.annotations.NotNull;
 import org.xnio.ChannelListener;
 
 import java.io.OutputStream;
@@ -123,8 +124,10 @@ public class SidenConnection implements Connection {
             public AttributeContainer.Attr next() {
                 String key = i.next();
                 return new Attr() {
+
+                    @NotNull
                     @Override
-                    public String name() {
+                    public String getName() {
                         return key;
                     }
 

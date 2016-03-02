@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 SATO taichi
+ * Copyright 2015 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,35 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
-
-import java.util.Optional;
+package ninja.siden.internal
 
 /**
  * @author taichi
  */
-public interface AttributeContainer extends Iterable<AttributeContainer.Attr> {
-
-    /**
-     * @param key    attribute name
-     * @param newone new attribute
-     * @return existing value
-     */
-    <T> Optional<T> attr(String key, T newone);
-
-    <T> Optional<T> attr(String key);
-
-    /**
-     * @param key
-     * @return existing value
-     */
-    <T> Optional<T> remove(String key);
-
-    interface Attr {
-        String name();
-
-        <T> T value();
-
-        <T> T remove();
-    }
+internal enum class ExchangeState {
+    Rendered, Redirected
 }

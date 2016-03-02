@@ -13,18 +13,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden
+
+import java.util.Optional
 
 /**
  * @author taichi
  */
-public interface Session extends AttributeContainer {
+interface AttributeContainer : Iterable<AttributeContainer.Attr> {
 
-    String id();
+    /**
+     * @param key    attribute name
+     * *
+     * @param newone new attribute
+     * *
+     * @return existing value
+     */
+    fun <T> attr(key: String, newone: T): Optional<T>
 
-    void invalidate();
+    fun <T> attr(key: String): Optional<T>
 
-    Session regenerate();
+    /**
+     * @param key
+     * *
+     * @return existing value
+     */
+    fun <T> remove(key: String): Optional<T>
 
-    io.undertow.server.session.Session raw();
+    interface Attr {
+        val name: String
+
+        fun <T> value(): T
+
+        fun <T> remove(): T
+    }
 }

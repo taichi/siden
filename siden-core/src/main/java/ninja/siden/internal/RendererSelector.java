@@ -86,7 +86,7 @@ public class RendererSelector<T> implements Renderer<T> {
         public void render(Object model, HttpServerExchange sink)
                 throws IOException {
             Reader reader = (Reader) model;
-            SecurityHandler.addContentType(sink);
+            SecurityHandler.Companion.addContentType(sink);
             OptionMap config = sink.getAttachment(Core.CONFIG);
             delegate.render(
                     new ReaderInputStream(reader, config.get(Config.CHARSET)),
@@ -104,7 +104,7 @@ public class RendererSelector<T> implements Renderer<T> {
         @Override
         public void render(Object model, HttpServerExchange sink)
                 throws IOException {
-            SecurityHandler.addContentType(sink);
+            SecurityHandler.Companion.addContentType(sink);
             Renderer.ofStream((Object o, OutputStream out) -> {
                 InputStream in = (InputStream) o;
                 try {
@@ -148,7 +148,7 @@ public class RendererSelector<T> implements Renderer<T> {
             // TODO proxy?
             URLResource resource = new URLResource(url, url.openConnection(),
                     url.getPath());
-            SecurityHandler.addContentType(sink, resource.getContentType(mm));
+            SecurityHandler.Companion.addContentType(sink, resource.getContentType(mm));
             resource.serve(sink.getResponseSender(), sink,
                     IoCallback.END_EXCHANGE);
         }
@@ -197,7 +197,7 @@ public class RendererSelector<T> implements Renderer<T> {
         public void render(Object model, HttpServerExchange sink)
                 throws IOException {
             FileChannel channel = (FileChannel) model;
-            SecurityHandler.addContentType(sink);
+            SecurityHandler.Companion.addContentType(sink);
             sink.getResponseSender().transferFrom(channel,
                     IoCallback.END_EXCHANGE);
         }
@@ -214,7 +214,7 @@ public class RendererSelector<T> implements Renderer<T> {
         public void render(Object model, HttpServerExchange sink)
                 throws IOException {
             ByteBuffer s = (ByteBuffer) model;
-            SecurityHandler.addContentType(sink);
+            SecurityHandler.Companion.addContentType(sink);
             sink.getResponseSender().send(s);
         }
     }
@@ -230,7 +230,7 @@ public class RendererSelector<T> implements Renderer<T> {
         public void render(Object model, HttpServerExchange sink)
                 throws IOException {
             byte[] ary = (byte[]) model;
-            SecurityHandler.addContentType(sink);
+            SecurityHandler.Companion.addContentType(sink);
             sink.getResponseSender().send(ByteBuffer.wrap(ary));
         }
     }
@@ -247,7 +247,7 @@ public class RendererSelector<T> implements Renderer<T> {
                 throws IOException {
             OptionMap config = sink.getAttachment(Core.CONFIG);
             String s = model.toString();
-            SecurityHandler.addContentType(sink,
+            SecurityHandler.Companion.addContentType(sink,
                     config.get(Config.DEFAULT_CONTENT_TYPE));
             sink.getResponseSender().send(s, config.get(Config.CHARSET));
         }
