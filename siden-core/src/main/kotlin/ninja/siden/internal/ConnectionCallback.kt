@@ -21,6 +21,7 @@ import io.undertow.websockets.core.WebSocketChannel
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import ninja.siden.Connection
 import ninja.siden.WebSocketFactory
+import org.jboss.logging.Logger
 import org.xnio.IoUtils
 import java.io.IOException
 import java.util.*
@@ -34,8 +35,7 @@ class ConnectionCallback(internal val factory: WebSocketFactory) : WebSocketConn
     override fun onConnect(exchange: WebSocketHttpExchange,
                            channel: WebSocketChannel) {
         try {
-            val connection = SidenConnection(exchange, channel,
-                    peers)
+            val connection = SidenConnection(exchange, channel, peers)
             val socket = factory.create(connection)
             socket.onConnect(connection)
             channel.receiveSetter.set(ReceiveListenerAdapter(socket))
@@ -44,7 +44,12 @@ class ConnectionCallback(internal val factory: WebSocketFactory) : WebSocketConn
             UndertowLogger.REQUEST_IO_LOGGER.ioException(e)
             IoUtils.safeClose(channel)
         } catch (e: Exception) {
+            LOG.error(e.message, e)
             IoUtils.safeClose(channel)
         }
+    }
+
+    companion object {
+        internal val LOG = Logger.getLogger(ConnectionCallback::class.java)
     }
 }

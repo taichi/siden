@@ -33,12 +33,11 @@ public class Main {
 		app.get("/hello", (req, res) -> "Hello world !!");
 
 		// receive Ajax request only
-		app.get("/ajax", (req, res) -> "{ 'name' : 'ajax' }").match(
-				Request::xhr);
+		app.get("/ajax", (req, res) -> "{ 'name' : 'ajax' }").match(Request::getXhr);
 
 		// simple logging filter
 		app.use((req, res, chain) -> {
-			System.out.printf("%s %s %n", req.method(), req.path());
+			System.out.printf("%s %s %n", req.getMethod(), req.getPath());
 			chain.next();
 		});
 

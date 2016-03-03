@@ -13,23 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package example;
+package example
 
-import ninja.siden.App;
+import ninja.siden.App
+import ninja.siden.Connection
+import ninja.siden.WebSocket
+import ninja.siden.WebSocketFactory
 
 /**
  * @author taichi
  */
-public class UseWebsocket {
+fun main(args: Array<String>) {
+    val app = App()
 
-	public static void main(String[] args) {
-		App app = new App();
+    app.get("/", { q, s -> java.io.File("siden-example/assets/chat.html") })
 
-		app.get("/", (q, s) -> new java.io.File("assets/chat.html"));
+    app.websocket("/ws").onText { con, txt -> con.peers.forEach { c -> c.send(txt) } }
 
-		app.websocket("/ws").onText(
-				(con, txt) -> con.peers().forEach(c -> c.send(txt)));
-
-		app.listen(8181).addShutdownHook();
-	}
+    app.listen(8181).addShutdownHook()
 }

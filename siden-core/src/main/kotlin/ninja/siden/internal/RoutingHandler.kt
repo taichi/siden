@@ -155,7 +155,7 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
         this.errorCodeMappings.put(model.code, list)
     }
 
-    internal inner class Routing(var predicate: Predicate, var route: Route, var renderer: Renderer<*>?)
+    internal data class Routing(var predicate: Predicate, var route: Route, var renderer: Renderer<*>?)
 
     companion object {
 

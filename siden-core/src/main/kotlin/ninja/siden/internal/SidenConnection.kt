@@ -15,7 +15,6 @@
  */
 package ninja.siden.internal
 
-import io.undertow.server.session.Session
 import io.undertow.util.Cookies
 import io.undertow.util.Headers
 import io.undertow.websockets.core.*
@@ -35,13 +34,22 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author taichi
  */
-class SidenConnection(exchange: WebSocketHttpExchange,
+class SidenConnection(private val exchange: WebSocketHttpExchange,
                       internal val channel: WebSocketChannel,
                       override val peers: MutableSet<Connection>,
                       private val attrs: AttributeContainer = DefaultAttributeContainer()) : Connection, AttributeContainer by attrs {
-    override val current: ninja.siden.Session
+    override val current: ninja.siden.Session?
+        get() {
+            var sess = exchange.session as? io.undertow.server.session.Session
+            if (sess != null) {
+                return WebSocketSession(sess)
+            }
+            return null
+        }
 
-    override val params: Map<String, String> = exchange.getAttachment(PathPredicate.PARAMS)
+    override val params: Map<String, String> by lazy {
+        exchange.getAttachment(PathPredicate.PARAMS) ?: emptyMap()
+    }
     internal val queries: Map<String, List<String>> = exchange.requestParameters
     override val headers: Map<String, List<String>> = exchange.requestHeaders
 
@@ -54,7 +62,6 @@ class SidenConnection(exchange: WebSocketHttpExchange,
     }
 
     init {
-        current = WebSocketSession(exchange.session as io.undertow.server.session.Session)
         channel.addCloseTask { this@SidenConnection.peers.remove(this@SidenConnection) }
         peers.add(this)
     }
@@ -72,11 +79,11 @@ class SidenConnection(exchange: WebSocketHttpExchange,
 
     internal inner class WsCb(var future: CompletableFuture<Void>) : WebSocketCallback<Void> {
 
-        override fun complete(channel: WebSocketChannel, context: Void) {
+        override fun complete(channel: WebSocketChannel, context: Void?) {
             future.complete(null)
         }
 
-        override fun onError(channel: WebSocketChannel, context: Void, throwable: Throwable) {
+        override fun onError(channel: WebSocketChannel, context: Void?, throwable: Throwable) {
             future.completeExceptionally(throwable)
         }
     }
@@ -119,8 +126,7 @@ class SidenConnection(exchange: WebSocketHttpExchange,
     }
 
     override fun sendStream(fn: (OutputStream) -> Unit) {
-        Using.consume(
-                { BinaryOutputStream(this.channel.send(WebSocketFrameType.BINARY)) }, fn)
+        Using.consume({ BinaryOutputStream(this.channel.send(WebSocketFrameType.BINARY)) }, fn)
     }
 
     override fun sendWriter(fn: (Writer) -> Unit) {
@@ -145,10 +151,7 @@ class SidenConnection(exchange: WebSocketHttpExchange,
         get() = this.channel.isOpen
 
     override fun params(key: String): Optional<String> {
-        return if (this.params == null)
-            Optional.empty<String>()
-        else
-            Optional.ofNullable<String>(this.params[key])
+        return Optional.ofNullable<String>(this.params[key])
     }
 
     override fun query(key: String): Optional<String> {

@@ -15,32 +15,31 @@
  */
 package example;
 
+import ninja.siden.App;
+
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
-import ninja.siden.App;
 
 /**
  * @author taichi
  */
 public class URLShortener {
 
-	public static void main(String[] args) {
-		App app = new App();
-		ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
-		app.post("/", (req, res) -> {
-			Optional<String> opt = req.body();
-			return opt.map(s -> {
-				String k = Integer.toHexString(s.hashCode());
-				map.put(k, s);
-				return String.format("http://%s/%s",
-						req.raw().getHostAndPort(), k);
-			});
-		});
+    public static void main(String[] args) {
+        App app = new App();
+        ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
+        app.post("/", (req, res) -> {
+            Optional<String> opt = req.body();
+            return opt.map(s -> {
+                String k = Integer.toHexString(s.hashCode());
+                map.put(k, s);
+                return String.format("http://%s/%s", req.getRaw().getHostAndPort(), k);
+            });
+        });
 
-		app.get("/:k", (req, res) -> req.params("k").map(key -> map.get(key))
-				.map(res::redirect).orElse(404));
+        app.get("/:k", (req, res) -> req.params("k").map(key -> map.get(key))
+                .map(res::redirect).orElse(404));
 
-		app.listen();
-	}
+        app.listen();
+    }
 }

@@ -77,7 +77,7 @@ interface Connection : AttributeContainer {
 
     fun cookie(name: String): Optional<Cookie>
 
-    val current: Session
+    val current: Session?
 
     val raw: WebSocketChannel
 

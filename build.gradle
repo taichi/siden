@@ -31,7 +31,7 @@ configure(subprojects) {
 
 	dependencies {
 		compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-		compile 'io.undertow:undertow-core:1.2.8.Final'
+		compile 'io.undertow:undertow-core:1.2.11.Final'
 
 		testCompile 'junit:junit:4.+'
 		testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"

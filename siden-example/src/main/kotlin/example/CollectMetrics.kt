@@ -13,29 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package example;
+package example
 
-import ninja.siden.App;
-import ninja.siden.Config;
+import ninja.siden.App
+import ninja.siden.Config
 
-/**
- * @author taichi
- */
-public class CollectMetrics {
+fun main(args: Array<String>) {
+    // development environments don't need metrics.
+    val app = App.configure { b -> b.set(Config.ENV, "stable") }
 
-	public static void main(String[] args) {
-		// development environments don't need metrics.
-		App app = App.configure(b -> b.set(Config.ENV, "stable"));
+    app["/", { req, res -> "hello" }]
 
-		app.get("/", (req, res) -> "hello");
+    val sub = App()
+    sub["/hoi", { req, res -> "HOIHOI" }]
+    sub.websocket("/ws").onText { c, s -> c.send(s) }
 
-		App sub = new App();
-		sub.get("/hoi", (req, res) -> "HOIHOI");
-		sub.websocket("/ws").onText((c, s) -> c.send(s));
+    app.use("/aaa", sub)
+    app.use("/bbb", sub)
 
-		app.use("/aaa", sub);
-		app.use("/bbb", sub);
-
-		app.listen().addShutdownHook();
-	}
+    app.listen().addShutdownHook()
 }
