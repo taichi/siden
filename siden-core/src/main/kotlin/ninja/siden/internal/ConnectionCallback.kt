@@ -20,12 +20,10 @@ import io.undertow.websockets.WebSocketConnectionCallback
 import io.undertow.websockets.core.WebSocketChannel
 import io.undertow.websockets.spi.WebSocketHttpExchange
 import ninja.siden.Connection
-import ninja.siden.WebSocket
 import ninja.siden.WebSocketFactory
 import org.xnio.IoUtils
-
 import java.io.IOException
-import java.util.Collections
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**

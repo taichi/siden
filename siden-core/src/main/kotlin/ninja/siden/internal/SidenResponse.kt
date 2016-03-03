@@ -24,7 +24,6 @@ import ninja.siden.Config
 import ninja.siden.Cookie
 import ninja.siden.Renderer
 import ninja.siden.Response
-import ninja.siden.util.Suppress
 import java.util.*
 
 /**

@@ -80,7 +80,7 @@ public class MIMEPredicateTest {
 
     @Test
     public void test() throws Exception {
-        Predicate p = MIMEPredicate.accept(wait);
+        Predicate p = MIMEPredicate.Companion.accept(wait);
         this.exchange.getRequestHeaders().add(Headers.ACCEPT, request);
         assertEquals(is, p.resolve(exchange));
     }

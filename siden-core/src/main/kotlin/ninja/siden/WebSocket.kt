@@ -13,12 +13,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden
+
+import java.nio.ByteBuffer
 
 /**
  * @author taichi
  */
-public interface WebSocketFactory {
+interface WebSocket {
 
-    WebSocket create(Connection connection);
+    open fun onConnect(connection: Connection) {
+    }
+
+    open fun onText(payload: String) {
+    }
+
+    open fun onBinary(payload: Array<ByteBuffer>) {
+    }
+
+    open fun onPong(payload: Array<ByteBuffer>) {
+    }
+
+    open fun onPing(payload: Array<ByteBuffer>) {
+    }
+
+    open fun onClose(payload: Array<ByteBuffer>) {
+    }
 }

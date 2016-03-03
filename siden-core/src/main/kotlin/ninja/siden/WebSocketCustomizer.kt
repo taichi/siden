@@ -13,30 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden
 
-import java.nio.ByteBuffer;
+import java.nio.ByteBuffer
 
 /**
  * @author taichi
  */
-public interface WebSocket {
+interface WebSocketCustomizer {
 
-    default void onConnect(Connection connection) throws Exception {
-    }
+    fun onConnect(fn: (Connection) -> Unit): WebSocketCustomizer
 
-    default void onText(String payload) throws Exception {
-    }
+    fun onText(fn: (Connection, String) -> Unit): WebSocketCustomizer
 
-    default void onBinary(ByteBuffer[] payload) throws Exception {
-    }
+    fun onBinary(fn: (Connection, Array<ByteBuffer>) -> Unit): WebSocketCustomizer
 
-    default void onPong(ByteBuffer[] payload) throws Exception {
-    }
+    fun onPong(fn: (Connection, Array<ByteBuffer>) -> Unit): WebSocketCustomizer
 
-    default void onPing(ByteBuffer[] payload) throws Exception {
-    }
+    fun onPing(fn: (Connection, Array<ByteBuffer>) -> Unit): WebSocketCustomizer
 
-    default void onClose(ByteBuffer[] payload) throws Exception {
-    }
+    fun onClose(fn: (Connection, Array<ByteBuffer>) -> Unit): WebSocketCustomizer
 }

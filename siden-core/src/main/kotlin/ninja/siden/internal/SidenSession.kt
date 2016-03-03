@@ -25,7 +25,7 @@ import java.util.*
 /**
  * @author taichi
  */
-open class SidenSession(internal val exchange: HttpServerExchange,
+open class SidenSession(internal val exchange: HttpServerExchange?,
                         internal val delegate: io.undertow.server.session.Session) : Session {
 
     @Suppress("UNCHECKED_CAST")
@@ -79,7 +79,7 @@ open class SidenSession(internal val exchange: HttpServerExchange,
     }
 
     override fun regenerate(): Session {
-        val config = this.exchange.getAttachment(SessionConfig.ATTACHMENT_KEY)
+        val config = this.exchange?.getAttachment(SessionConfig.ATTACHMENT_KEY)
         this.delegate.changeSessionId(this.exchange, config)
         return this
     }

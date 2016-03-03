@@ -15,36 +15,10 @@
  */
 package ninja.siden
 
-import java.util.*
-
 /**
  * @author taichi
  */
-interface AttributeContainer : Iterable<AttributeContainer.Attr> {
+interface WebSocketFactory {
 
-    /**
-     * @param key    attribute name
-     * *
-     * @param newone new attribute
-     * *
-     * @return existing value
-     */
-    fun <T> attr(key: String, newone: T): Optional<T>
-
-    fun <T> attr(key: String): Optional<T>
-
-    /**
-     * @param key
-     * *
-     * @return existing value
-     */
-    fun <T> remove(key: String): Optional<T>
-
-    interface Attr {
-        val name: String
-
-        fun <T> value(): T
-
-        fun <T> remove(): T
-    }
+    fun create(connection: Connection): WebSocket
 }

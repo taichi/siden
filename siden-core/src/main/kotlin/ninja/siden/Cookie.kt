@@ -15,7 +15,7 @@
  */
 package ninja.siden
 
-import java.util.Date
+import java.util.*
 
 /**
  * @author taichi
