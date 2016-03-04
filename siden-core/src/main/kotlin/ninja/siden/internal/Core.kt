@@ -22,8 +22,6 @@ import ninja.siden.Request
 import ninja.siden.Response
 import org.xnio.OptionMap
 
-import java.util.function.Predicate
-
 /**
  * @author taichi
  */
@@ -53,10 +51,10 @@ class Core(internal val config: OptionMap, internal val next: HttpHandler) : Htt
 
         @JvmField val RESPONSE = AttachmentKey.create(Response::class.java)
 
-        fun adapt(fn: Predicate<Request>): io.undertow.predicate.Predicate {
+        fun adapt(fn: (Request)->Boolean): io.undertow.predicate.Predicate {
             return io.undertow.predicate.Predicate { exchange ->
                 val request = exchange.getAttachment(Core.REQUEST)
-                fn.test(request)
+                fn(request)
             }
         }
     }

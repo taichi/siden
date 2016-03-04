@@ -29,26 +29,26 @@ import java.util.*
 class RoutingDef(val template: String,
                  val predicate: Predicate,
                  val method: HttpMethod,
-                 val route: Route) : RoutingCustomizer {
+                 val route: Route,
+                 var renderer: Renderer<*>? = null
+                 ) : RoutingCustomizer {
 
-    var renderer: Renderer<*>? = null
-        internal set
     var type: String = ""
         internal set
     var accepts: MutableList<String> = ArrayList()
     var matches = Predicates.truePredicate()
 
     override fun type(type: String): RoutingCustomizer {
-        this.type = requireNotNull(type)
+        this.type = type
         return this
     }
 
     override fun accept(type: String): RoutingCustomizer {
-        this.accepts.add(requireNotNull(type))
+        this.accepts.add(type)
         return this
     }
 
-    override fun match(fn: java.util.function.Predicate<Request>): RoutingCustomizer {
+    override fun match(fn: (Request) -> Boolean): RoutingCustomizer {
         this.matches = Predicates.and(this.matches, Core.adapt(fn))
         return this
     }

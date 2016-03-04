@@ -15,16 +15,9 @@
  */
 package example
 
-import ninja.siden.App
-import ninja.siden.Config
-import ninja.siden.Renderer
-import ninja.siden.RendererRepository
-import ninja.siden.util.Suppress
-
 import com.github.jknack.handlebars.Handlebars
-import com.github.jknack.handlebars.Template
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
-import com.github.jknack.handlebars.io.TemplateLoader
+import ninja.siden.*
 
 /**
  * @author taichi
@@ -40,10 +33,10 @@ fun main(args: Array<String>) {
     val t = engine.compileInline("Hello {{this}}!")
 
     // use handlebars simply
-    app.get("/bars") { req, res -> res.render("john", Renderer.of { context, writer -> t.apply(context, writer) }) }
+    app.get("/bars", Route { req, res -> res.render("john", Renderer.of { context, writer -> t.apply(context, writer) }) })
 
     // read template from templates/say/hello.html
-    app.get("/hello") { req, res -> res.render(User("peter"), "say/hello") }
+    app.get("/hello", Route { req, res -> res.render(User("peter"), "say/hello") })
 
     app.listen().addShutdownHook()
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 SATO taichi
+ * Copyright 2014 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden
 
 /**
  * @author taichi
  */
-public interface Stoppable {
+interface AssetsCustomizer {
 
-    void stop();
+    fun cacheTime(time: Int): AssetsCustomizer
 
-    void addShutdownHook();
+    fun directoryListing(allow: Boolean): AssetsCustomizer
+
+    fun welcomeFiles(vararg files: String): AssetsCustomizer
+
+    // AssetsCustomizer etag(Boolean is);
+
+    fun from(loader: ClassLoader): AssetsCustomizer
 }

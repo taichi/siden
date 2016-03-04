@@ -36,11 +36,7 @@ import javax.management.ObjectName
 class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
 
     override fun apply(context: AppContext, def: RoutingDef) {
-        val newone = RoutingDef(def.template, def.predicate, def.method, makeRouteTracker(context, def))
-        val re = newone.renderer
-        if (re != null) {
-            newone.render(re)
-        }
+        val newone = RoutingDef(def.template, def.predicate, def.method, makeRouteTracker(context, def), def.renderer)
         newone.type(newone.type)
         newone.accepts = newone.accepts
         newone.matches = newone.matches
@@ -68,10 +64,7 @@ class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
 
     protected fun makeWebSocketTracker(context: AppContext, def: WebSocketDef): WebSocketFactory {
         val tracker = WebSocketTracker(def.factory)
-        register(
-                context.root,
-                tracker,
-                listOf("type", "WebSocket", "path", ObjectName.quote(context.prefix + def.template)))
+        register(context.root, tracker, listOf("type", "WebSocket", "path", ObjectName.quote(context.prefix + def.template)))
         return tracker
     }
 

@@ -16,23 +16,22 @@
 package ninja.siden.internal
 
 import ninja.siden.App
+import ninja.siden.Route
 import ninja.siden.Stoppable
 import org.apache.http.client.methods.HttpGet
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
-
 import java.io.ByteArrayInputStream
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.Arrays
-
-import org.junit.Assert.assertEquals
+import java.util.*
 
 /**
  * @author taichi
@@ -55,7 +54,7 @@ class RendererSelectorTest(val name: String, internal var actual: Any, internal 
     }
 
     internal fun runServer(result: Any) {
-        this.app.get("/renderer/$name", { req, res -> result })
+        this.app.get("/renderer/$name", Route { req, res -> result })
         this.stopper = this.app.listen(port)
     }
 

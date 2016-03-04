@@ -13,20 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
-
-import java.util.function.Predicate;
+package ninja.siden
 
 /**
  * @author taichi
  */
-public interface RoutingCustomizer extends
-        RendererCustomizer<RoutingCustomizer> {
+interface RoutingCustomizer : RendererCustomizer<RoutingCustomizer> {
 
-    RoutingCustomizer type(String type);
+    fun type(type: String): RoutingCustomizer
 
-    RoutingCustomizer accept(String type);
+    fun accept(type: String): RoutingCustomizer
 
-    RoutingCustomizer match(Predicate<Request> fn);
+    fun match(fn: (Request)-> Boolean): RoutingCustomizer
 
 }

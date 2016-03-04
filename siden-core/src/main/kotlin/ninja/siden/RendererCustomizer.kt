@@ -13,13 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden
 
 /**
  * @author taichi
  */
-public interface RendererCustomizer<T extends RendererCustomizer<T>> {
+interface RendererCustomizer<T : RendererCustomizer<T>> {
 
-    <MODEL> T render(Renderer<MODEL> renderer);
+    fun <MODEL> render(renderer: Renderer<MODEL>): T
 
 }

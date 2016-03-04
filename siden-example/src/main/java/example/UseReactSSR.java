@@ -15,11 +15,11 @@
  */
 package example;
 
-import java.nio.file.Paths;
-import java.util.Arrays;
-
 import ninja.siden.App;
 import ninja.siden.react.React;
+
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * React.js Server Side Rendering Example on JVM.

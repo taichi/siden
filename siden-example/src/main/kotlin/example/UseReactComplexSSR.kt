@@ -15,23 +15,17 @@
  */
 package example
 
-import java.nio.file.Paths
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.HashMap
-import java.util.regex.Pattern
-
+import com.github.mustachejava.DefaultMustacheFactory
 import ninja.siden.App
 import ninja.siden.Renderer
+import ninja.siden.Route
 import ninja.siden.RoutingCustomizer
 import ninja.siden.react.React
-
 import org.boon.Maps
 import org.boon.json.JsonFactory
-
-import com.github.mustachejava.DefaultMustacheFactory
-import com.github.mustachejava.Mustache
-import com.github.mustachejava.MustacheFactory
+import java.nio.file.Paths
+import java.util.*
+import java.util.regex.Pattern
 
 /**
  * React.js Server Side Rendering Example on JVM.
@@ -67,25 +61,25 @@ fun main(args: Array<String>) {
             Paths.get("build", "comments.js")))
 
     val app = App()
-    app[Pattern.compile("/(index.html?)?"), { q, s ->
+    app.get(Pattern.compile("/(index.html?)?"), Route { q, s ->
         val props = JsonFactory.toJson(Maps.map<String, Any>("initdata",
                 comments, "url", "comments.json"))
         val model = HashMap<String, Any>()
         model.put("rendered", rc.toHtml(props))
         model.put("clientjs", rc.toClientJs(props))
         s.render<Any>(model, renderer)
-    }].type("text/html")
+    }).type("text/html")
 
     // JSON API
-    json(app.get("/comments.json", { q, s -> comments }))
-    json(app.post("/comments.json") { req, res ->
+    json(app.get("/comments.json", Route { q, s -> comments }))
+    json(app.post("/comments.json", Route { req, res ->
         val m = HashMap<String, Any>()
         m.put("id", ++id)
         req.form("author").ifPresent { s -> m.put("author", s) }
         req.form("text").ifPresent { s -> m.put("text", s) }
         comments.add(m)
         comments
-    })
+    }))
 
     app.assets("build")
     app.assets("/static", "assets")

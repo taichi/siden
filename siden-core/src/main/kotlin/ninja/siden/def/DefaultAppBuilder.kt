@@ -34,13 +34,13 @@ import org.xnio.OptionMap
 /**
  * @author taichi
  */
-open class DefaultAppBuilder @JvmOverloads constructor(val config: OptionMap,
-                                                       val assets: PathHandler = Handlers.path(),
-                                                       val router: RoutingHandler = RoutingHandler(assets),
-                                                       val subapp: PathHandler = PathHandler(router),
-                                                       val websockets: PredicatesHandler = PredicatesHandler(subapp),
-                                                       val filters: FiltersHandler = FiltersHandler(websockets)
-) : AppBuilder {
+open class DefaultAppBuilder(val config: OptionMap) : AppBuilder {
+
+    val assets: PathHandler = Handlers.path()
+    val router: RoutingHandler = RoutingHandler(assets)
+    val subapp: PathHandler = PathHandler(router)
+    val websockets: PredicatesHandler = PredicatesHandler(subapp)
+    val filters: FiltersHandler = FiltersHandler(websockets)
 
     override fun begin() {
         if (config.get<Boolean>(Config.SIDEN_FAVICON, false)) {
@@ -82,8 +82,7 @@ open class DefaultAppBuilder @JvmOverloads constructor(val config: OptionMap,
         return makeSharedHandlers(root, this.config, this.filters)
     }
 
-    protected open fun makeSharedHandlers(root: App, config: OptionMap,
-                                          next: HttpHandler): HttpHandler {
+    protected open fun makeSharedHandlers(root: App, config: OptionMap,next: HttpHandler): HttpHandler {
         var hh = next
         if (config.get(Config.METHOD_OVERRIDE)) {
             hh = MethodOverrideHandler(hh)
@@ -95,14 +94,14 @@ open class DefaultAppBuilder @JvmOverloads constructor(val config: OptionMap,
             hh = Handlers.disableCache(hh)
         } else {
             val gsh = Handlers.gracefulShutdown(hh)
-            root.stopOn({
+            root.stopOn {
                 gsh.shutdown()
                 try {
                     gsh.awaitShutdown(config.get(Config.WAIT_FOR_GRACEFUL_SHUTDOWN, 500))
                 } catch (e: InterruptedException) {
                     // ignore
                 }
-            })
+            }
             hh = gsh
         }
 

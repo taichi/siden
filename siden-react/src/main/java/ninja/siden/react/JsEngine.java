@@ -15,18 +15,16 @@
  */
 package ninja.siden.react;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+import ninja.siden.util.Suppress;
+import ninja.siden.util.Using;
+import org.jboss.logging.Logger;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-
-import ninja.siden.util.Suppress;
-import ninja.siden.util.Using;
-
-import org.jboss.logging.Logger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * @author taichi

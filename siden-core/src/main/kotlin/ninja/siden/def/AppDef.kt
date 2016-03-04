@@ -55,15 +55,13 @@ class AppDef(val config: OptionMap) {
         return this.add(p.pattern(), PathPredicate(p), method, route)
     }
 
-    fun add(template: String, path: PathPredicate,
-            method: HttpMethod, route: Route): RoutingCustomizer {
+    fun add(template: String, path: PathPredicate, method: HttpMethod, route: Route): RoutingCustomizer {
         val def = RoutingDef(template, path, method, route)
         this.router.add(def)
         return def
     }
 
-    fun add(template: String, predicate: Predicate,
-            factory: WebSocketFactory) {
+    fun add(template: String, predicate: Predicate, factory: WebSocketFactory) {
         this.websockets.add(WebSocketDef(template, predicate, factory))
     }
 
@@ -75,8 +73,7 @@ class AppDef(val config: OptionMap) {
         this.subapp.add(SubAppDef(prefix, subapp))
     }
 
-    fun <T : Throwable> add(type: Class<T>,
-                            route: ExceptionalRoute<T>): RendererCustomizer<*> {
+    fun <T : Throwable> add(type: Class<T>, route: ExceptionalRoute<T>): RendererCustomizer<*> {
         val def = ExceptionalRoutingDef(type, route)
         this.exceptionRouter.add(def)
         return def

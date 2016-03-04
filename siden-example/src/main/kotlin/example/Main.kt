@@ -15,9 +15,7 @@
  */
 package example
 
-import ninja.siden.App
-import ninja.siden.Renderer
-import ninja.siden.Request
+import ninja.siden.*
 
 import org.boon.json.JsonFactory
 
@@ -28,31 +26,33 @@ fun main(args: Array<String>) {
     val app = App()
 
     // simple get
-    app.get("/hello") { req, res -> "Hello world !!" }
+    app.get("/hello", Route { req, res -> "Hello world !!" })
 
     // receive Ajax request only
-    app.get("/ajax") { req, res -> "{ 'name' : 'ajax' }" }.match( { it.xhr })
+    app.get("/ajax", Route { req, res -> "{ 'name' : 'ajax' }" }).match( { it.xhr })
 
     // simple logging filter
-    app.use { req, res, chain ->
+    app.use (Filter { req, res, chain ->
         System.out.printf("%s %s %n", req.method, req.path)
         chain.next()
-    }
+    })
 
     // exception handling
 
-    app.error(MyException::class.java) { ex, req, res -> ex.extramessage() }
+    app.error(MyException::class.java, ExceptionalRoute { ex, req, res -> ex.extramessage() })
 
-    app["/err", { req, res -> throw MyException() }]
+    app.get("/err",Route { req, res -> throw MyException() })
 
     // response code handling
-    app.error(402) { req, res -> "Payment Required. Payment Required!!" }
-    app["/402", { req, res -> 402 }]
-    app["/payment", { req, res -> res.status(402) }]
+    app.error(402, Route { req, res -> "Payment Required. Payment Required!!" })
+    app.get("/402", Route { req, res -> 402 })
+    app.get("/payment", Route { req, res -> res.status(402) })
 
     // json api on top of Boon JSON
     // see. https://github.com/boonproject/boon
-    app["/users/:name", { req, res -> req.params("name").map( { User(it) }) }].render(Renderer.of { value: Any, appendable: Appendable -> JsonFactory.toJson(value, appendable) }).type("application/json")
+    app.get("/users/:name", Route { req, res -> req.params("name").map( { User(it) }) })
+            .render(Renderer.of { value: Any, appendable: Appendable -> JsonFactory.toJson(value, appendable) })
+            .type("application/json")
 
     // use static resources
     // GET /javascripts/jquery.js
@@ -65,12 +65,12 @@ fun main(args: Array<String>) {
     // GET /static/favicon.ico
     app.assets("/static", "assets/")
 
-    app["/", { req, res -> "Siden Example Application is running." }]
+    app.get("/", Route { req, res -> "Siden Example Application is running." })
 
     // sub application
     val sub = App()
     // GET /secret/admin
-    sub["/admin", { req, res -> "I'm in secret area" }]
+    sub.get("/admin", Route { req, res -> "I'm in secret area" })
     app.use("/secret", sub)
 
     app.listen().addShutdownHook()
