@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 SATO taichi
+ * Copyright 2014 SATO taichi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.util;
+package ninja.siden.util
 
-import java.util.concurrent.atomic.LongAccumulator;
+import org.junit.Test
+
+import org.junit.Assert.assertEquals
 
 /**
  * @author taichi
  */
-public interface LongAccumulators {
+class ExactlyOnceCloseableTest {
 
-    static LongAccumulator max() {
-        return new LongAccumulator((x, y) -> x < y ? y : x, 0);
-    }
-
-    static LongAccumulator min() {
-        return new LongAccumulator((x, y) -> y < x || (x < 0 && -1 < y) ? y : x, -1);
+    @Test
+    fun close() {
+        var counter = 0
+        val c = ExactlyOnceCloseable.wrap(AutoCloseable { counter++ })
+        c.close()
+        c.close()
+        assertEquals(1, counter)
     }
 }

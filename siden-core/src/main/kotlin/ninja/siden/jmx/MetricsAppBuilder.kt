@@ -88,7 +88,7 @@ class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
         val name = "ninja.siden".to(attrs)
         val server = ManagementFactory.getPlatformMBeanServer()
         server.registerMBean(bean, name)
-        val ec = ExactlyOnceCloseable.wrap { server.unregisterMBean(name) }
+        val ec = ExactlyOnceCloseable.wrap (AutoCloseable { server.unregisterMBean(name) })
         root.stopOn { app -> ec.close() }
     }
 }

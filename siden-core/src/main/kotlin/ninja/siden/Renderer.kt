@@ -34,8 +34,7 @@ interface Renderer<T> {
 
     companion object {
 
-        fun <MODEL> ofStream(
-                fn: (MODEL, OutputStream) -> Unit): Renderer<MODEL> {
+        fun <MODEL> ofStream(fn: (MODEL, OutputStream) -> Unit): Renderer<MODEL> {
             return BlockingRenderer(object : Renderer<MODEL> {
                 override fun render(model: MODEL, sink: HttpServerExchange) {
                     fn(model, sink.outputStream)
