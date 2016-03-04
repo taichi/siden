@@ -41,18 +41,18 @@ class JsEngine {
         this.manager.bindings = se.getBindings(ScriptContext.ENGINE_SCOPE)
     }
 
-    fun eval(script: String): Any {
+    fun eval(script: String): Any? {
         LOG.debug(manager.bindings.keys)
         val engine = newEngine()
         return engine.eval(script)
     }
 
-    fun eval(path: Path): Any {
+    fun eval(path: Path): Any? {
         LOG.debug(manager.bindings.keys)
         return eval(newEngine(), path)
     }
 
-    internal fun eval(engine: ScriptEngine, path: Path): Any {
+    internal fun eval(engine: ScriptEngine, path: Path): Any? {
         return Files.newBufferedReader(path).use {
             engine.eval(it)
         }

@@ -42,7 +42,6 @@ class JsEngineTest {
     }
 
     @Test
-    @Throws(Exception::class)
     fun testEvalSeparately() {
         this.target.initialize(emptyList())
         this.target.eval("var hoge = 10")

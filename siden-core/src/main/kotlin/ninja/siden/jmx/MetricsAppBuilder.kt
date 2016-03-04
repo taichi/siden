@@ -34,9 +34,9 @@ class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
 
     override fun apply(context: AppContext, def: RoutingDef) {
         val newone = RoutingDef(def.template, def.predicate, def.method, makeRouteTracker(context, def), def.renderer)
-        newone.type(newone.type)
-        newone.accepts = newone.accepts
-        newone.matches = newone.matches
+        newone.type(def.type)
+        newone.accepts = def.accepts
+        newone.matches = def.matches
         newone.addTo(this.router)
     }
 
@@ -77,15 +77,14 @@ class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
         return SessionAttachmentHandler(next, sessionManager, sessionConfig)
     }
 
-    override fun makeSharedHandlers(root: App, config: OptionMap,
-                                    next: HttpHandler): HttpHandler {
+    override fun makeSharedHandlers(root: App, config: OptionMap, next: HttpHandler): HttpHandler {
         val shared = super.makeSharedHandlers(root, config, next)
         register(root, RequestMetrics.to(MetricsHandler(shared)), listOf("type", "Request", "name", "Global"))
         return shared
     }
 
     protected fun register(root: App, bean: Any, attrs: List<String>) {
-        val name = "ninja.siden".to(attrs)
+        val name = "ninja.siden".toObjectName(attrs)
         val server = ManagementFactory.getPlatformMBeanServer()
         server.registerMBean(bean, name)
         val ec = ExactlyOnceCloseable.wrap (AutoCloseable { server.unregisterMBean(name) })

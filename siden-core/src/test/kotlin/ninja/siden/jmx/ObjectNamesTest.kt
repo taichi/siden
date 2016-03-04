@@ -13,31 +13,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-@file:JvmName("ObjectNames")
-
 package ninja.siden.jmx
 
+import ninja.siden.jmx.*
+import org.junit.Test
+
 import javax.management.ObjectName
+import java.util.Arrays
+
+import org.junit.Assert.assertEquals
 
 /**
  * @author taichi
  */
-fun CharSequence.toObjectName(): ObjectName = ObjectName(this.toString())
+class ObjectNamesTest {
 
-fun CharSequence.toObjectName(props: List<String>): ObjectName {
-    require(props.size % 2 == 0)
-    val stb = StringBuilder(this)
-    stb.append(":")
-    val i = props.iterator()
-    while (i.hasNext()) {
-        stb.append(i.next())
-        stb.append('=')
-        stb.append(i.next())
-        if (i.hasNext()) {
-            stb.append(',')
-        }
+    @Test
+    fun toObjectName() {
+        val name = "aaa.bbb:type=Z".toObjectName()
+        assertEquals("aaa.bbb", name.domain)
+        assertEquals("Z", name.getKeyProperty("type"))
     }
-    return stb.toObjectName()
+
+    @Test
+    fun withMap() {
+        val list = Arrays.asList("type", "Z", "aaa", "bbb", "ccc", "ddd", "bbb", "zzz")
+        val name = "aaa.bbb".toObjectName(list)
+        assertEquals("aaa.bbb:type=Z,aaa=bbb,ccc=ddd,bbb=zzz", name.toString())
+    }
+
 }
-
-
