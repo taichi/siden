@@ -28,7 +28,7 @@ import java.util.*
 import java.util.regex.Pattern
 
 /**
- * React.js Server Side Rendering Example on JVM.
+ * ninja.siden.react.React.js Server Side Rendering Example on JVM.
 
  * @author taichi
  */

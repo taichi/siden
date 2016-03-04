@@ -47,15 +47,15 @@ class AppDef(val config: OptionMap) {
         return def
     }
 
-    fun add(method: HttpMethod, path: String, route: Route): RoutingCustomizer {
+    fun add(method: HttpMethod, path: String, route: (Request, Response) -> Any): RoutingCustomizer {
         return this.add(path, PathPredicate(path), method, route)
     }
 
-    fun add(method: HttpMethod, p: Pattern, route: Route): RoutingCustomizer {
+    fun add(method: HttpMethod, p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer {
         return this.add(p.pattern(), PathPredicate(p), method, route)
     }
 
-    fun add(template: String, path: PathPredicate, method: HttpMethod, route: Route): RoutingCustomizer {
+    fun add(template: String, path: PathPredicate, method: HttpMethod, route: (Request, Response) -> Any): RoutingCustomizer {
         val def = RoutingDef(template, path, method, route)
         this.router.add(def)
         return def
@@ -73,13 +73,13 @@ class AppDef(val config: OptionMap) {
         this.subapp.add(SubAppDef(prefix, subapp))
     }
 
-    fun <T : Throwable> add(type: Class<T>, route: ExceptionalRoute<T>): RendererCustomizer<*> {
+    fun <T : Throwable> add(type: Class<T>, route: (T, Request, Response) -> Any): RendererCustomizer<*> {
         val def = ExceptionalRoutingDef(type, route)
         this.exceptionRouter.add(def)
         return def
     }
 
-    fun add(errorCode: Int, route: Route): RendererCustomizer<*> {
+    fun add(errorCode: Int, route: (Request, Response) -> Any): RendererCustomizer<*> {
         val def = ErrorCodeRoutingDef(errorCode, route)
         this.errorRouter.add(def)
         return def

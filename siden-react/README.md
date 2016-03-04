@@ -1,4 +1,4 @@
-# React.js Server Side Rendering Support
+# ninja.siden.react.React.js Server Side Rendering Support
 
 ## Installation
 
@@ -59,13 +59,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 import ninja.siden.App;
-import ninja.siden.react.React;
+import ninja.siden.react.ninja.siden.react.React;
 
 public class UseReactSSR {
 
 	public static void main(String[] args) {
 		// setup react server side rendering
-		React rc = new React("HelloMessage", "content", Arrays.asList(
+		ninja.siden.react.React rc = new ninja.siden.react.React("HelloMessage", "content", Arrays.asList(
 				// https://github.com/paulmillr/console-polyfill
 				// Nashorn don't contain console object.
 				Paths.get("assets", "console-polyfill.js"),
@@ -89,8 +89,8 @@ public class UseReactSSR {
 ```
 
 ```javascript
-/** @jsx React.DOM */
-var HelloMessage = React.createClass({
+/** @jsx ninja.siden.react.React.DOM */
+var HelloMessage = ninja.siden.react.React.createClass({
   render: function() {
     return <div>Hello {this.props.name}</div>;
   }
@@ -100,6 +100,6 @@ var HelloMessage = React.createClass({
 if you want to more complex example, see [here](https://github.com/taichi/siden/tree/master/siden-example/src/main/java/example/UseReactComplexSSR.java)
 
 ## Similar projects
-* [React.NET](https://github.com/reactjs/React.NET)
+* [ninja.siden.react.React.NET](https://github.com/reactjs/ninja.siden.react.React.NET)
 * [Om Server Rendering](https://github.com/pleasetrythisathome/om-server-rendering)
 * [jreact](https://github.com/KnisterPeter/jreact/)

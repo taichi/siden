@@ -29,7 +29,7 @@ import java.util.*
 class RoutingDef(val template: String,
                  val predicate: Predicate,
                  val method: HttpMethod,
-                 val route: Route,
+                 val route: (Request, Response) -> Any,
                  var renderer: Renderer<*>? = null
                  ) : RoutingCustomizer {
 
@@ -66,8 +66,8 @@ class RoutingDef(val template: String,
         val t = this.type
         if (t.isNullOrEmpty() == false) {
             list.add(MIMEPredicate.accept(type))
-            route = Route { req, res ->
-                val result = this.route.handle(req, res)
+            route = { req, res ->
+                val result = this.route(req, res)
                 res.type(this.type)
                 result
             }

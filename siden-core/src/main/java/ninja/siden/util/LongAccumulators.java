@@ -27,7 +27,6 @@ public interface LongAccumulators {
     }
 
     static LongAccumulator min() {
-        return new LongAccumulator(
-                (x, y) -> y < x || (x < 0 && -1 < y) ? y : x, -1);
+        return new LongAccumulator((x, y) -> y < x || (x < 0 && -1 < y) ? y : x, -1);
     }
 }

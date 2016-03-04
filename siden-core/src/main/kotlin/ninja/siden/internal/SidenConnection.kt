@@ -22,7 +22,6 @@ import io.undertow.websockets.spi.WebSocketHttpExchange
 import ninja.siden.AttributeContainer
 import ninja.siden.Connection
 import ninja.siden.Cookie
-import ninja.siden.util.Using
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.io.Writer
@@ -126,15 +125,13 @@ class SidenConnection(private val exchange: WebSocketHttpExchange,
     }
 
     override fun sendStream(fn: (OutputStream) -> Unit) {
-        Using.consume({ BinaryOutputStream(this.channel.send(WebSocketFrameType.BINARY)) }, fn)
+        BinaryOutputStream(this.channel.send(WebSocketFrameType.BINARY)).use(fn)
     }
 
     override fun sendWriter(fn: (Writer) -> Unit) {
-        Using.consume({
-            OutputStreamWriter(BinaryOutputStream(
-                    this.channel.send(WebSocketFrameType.TEXT)),
-                    StandardCharsets.UTF_8)
-        }, fn)
+        OutputStreamWriter(BinaryOutputStream(
+                this.channel.send(WebSocketFrameType.TEXT)),
+                StandardCharsets.UTF_8).use(fn)
     }
 
     override val protocolVersion: String

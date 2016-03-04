@@ -15,14 +15,13 @@
  */
 package ninja.siden.def
 
-import ninja.siden.ExceptionalRoute
-import ninja.siden.Renderer
-import ninja.siden.RendererCustomizer
+import ninja.siden.*
 
 /**
  * @author taichi
  */
-class ExceptionalRoutingDef<EX : Throwable>(val type: Class<EX>, val route: ExceptionalRoute<EX>) : RendererCustomizer<ExceptionalRoutingDef<EX>> {
+class ExceptionalRoutingDef<EX : Throwable>(val type: Class<EX>,
+                                            val route: (EX, Request, Response) -> Any) : RendererCustomizer<ExceptionalRoutingDef<EX>> {
     var renderer: Renderer<*>? = null
         internal set
 

@@ -19,10 +19,7 @@ import io.undertow.Undertow
 import io.undertow.predicate.Predicate
 import io.undertow.server.HttpHandler
 import io.undertow.server.HttpServerExchange
-import ninja.siden.App
-import ninja.siden.Config
-import ninja.siden.Renderer
-import ninja.siden.Route
+import ninja.siden.*
 import ninja.siden.def.ErrorCodeRoutingDef
 import ninja.siden.def.ExceptionalRoutingDef
 import java.util.*
@@ -43,7 +40,7 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
         for (route in routings) {
             if (route.predicate.resolve(exchange)) {
                 val hh = HttpHandler { ex ->
-                    handle(ex, Route { request, response -> route.route.handle(request, response) },
+                    handle(ex,  { request, response -> route.route(request, response) },
                             route.renderer)
                 }
                 if (exchange.isInIoThread) {
@@ -62,7 +59,7 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
             exchange.responseCode = responseCode
             val list = this.errorCodeMappings[responseCode] ?:emptyList<ErrorCodeRoutingDef>()
             for (route in list) {
-                if (handle(exchange, Route { request, response -> route.route.handle(request, response) }, route.renderer)) {
+                if (handle(exchange, { request, response -> route.route(request, response) }, route.renderer)) {
                     return true
                 }
             }
@@ -86,17 +83,17 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
     internal fun <T : Throwable> handle(exception: T,
                                         exchange: HttpServerExchange): Boolean {
         val def = find(exception)
-        return def != null && handle(exchange, Route { req, res ->
+        return def != null && handle(exchange, { req, res ->
             exchange.responseCode = 500
-            def.route.handle(exception, req, res)
+            def.route(exception, req, res)
         }, def.renderer)
     }
 
-    internal fun handle(exchange: HttpServerExchange, fn: Route, renderer: Renderer<*>?): Boolean {
+    internal fun handle(exchange: HttpServerExchange, fn: (Request, Response) -> Any, renderer: Renderer<*>?): Boolean {
         try {
             val request = exchange.getAttachment(Core.REQUEST)
             val response = exchange.getAttachment(Core.RESPONSE)
-            var model: Any? = fn.handle(request, response)
+            var model: Any? = fn(request, response)
             if (model != null) {
                 if (model is Optional<*>) {
                     model = model.orElse(null)
@@ -138,7 +135,7 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
         return ignorePackages.any( { n.startsWith(it) })
     }
 
-    fun add(predicate: Predicate, route: Route, renderer: Renderer<*>?) {
+    fun add(predicate: Predicate, route: (Request, Response) -> Any, renderer: Renderer<*>?) {
         this.routings.add(Routing(predicate, route, renderer))
     }
 
@@ -155,7 +152,7 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
         this.errorCodeMappings.put(model.code, list)
     }
 
-    internal data class Routing(var predicate: Predicate, var route: Route, var renderer: Renderer<*>?)
+    internal data class Routing(var predicate: Predicate, var route: (Request, Response) -> Any, var renderer: Renderer<*>?)
 
     companion object {
 

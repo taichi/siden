@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+/** @jsx ninja.siden.react.React.DOM */
 var converter = new Showdown.converter();
-var Comment = React.createClass({
+var Comment = ninja.siden.react.React.createClass({
   render: function() {
 	var rawMarkup = converter.makeHtml(this.props.children.toString());
     return (
@@ -13,7 +13,7 @@ var Comment = React.createClass({
     );
   }
 });
-var CommentList = React.createClass({
+var CommentList = ninja.siden.react.React.createClass({
   render: function() {
      var commentNodes = this.props.data.map(function (comment) {
         return (
@@ -30,7 +30,7 @@ var CommentList = React.createClass({
     );
   }
 });
-var CommentForm = React.createClass({
+var CommentForm = ninja.siden.react.React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var author = this.refs.author.getDOMNode().value.trim();
@@ -53,7 +53,7 @@ var CommentForm = React.createClass({
     );
   }
 });
-var CommentBox = React.createClass({
+var CommentBox = ninja.siden.react.React.createClass({
   getInitialState: function() {
     return { data: this.props.initdata };
   },

@@ -40,27 +40,27 @@ class App(val config: OptionMap = Config.defaults().map) {
     protected val stop = Publisher<App>()
 
     // request handling
-    fun get(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.GET, path, route)
+    fun get(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.GET, path, route)
 
-    fun head(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.HEAD, path, route)
+    fun head(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.HEAD, path, route)
 
-    fun post(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.POST, path, route)
+    fun post(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.POST, path, route)
 
-    fun put(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.PUT, path, route)
+    fun put(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.PUT, path, route)
 
-    fun delete(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.DELETE, path, route)
+    fun delete(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.DELETE, path, route)
 
-    fun trace(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.TRACE, path, route)
+    fun trace(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.TRACE, path, route)
 
-    fun options(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.OPTIONS, path, route)
+    fun options(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.OPTIONS, path, route)
 
-    fun connect(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.CONNECT, path, route)
+    fun connect(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.CONNECT, path, route)
 
-    fun patch(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.PATCH, path, route)
+    fun patch(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.PATCH, path, route)
 
-    fun link(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.LINK, path, route)
+    fun link(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.LINK, path, route)
 
-    fun unlink(path: String, route: Route): RoutingCustomizer = this.def.add(HttpMethod.UNLINK, path, route)
+    fun unlink(path: String, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.UNLINK, path, route)
 
     fun websocket(path: String, factory: WebSocketFactory) = this.def.add(path, PathPredicate(path), factory)
 
@@ -70,27 +70,27 @@ class App(val config: OptionMap = Config.defaults().map) {
         return factory
     }
 
-    fun get(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.GET, p, route)
+    fun get(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.GET, p, route)
 
-    fun head(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.HEAD, p, route)
+    fun head(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.HEAD, p, route)
 
-    fun post(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.POST, p, route)
+    fun post(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.POST, p, route)
 
-    fun put(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.PUT, p, route)
+    fun put(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.PUT, p, route)
 
-    fun delete(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.DELETE, p, route)
+    fun delete(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.DELETE, p, route)
 
-    fun trace(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.TRACE, p, route)
+    fun trace(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.TRACE, p, route)
 
-    fun options(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.OPTIONS, p, route)
+    fun options(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.OPTIONS, p, route)
 
-    fun connect(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.CONNECT, p, route)
+    fun connect(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.CONNECT, p, route)
 
-    fun patch(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.PATCH, p, route)
+    fun patch(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.PATCH, p, route)
 
-    fun link(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.LINK, p, route)
+    fun link(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.LINK, p, route)
 
-    fun unlink(p: Pattern, route: Route): RoutingCustomizer = this.def.add(HttpMethod.UNLINK, p, route)
+    fun unlink(p: Pattern, route: (Request, Response) -> Any): RoutingCustomizer = this.def.add(HttpMethod.UNLINK, p, route)
 
     fun websocket(path: Pattern, factory: WebSocketFactory) = this.def.add(path.pattern(), PathPredicate(path), factory)
 
@@ -125,10 +125,10 @@ class App(val config: OptionMap = Config.defaults().map) {
 
     fun use(path: String, filter: Filter) = this.def.add(PathPredicate(path), filter)
 
-    fun <T : Throwable> error(type: Class<T>, route: ExceptionalRoute<T>): RendererCustomizer<*>
+    fun <T : Throwable> error(type: Class<T>, route: (T, Request, Response) -> Any): RendererCustomizer<*>
             = this.def.add(type, route)
 
-    fun error(statusCode: Int, route: Route): RendererCustomizer<*> = this.def.add(statusCode, route)
+    fun error(statusCode: Int, route: (Request, Response) -> Any): RendererCustomizer<*> = this.def.add(statusCode, route)
 
     /**
      * mount sub application on `path`

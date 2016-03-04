@@ -13,36 +13,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden.util;
+package ninja.siden.util
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.*
+import java.util.function.Consumer
 
 /**
  * @author taichi
  */
-public class Publisher<E> {
+class Publisher<E> {
 
-    List<Consumer<E>> listeners = Collections
-            .synchronizedList(new ArrayList<>());
+    internal var listeners = Collections.synchronizedList(ArrayList<(E) -> Unit>())
 
-    public void on(Consumer<E> fn) {
-        this.listeners.add(fn);
+    fun on(fn: (E) -> Unit) {
+        this.listeners.add(fn)
     }
 
-    public void off(Consumer<E> fn) {
-        this.listeners.remove(fn);
+    fun off(fn: (E)->Unit) {
+        this.listeners.remove(fn)
     }
 
-    public void post(E event) {
-        for (Iterator<Consumer<E>> i = this.listeners.iterator(); i.hasNext(); ) {
+    fun post(event: E) {
+        val i = this.listeners.iterator()
+        while (i.hasNext()) {
             try {
-                i.next().accept(event);
+                i.next()(event)
             } finally {
-                i.remove();
+                i.remove()
             }
         }
     }

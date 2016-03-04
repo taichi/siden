@@ -161,8 +161,13 @@ public interface Trial<T> {
         }
     }
 
-    public static <T, R, E extends Exception> Function<T, Trial<R>> of(
-            ExceptionalFunction<T, R, E> fn) {
+    @FunctionalInterface
+    public interface ExceptionalFunction<T, R, EX extends Exception> {
+
+        R apply(T t) throws EX;
+    }
+
+    public static <T, R, E extends Exception> Function<T, Trial<R>> of(ExceptionalFunction<T, R, E> fn) {
         return t -> {
             try {
                 return new Success<R>(fn.apply(t));

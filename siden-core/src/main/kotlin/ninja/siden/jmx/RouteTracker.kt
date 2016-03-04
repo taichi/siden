@@ -17,22 +17,16 @@ package ninja.siden.jmx
 
 import ninja.siden.Request
 import ninja.siden.Response
-import ninja.siden.Route
 
 /**
  * @author taichi
  */
-class RouteTracker(internal val original: Route) : Route, RequestMXBean {
-    internal val totalResult = RequestMeter()
-
-    override fun handle(request: Request, response: Response): Any {
-        return totalResult.record { original.handle(request, response) }
-    }
+class RouteTracker(val totalResult: RequestMeter) : RequestMXBean {
 
     override fun reset() {
         this.totalResult.reset()
     }
 
     override val metrics: RequestMetrics
-        get() = this.totalResult.toMetrics()
+        get() = totalResult.toMetrics()
 }

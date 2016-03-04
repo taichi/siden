@@ -15,14 +15,12 @@
  */
 package ninja.siden.def
 
-import ninja.siden.Renderer
-import ninja.siden.RendererCustomizer
-import ninja.siden.Route
+import ninja.siden.*
 
 /**
  * @author taichi
  */
-class ErrorCodeRoutingDef(val code: Int, val route: Route) : RendererCustomizer<ErrorCodeRoutingDef> {
+class ErrorCodeRoutingDef(val code: Int, val route: (Request, Response) -> Any) : RendererCustomizer<ErrorCodeRoutingDef> {
     var renderer: Renderer<*>? = null
         internal set
 

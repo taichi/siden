@@ -20,10 +20,7 @@ import io.undertow.server.handlers.MetricsHandler
 import io.undertow.server.session.InMemorySessionManager
 import io.undertow.server.session.SessionAttachmentHandler
 import io.undertow.server.session.SessionCookieConfig
-import ninja.siden.App
-import ninja.siden.Config
-import ninja.siden.Route
-import ninja.siden.WebSocketFactory
+import ninja.siden.*
 import ninja.siden.def.*
 import ninja.siden.util.ExactlyOnceCloseable
 import org.xnio.OptionMap
@@ -43,12 +40,13 @@ class MetricsAppBuilder(config: OptionMap) : DefaultAppBuilder(config) {
         newone.addTo(this.router)
     }
 
-    protected fun makeRouteTracker(context: AppContext, original: RoutingDef): Route {
-        val tracker = RouteTracker(original.route)
+    protected fun makeRouteTracker(context: AppContext, original: RoutingDef): (Request, Response) -> Any {
+        val meter = RequestMeter()
+        val tracker = RouteTracker(meter)
         register(context.root, tracker, listOf("type", "Request", "path",
                 ObjectName.quote(context.prefix + original.template),
                 "method", original.method.name))
-        return tracker
+        return { q, s -> meter.record { original.route(q, s) } }
     }
 
     override fun apply(context: AppContext, def: SubAppDef) {

@@ -16,13 +16,13 @@
 package example;
 
 import ninja.siden.App;
-import ninja.siden.react.React;
+import React;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
- * React.js Server Side Rendering Example on JVM.
+ * ninja.siden.react.React.js Server Side Rendering Example on JVM.
  * 
  * @author taichi
  */
