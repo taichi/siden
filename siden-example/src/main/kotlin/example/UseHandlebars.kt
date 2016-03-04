@@ -33,10 +33,10 @@ fun main(args: Array<String>) {
     val t = engine.compileInline("Hello {{this}}!")
 
     // use handlebars simply
-    app.get("/bars", Route { req, res -> res.render("john", Renderer.of { context, writer -> t.apply(context, writer) }) })
+    app.get("/bars", { req, res -> res.render("john", Renderer.of { context, writer -> t.apply(context, writer) }) })
 
     // read template from templates/say/hello.html
-    app.get("/hello", Route { req, res -> res.render(User("peter"), "say/hello") })
+    app.get("/hello", { req, res -> res.render(User("peter"), "say/hello") })
 
     app.listen().addShutdownHook()
 }

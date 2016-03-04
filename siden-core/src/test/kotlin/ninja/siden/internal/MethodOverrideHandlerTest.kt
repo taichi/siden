@@ -53,7 +53,7 @@ class MethodOverrideHandlerTest {
 
             @Mock
             fun <T> getAttachment(key: AttachmentKey<T>): T {
-                throw AssertionError()
+                throw AssertionError(key.toString())
             }
         }.mockInstance
 

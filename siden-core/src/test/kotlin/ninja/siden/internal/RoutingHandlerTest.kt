@@ -33,6 +33,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 import java.util.*
+import kotlin.test.assertNotNull
 
 /**
  * @author taichi
@@ -73,6 +74,7 @@ class RoutingHandlerTest {
                     @JvmName("render")
                     fun render(model: Any, sink: HttpServerExchange) {
                         assertEquals("Hello", model)
+                        assertNotNull(sink)
                     }
                 }.mockInstance)
         target.handleRequest(this.exchange)
@@ -89,6 +91,7 @@ class RoutingHandlerTest {
                     @JvmName("render")
                     fun render(model: Any, sink: HttpServerExchange) {
                         assertEquals("Hello", model)
+                        assertNotNull(sink)
                     }
                 }.mockInstance)
         target.handleRequest(this.exchange)
@@ -104,17 +107,16 @@ class RoutingHandlerTest {
             @JvmName("render")
             fun render(model: Any, sink: HttpServerExchange) {
                 assertEquals("Hey", model)
+                assertNotNull(sink)
             }
         }.mockInstance))
 
         target.add(Predicates.truePredicate(), { q, s -> 400 },
-                object : MockUp<Renderer<Any>>() {
-                    @Mock(invocations = 0)
-                    @Throws(IOException::class)
-                    @JvmName("render")
-                    fun render(model: Any, sink: HttpServerExchange) {
+                object : Renderer<Any> {
+                    override fun render(model: Any, sink: HttpServerExchange) {
+                        throw AssertionError()
                     }
-                }.mockInstance)
+                })
         target.handleRequest(this.exchange)
     }
 
@@ -127,17 +129,16 @@ class RoutingHandlerTest {
             @JvmName("render")
             internal fun render(model: Any, sink: HttpServerExchange) {
                 assertEquals("Hey", model)
+                assertNotNull(sink)
             }
         }.mockInstance))
 
         target.add(Predicates.truePredicate(), { q, s -> s.status(402) },
-                object : MockUp<Renderer<Any>>() {
-                    @Mock(invocations = 0)
-                    @Throws(IOException::class)
-                    @JvmName("render")
-                    fun render(model: Any, sink: HttpServerExchange) {
+                object : Renderer<Any> {
+                    override fun render(model: Any, sink: HttpServerExchange) {
+                        throw AssertionError()
                     }
-                }.mockInstance)
+                })
 
         target.handleRequest(this.exchange)
         assertEquals(402, this.exchange.responseCode.toLong())
@@ -153,13 +154,11 @@ class RoutingHandlerTest {
         val target = RoutingHandler(Testing.empty())
         target.add(Predicates.truePredicate(),
                 { q, s -> s.cookie("hoge", "fuga") },
-                object : MockUp<Renderer<Any>>() {
-                    @Mock(invocations = 0)
-                    @Throws(IOException::class)
-                    @JvmName("render")
-                    fun render(model: Any, sink: HttpServerExchange) {
+                object : Renderer<Any> {
+                    override fun render(model: Any, sink: HttpServerExchange) {
+                        throw AssertionError()
                     }
-                }.mockInstance)
+                })
 
         target.handleRequest(this.exchange)
     }
@@ -178,6 +177,7 @@ class RoutingHandlerTest {
 
             @Mock(invocations = 1)
             fun setResponseCode(responseCode: Int): HttpServerExchange {
+                assert(0 < responseCode)
                 return mockInstance
             }
 
@@ -231,16 +231,15 @@ class RoutingHandlerTest {
             @JvmName("render")
             fun render(model: Any, sink: HttpServerExchange) {
                 assertEquals("Hey", model)
+                assertNotNull(sink)
             }
         }.mockInstance))
 
-        target.add(Predicates.truePredicate(), { q, s -> throw MyIoException() }, object : MockUp<Renderer<Any>>() {
-            @Mock(invocations = 0)
-            @Throws(IOException::class)
-            @JvmName("render")
-            fun render(model: Any, sink: HttpServerExchange) {
+        target.add(Predicates.truePredicate(), { q, s -> throw MyIoException() }, object : Renderer<Any> {
+            override fun render(model: Any, sink: HttpServerExchange) {
+                throw AssertionError()
             }
-        }.mockInstance)
+        })
 
         this.exchange.putAttachment(Core.CONFIG, Config.defaults().map)
         this.exchange.putAttachment(Core.REQUEST, SidenRequest(this.exchange))

@@ -16,7 +16,6 @@
 package example
 
 import ninja.siden.App
-import ninja.siden.Route
 import java.io.File
 
 /**
@@ -25,7 +24,7 @@ import java.io.File
 fun main(args: Array<String>) {
     val app = App()
 
-    app.get("/", Route { q, s -> File("siden-example/assets/chat.html") })
+    app.get("/", { q, s -> File("siden-example/assets/chat.html") })
 
     app.websocket("/ws").onText { con, txt -> con.peers.forEach { c -> c.send(txt) } }
 

@@ -44,6 +44,7 @@ class LongAccumulatorsTest {
 
         companion object {
             @DataPoints
+            @JvmField
             var fixtures = arrayOf(intArrayOf(10, 11, 11), intArrayOf(10, 9, 10))
         }
     }
@@ -61,7 +62,8 @@ class LongAccumulatorsTest {
 
         companion object {
             @DataPoints
-            var fixtures = arrayOf(intArrayOf(10, 11, 10), intArrayOf(10, 9, 9), intArrayOf(-10, 7, 7))
+            @JvmField
+            val fixtures = arrayOf(intArrayOf(10, 11, 10), intArrayOf(10, 9, 9), intArrayOf(-10, 7, 7))
         }
     }
 }

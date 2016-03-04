@@ -73,13 +73,7 @@ class FiltersHandlerTest {
     @Test
     @Throws(Exception::class)
     fun testSimpleCall() {
-        val filter = object : MockUp<Filter>() {
-            @Mock(invocations = 2)
-            @Throws(Exception::class)
-            fun filter(req: Request, res: Response, chain: FilterChain) {
-                chain.next()
-            }
-        }.mockInstance
+        var filter = Filter { req, res, chain -> chain.next() }
 
         val target = FiltersHandler(Testing.mustCall())
         target.add(FilterDef(Predicates.truePredicate(), filter))

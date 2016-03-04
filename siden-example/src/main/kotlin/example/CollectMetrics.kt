@@ -17,16 +17,15 @@ package example
 
 import ninja.siden.App
 import ninja.siden.Config
-import ninja.siden.Route
 
 fun main(args: Array<String>) {
     // development environments don't need metrics.
     val app = App.configure { b -> b.set(Config.ENV, "stable") }
 
-    app.get("/", Route { req, res -> "hello" })
+    app.get("/", { req, res -> "hello" })
 
     val sub = App()
-    sub.get("/hoi",Route { req, res -> "HOIHOI" })
+    sub.get("/hoi", { req, res -> "HOIHOI" })
     sub.websocket("/ws").onText { c, s -> c.send(s) }
 
     app.use("/aaa", sub)

@@ -16,8 +16,7 @@
 package example;
 
 import ninja.siden.App;
-import React;
-
+import ninja.siden.react.*;
 import java.nio.file.Paths;
 import java.util.Arrays;
 

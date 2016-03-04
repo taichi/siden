@@ -30,6 +30,7 @@ import java.util.*
 import java.util.logging.ConsoleHandler
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.test.assertNotNull
 
 /**
  * @author taichi
@@ -62,6 +63,7 @@ class Testing {
                 @Mock(invocations = 1)
                 @Throws(Exception::class)
                 fun handleRequest(exchange: HttpServerExchange) {
+                    assertNotNull(exchange)
                 }
             }.mockInstance
         }

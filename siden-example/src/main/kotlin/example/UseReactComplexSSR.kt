@@ -18,7 +18,6 @@ package example
 import com.github.mustachejava.DefaultMustacheFactory
 import ninja.siden.App
 import ninja.siden.Renderer
-import ninja.siden.Route
 import ninja.siden.RoutingCustomizer
 import ninja.siden.react.React
 import org.boon.Maps
@@ -33,6 +32,7 @@ import java.util.regex.Pattern
  * @author taichi
  */
 var id = 0
+
 fun main(args: Array<String>) {
 
     // test data
@@ -61,7 +61,7 @@ fun main(args: Array<String>) {
             Paths.get("build", "comments.js")))
 
     val app = App()
-    app.get(Pattern.compile("/(index.html?)?"), Route { q, s ->
+    app.get(Pattern.compile("/(index.html?)?"), { q, s ->
         val props = JsonFactory.toJson(Maps.map<String, Any>("initdata",
                 comments, "url", "comments.json"))
         val model = HashMap<String, Any>()
@@ -71,8 +71,8 @@ fun main(args: Array<String>) {
     }).type("text/html")
 
     // JSON API
-    json(app.get("/comments.json", Route { q, s -> comments }))
-    json(app.post("/comments.json", Route { req, res ->
+    json(app.get("/comments.json", { q, s -> comments }))
+    json(app.post("/comments.json", { req, res ->
         val m = HashMap<String, Any>()
         m.put("id", ++id)
         req.form("author").ifPresent { s -> m.put("author", s) }
