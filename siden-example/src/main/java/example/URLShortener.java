@@ -15,7 +15,10 @@
  */
 package example;
 
+import kotlin.jvm.functions.Function2;
 import ninja.siden.App;
+import ninja.siden.Request;
+import ninja.siden.Response;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

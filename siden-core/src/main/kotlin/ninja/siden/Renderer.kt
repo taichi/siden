@@ -38,17 +38,16 @@ interface Renderer<T> {
                 fn: (MODEL, OutputStream) -> Unit): Renderer<MODEL> {
             return BlockingRenderer(object : Renderer<MODEL> {
                 override fun render(model: MODEL, sink: HttpServerExchange) {
-                    fn(model, sink.getOutputStream())
+                    fn(model, sink.outputStream)
                 }
             })
         }
 
         fun <MODEL> of(fn: (MODEL, Writer) -> Unit): Renderer<MODEL> {
-            return BlockingRenderer(object : Renderer<MODEL> {
+            return BlockingRenderer(renderer = object : Renderer<MODEL> {
                 override fun render(model: MODEL, sink: HttpServerExchange) {
                     val config = sink.getAttachment(Core.CONFIG)
-                    val w = OutputStreamWriter(sink.getOutputStream(),
-                            config.get(Config.CHARSET))
+                    val w = OutputStreamWriter(sink.outputStream, config.get(Config.CHARSET))
                     fn(model, w)
                     w.flush()
                 }

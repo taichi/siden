@@ -195,5 +195,9 @@ class App(val config: OptionMap = Config.defaults().map) {
             val omb = fn(Config.defaults())
             return App(omb.map)
         }
+
+        fun fnc() : (Request, Response)-> Any {
+            return {r, s -> 1}
+        }
     }
 }

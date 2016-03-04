@@ -17,7 +17,6 @@ package ninja.siden.jmx
 
 import ninja.siden.App
 import ninja.siden.Config
-import ninja.siden.Route
 import ninja.siden.Stoppable
 import ninja.siden.internal.Testing
 import org.junit.After
@@ -50,7 +49,7 @@ class MetricsAppBuilderTest {
     }
 
     protected fun listen() {
-        this.stopper = this.target.listen(port=port++)
+        this.stopper = this.target.listen(port = port++)
     }
 
     @Test
@@ -75,7 +74,7 @@ class MetricsAppBuilderTest {
 
     @Test
     fun routes() {
-        target.get("/aaa", Route { req, res -> "abc" })
+        target.get("/aaa", { req, res -> "abc" })
         this.listen()
 
         val on = ObjectName(
@@ -88,7 +87,7 @@ class MetricsAppBuilderTest {
     @Test
     fun nestedRoutes() {
         val sub = App()
-        sub.head("/def", Route { req, res -> "def" })
+        sub.head("/def", { req, res -> "def" })
         target.use("/abc", sub)
         this.listen()
         val abc = ObjectName(
@@ -99,7 +98,7 @@ class MetricsAppBuilderTest {
     @Test
     fun nestedRoutesTwoTimes() {
         val sub = App()
-        sub.head("/def", Route { req, res -> "def" })
+        sub.head("/def", { req, res -> "def" })
         target.use("/abc", sub)
         target.use("/efg", sub)
         this.listen()
@@ -116,9 +115,9 @@ class MetricsAppBuilderTest {
     @Test
     fun deeplyNestedRoutes() {
         val subsub = App()
-        subsub.get("/jkl", Route { req, res -> "eee" })
+        subsub.get("/jkl", { req, res -> "eee" })
         val sub = App()
-        sub.head("/def", Route { req, res -> "def" })
+        sub.head("/def", { req, res -> "def" })
         sub.use("/ghi", subsub)
 
         target.use("/abc", sub)

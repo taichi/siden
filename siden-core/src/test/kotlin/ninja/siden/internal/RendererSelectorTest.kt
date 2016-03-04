@@ -16,7 +16,6 @@
 package ninja.siden.internal
 
 import ninja.siden.App
-import ninja.siden.Route
 import ninja.siden.Stoppable
 import org.apache.http.client.methods.HttpGet
 import org.junit.After
@@ -54,7 +53,7 @@ class RendererSelectorTest(val name: String, internal var actual: Any, internal 
     }
 
     internal fun runServer(result: Any) {
-        this.app.get("/renderer/$name", Route { req, res -> result })
+        this.app.get("/renderer/$name", { req, res -> result })
         this.stopper = this.app.listen(port)
     }
 
@@ -83,7 +82,8 @@ class RendererSelectorTest(val name: String, internal var actual: Any, internal 
 
         @Parameters(name = "{0}")
         @Throws(Exception::class)
-        @JvmStatic fun parameters(): Iterable<Array<Any>> {
+        @JvmStatic
+        fun parameters(): Iterable<Array<Any>> {
             return Arrays.asList(*arrayOf(
                     arrayOf("String", "Hello", port++),
                     arrayOf("File", tmp().toFile(), port++),

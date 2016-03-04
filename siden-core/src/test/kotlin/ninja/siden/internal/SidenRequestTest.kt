@@ -16,7 +16,6 @@
 package ninja.siden.internal
 
 import ninja.siden.App
-import ninja.siden.Route
 import ninja.siden.Stoppable
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.entity.StringEntity
@@ -96,7 +95,7 @@ class SidenRequestTest {
     fun stringBody(body: String): Optional<String> {
         val latch = CountDownLatch(2)
         val queue = ArrayBlockingQueue<Optional<String>>(1)
-        this.app.post("/string", Route { req, res ->
+        this.app.post("/string", { req, res ->
             val content = req.body()
             queue.add(content)
             latch.countDown()
