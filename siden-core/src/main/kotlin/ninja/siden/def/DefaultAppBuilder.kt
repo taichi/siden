@@ -43,7 +43,7 @@ open class DefaultAppBuilder @JvmOverloads constructor(val config: OptionMap,
 ) : AppBuilder {
 
     override fun begin() {
-        if (config.get(Config.SIDEN_FAVICON, false)) {
+        if (config.get<Boolean>(Config.SIDEN_FAVICON, false)) {
             AssetDef.useDefaultFavicon(this.assets)
         }
     }

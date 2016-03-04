@@ -20,10 +20,7 @@ import io.undertow.util.DateUtils
 import io.undertow.util.Headers
 import io.undertow.util.HttpString
 import io.undertow.util.StatusCodes
-import ninja.siden.Config
-import ninja.siden.Cookie
-import ninja.siden.Renderer
-import ninja.siden.Response
+import ninja.siden.*
 import java.util.*
 
 /**
@@ -98,7 +95,7 @@ class SidenResponse(internal val exchange: HttpServerExchange) : Response {
 
     override fun <MODEL> render(model: MODEL, template: String): Any {
         val config = this.exchange.getAttachment(Core.CONFIG)
-        val repo = config.get(Config.RENDERER_REPOSITORY)
+        val repo = config.get(Config.RENDERER_REPOSITORY)?: RendererRepository.EMPTY
         return render(model, repo.find<MODEL>(template))
     }
 

@@ -13,23 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ninja.siden;
+package ninja.siden.internal
+
+import io.undertow.server.HttpServerExchange
+import ninja.siden.Renderer
 
 /**
  * @author taichi
  */
-@FunctionalInterface
-public interface RendererRepository {
+class BlockingRenderer<T>(internal val renderer: Renderer<T>) : Renderer<T> {
 
-    static RendererRepository EMPTY = new RendererRepository() {
-        @Override
-        public <T> Renderer<T> find(String path) {
-            throw new IllegalStateException(
-                    "RendererRepository is not configured. see. "
-                            + Config.class.getName() + "#"
-                            + Config.RENDERER_REPOSITORY.getName());
+    override fun render(model: T, sink: HttpServerExchange) {
+        if (sink.isBlocking == false) {
+            sink.startBlocking()
         }
-    };
-
-    <T> Renderer<T> find(String path);
+        if (sink.isInIoThread) {
+            sink.dispatch { exchange -> renderer.render(model, exchange) }
+        } else {
+            renderer.render(model, sink)
+        }
+    }
 }

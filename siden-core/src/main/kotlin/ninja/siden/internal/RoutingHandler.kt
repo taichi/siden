@@ -128,7 +128,7 @@ class RoutingHandler(internal val next: HttpHandler) : HttpHandler {
     internal fun resolve(renderer: Renderer<*>?, exchange: HttpServerExchange): Renderer<Any> {
         if (renderer == null) {
             val config = exchange.getAttachment(Core.CONFIG)
-            return config.get(Config.DEFAULT_RENDERER)
+            return config.get(Config.DEFAULT_RENDERER) as Renderer<Any>
         }
         return renderer as Renderer<Any>
     }

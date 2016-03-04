@@ -13,19 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package example
-
-import ninja.siden.App
+package ninja.siden
 
 /**
  * @author taichi
  */
-fun main(args: Array<String>) {
-    val app = App()
+@FunctionalInterface
+interface RendererRepository {
 
-    app.get("/", { q, s -> java.io.File("siden-example/assets/chat.html") })
+    fun <T> find(path: String): Renderer<T>
 
-    app.websocket("/ws").onText { con, txt -> con.peers.forEach { c -> c.send(txt) } }
+    companion object {
 
-    app.listen(8181).addShutdownHook()
+        val EMPTY: RendererRepository = object : RendererRepository {
+            override fun <T> find(path: String): Renderer<T> {
+                throw IllegalStateException(
+                        "RendererRepository is not configured."
+                                + "see. ninja.siden.Config#RENDERER_REPOSITORY")
+            }
+        }
+    }
 }

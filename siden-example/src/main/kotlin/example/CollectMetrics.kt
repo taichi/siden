@@ -22,10 +22,10 @@ fun main(args: Array<String>) {
     // development environments don't need metrics.
     val app = App.configure { b -> b.set(Config.ENV, "stable") }
 
-    app["/", { req, res -> "hello" }]
+    app.get("/") { req, res -> "hello" }
 
     val sub = App()
-    sub["/hoi", { req, res -> "HOIHOI" }]
+    sub.get("/hoi") { req, res -> "HOIHOI" }
     sub.websocket("/ws").onText { c, s -> c.send(s) }
 
     app.use("/aaa", sub)

@@ -28,18 +28,17 @@ import java.util.Objects;
 /**
  * @author taichi
  */
-public interface Config {
+public class Config {
 
     /**
      * Environment mode, defaults to System.getenv(SIDEN_ENV) (SIDEN_ENV
      * environment variable) or "development"
      */
-    Option<String> ENV = Option.simple(Config.class, "ENV", String.class);
+    public static final Option<String> ENV = Option.simple(Config.class, "ENV", String.class);
 
-    Option<Boolean> SIDEN_FAVICON = Option.simple(Config.class,
-            "SIDEN_FAVICON", Boolean.class);
+    public static final  Option<Boolean> SIDEN_FAVICON = Option.simple(Config.class, "SIDEN_FAVICON", Boolean.class);
 
-    Option<Long> WAIT_FOR_GRACEFUL_SHUTDOWN = Option.simple(Config.class,
+    public static final Option<Long> WAIT_FOR_GRACEFUL_SHUTDOWN = Option.simple(Config.class,
             "WAIT_FOR_GRACEFUL_SHUTDOWN", Long.class);
     /**
      * Use _method magic to allow put/delete forms in browsers that don't
@@ -48,51 +47,45 @@ public interface Config {
      * @see <a
      * href="http://jxck.hatenablog.com/entry/why-form-dosent-support-put-delete">why-form-dosent-support-put-delete</a>
      */
-    Option<Boolean> METHOD_OVERRIDE = Option.simple(Config.class,
-            "METHOD_OVERRIDE", Boolean.class);
+    public static final Option<Boolean> METHOD_OVERRIDE = Option.simple(Config.class, "METHOD_OVERRIDE", Boolean.class);
 
     @SuppressWarnings("rawtypes")
-    Option<Renderer> DEFAULT_RENDERER = Option.simple(Config.class,
+    public static final Option<Renderer> DEFAULT_RENDERER = Option.simple(Config.class,
             "DEFAULT_RENDERER", Renderer.class);
 
-    Option<RendererRepository> RENDERER_REPOSITORY = Option.simple(
+    public static final Option<RendererRepository> RENDERER_REPOSITORY = Option.simple(
             Config.class, "RENDERER_REPOSITORY", RendererRepository.class);
 
-    Option<Charset> CHARSET = Option.simple(Config.class, "CHARSET",
-            Charset.class);
+    public static final Option<Charset> CHARSET = Option.simple(Config.class, "CHARSET", Charset.class);
 
-    Option<String> DEFAULT_CONTENT_TYPE = Option.simple(Config.class,
-            "DEFAULT_CONTENT_TYPE", String.class);
+    public static final Option<String> DEFAULT_CONTENT_TYPE = Option.simple(Config.class, "DEFAULT_CONTENT_TYPE", String.class);
 
-    Option<MimeMappings> MIME_MAPPINGS = Option.simple(Config.class,
-            "MIME_MAPPINGS", MimeMappings.class);
+    public static final Option<MimeMappings> MIME_MAPPINGS = Option.simple(Config.class, "MIME_MAPPINGS", MimeMappings.class);
 
-    Option<Long> TRANSFER_MIN_SIZE = Option.simple(Config.class,
-            "TRANSFER_MIN_SIZE", Long.class);
+    public static final Option<Long> TRANSFER_MIN_SIZE = Option.simple(Config.class, "TRANSFER_MIN_SIZE", Long.class);
 
     // multipart request options
-    Option<Long> MAX_FILE_SIZE = Option.simple(Config.class, "MAX_FILE_SIZE",
-            Long.class);
+    public static final Option<Long> MAX_FILE_SIZE = Option.simple(Config.class, "MAX_FILE_SIZE", Long.class);
 
-    Option<File> TEMP_DIR = Option.simple(Config.class, "TEMP_DIR", File.class);
+    public static final Option<File> TEMP_DIR = Option.simple(Config.class, "TEMP_DIR", File.class);
 
-    Option<String> SESSION_COOKIE_NAME = Option.simple(Config.class,
+    public static final Option<String> SESSION_COOKIE_NAME = Option.simple(Config.class,
             "SESSION_COOKIE_NAME", String.class);
 
-    Option<Integer> MAX_SESSIONS = Option.simple(Config.class, "MAX_SESSIONS",
+    public static final Option<Integer> MAX_SESSIONS = Option.simple(Config.class, "MAX_SESSIONS",
             Integer.class);
 
-    Option<Integer> DEFAULT_SESSION_TIMEOUT_SECONDS = Option.simple(
+    public static final Option<Integer> DEFAULT_SESSION_TIMEOUT_SECONDS = Option.simple(
             Config.class, "DEFAULT_SESSION_TIMEOUT_SECONDS", Integer.class);
 
     // WebSocket Options
-    Option<Long> WS_MAX_IDLE_TIMEOUT = Option.simple(Config.class,
+    public static final Option<Long> WS_MAX_IDLE_TIMEOUT = Option.simple(Config.class,
             "WS_MAX_IDLE_TIMEOUT", Long.class);
 
-    Option<Integer> WS_BINARY_MESSAGE_BUFFER_SIZE = Option.simple(Config.class,
+    public static final Option<Integer> WS_BINARY_MESSAGE_BUFFER_SIZE = Option.simple(Config.class,
             "WS_BINARY_MESSAGE_BUFFER_SIZE", Integer.class);
 
-    Option<Integer> WS_TEXT_MESSAGE_BUFFER_SIZE = Option.simple(Config.class,
+    public static final Option<Integer> WS_TEXT_MESSAGE_BUFFER_SIZE = Option.simple(Config.class,
             "WS_TEXT_MESSAGE_BUFFER_SIZE", Integer.class);
 
     // Security Options
@@ -103,22 +96,20 @@ public interface Config {
      * @see <a
      * href="https://developer.mozilla.org/en-US/docs/Web/HTTP/X-Frame-Options">HTTP/X-Frame-Options</a>
      */
-    Option<String> FRAME_OPTIONS = Option.simple(Config.class, "FRAME_OPTIONS",
-            String.class);
+    public static final Option<String> FRAME_OPTIONS = Option.simple(Config.class, "FRAME_OPTIONS", String.class);
 
     /**
      * X-XSS-Protection: 1; mode=block
      */
-    Option<Boolean> USE_XSS_PROTECTION = Option.simple(Config.class,
-            "USE_XSS_PROTECTION", Boolean.class);
+    public static final Option<Boolean> USE_XSS_PROTECTION = Option.simple(Config.class, "USE_XSS_PROTECTION", Boolean.class);
 
     /**
      * X-Content-Type-Options: nosniff
      */
-    Option<Boolean> USE_CONTENT_TYPE_OPTIONS = Option.simple(Config.class,
+    public static final Option<Boolean> USE_CONTENT_TYPE_OPTIONS = Option.simple(Config.class,
             "USE_CONTENT_TYPE_OPTIONS", Boolean.class);
 
-    static OptionMap.Builder defaults() {
+    public static OptionMap.Builder defaults() {
         OptionMap.Builder omb = OptionMap.builder();
         omb.set(ENV,
                 Objects.toString(System.getenv("SIDEN_ENV"), "development"));
@@ -126,7 +117,6 @@ public interface Config {
         omb.set(WAIT_FOR_GRACEFUL_SHUTDOWN, 30 * 1000);
         omb.set(METHOD_OVERRIDE, false);
         omb.set(DEFAULT_RENDERER, new RendererSelector<Object>());
-        omb.set(RENDERER_REPOSITORY, RendererRepository.EMPTY);
         omb.set(CHARSET, StandardCharsets.UTF_8);
         omb.set(DEFAULT_CONTENT_TYPE, "text/plain; charset=UTF-8");
 

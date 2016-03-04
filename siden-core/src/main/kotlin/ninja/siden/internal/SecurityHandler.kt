@@ -33,11 +33,11 @@ class SecurityHandler(internal var next: HttpHandler) : HttpHandler {
 
         rh.add(SecurityHeaders.FRAME_OPTIONS, config.get(Config.FRAME_OPTIONS))
 
-        if (config.get(Config.USE_XSS_PROTECTION)) {
+        if (config.get<Boolean>(Config.USE_XSS_PROTECTION)) {
             rh.add(SecurityHeaders.XSS_PROTECTION, "1; mode=block")
         }
 
-        if (config.get(Config.USE_CONTENT_TYPE_OPTIONS)) {
+        if (config.get<Boolean>(Config.USE_CONTENT_TYPE_OPTIONS)) {
             rh.add(SecurityHeaders.CONTENT_TYPE_OPTIONS, "nosniff")
         }
 
